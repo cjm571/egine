@@ -3,14 +3,16 @@
 *                        *
 * Created on: 2014-02-07 *
 *************************/
+#pragma once
 
 #include "StdAfx.h"
 
-class DemoApp
+class MainFrame
 {
+// Ctors
 public:
-	DemoApp();
-	~DemoApp();
+	MainFrame();
+	~MainFrame();
 
 	// Register the window class and call methods for instantiating drawing resources
     HRESULT Initialize();
@@ -18,6 +20,7 @@ public:
     // Process and dispatch messages
     void RunMessageLoop();
 
+// Methods
 private:
     // Initialize device-independent resources.
     HRESULT CreateDeviceIndependentResources();
@@ -44,8 +47,8 @@ private:
         WPARAM wParam,
         LPARAM lParam
         );
-
-
+				
+// Properties
 private:
 	HWND m_hwnd;
 	ID2D1Factory* m_pDirect2dFactory;

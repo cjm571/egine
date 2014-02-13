@@ -4,9 +4,11 @@
 * Created on: 2014-02-07 *
 *************************/
 
-#include "DemoApp.h"
+#include "MainFrame.h"
 
-DemoApp::DemoApp() : 
+
+/********** CTORS **********/
+MainFrame::MainFrame() : 
     m_hwnd(NULL),
     m_pDirect2dFactory(NULL),
     m_pRenderTarget(NULL),
@@ -15,7 +17,7 @@ DemoApp::DemoApp() :
 {
 }
 
-DemoApp::~DemoApp()
+MainFrame::~MainFrame()
 {
 	SafeRelease(&m_pDirect2dFactory);
     SafeRelease(&m_pRenderTarget);
@@ -23,6 +25,8 @@ DemoApp::~DemoApp()
     SafeRelease(&m_pCornflowerBlueBrush);
 }
 
+
+/********** ENTRY POINT AND INITIALIZATION **********/
 int WINAPI WinMain(
     HINSTANCE /* hInstance */,
     HINSTANCE /* hPrevInstance */,
@@ -40,7 +44,7 @@ int WINAPI WinMain(
 	if (SUCCEEDED(CoInitialize(NULL)))
 	{
 		{
-			DemoApp app;
+			MainFrame app;
 
 			if (SUCCEEDED(app.Initialize()))
 			{
@@ -53,26 +57,26 @@ int WINAPI WinMain(
 	return 0;
 }
 
-LRESULT CALLBACK DemoApp::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK MainFrame::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT result = 0;
 
 	if (message == WM_CREATE)
 	{
 		LPCREATESTRUCT pcs = (LPCREATESTRUCT)lParam;
-		DemoApp *pDemoApp = (DemoApp *)pcs->lpCreateParams;
+		MainFrame *pMainFrame = (MainFrame *)pcs->lpCreateParams;
 
 		::SetWindowLongPtrW(
 			hwnd,
 			GWLP_USERDATA,
-			PtrToUlong(pDemoApp)
+			PtrToUlong(pMainFrame)
 			);
 
 		result = 1;
 	}
 	else
 	{
-		DemoApp *pDemoApp = reinterpret_cast<DemoApp *>(static_cast<LONG_PTR>(
+		MainFrame *pMainFrame = reinterpret_cast<MainFrame *>(static_cast<LONG_PTR>(
 			::GetWindowLongPtrW(
 				hwnd,
 				GWLP_USERDATA
@@ -80,7 +84,7 @@ LRESULT CALLBACK DemoApp::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM
 
 		bool wasHandled = false;
 
-		if (pDemoApp)
+		if (pMainFrame)
 		{
 			switch (message)
             {
@@ -88,7 +92,7 @@ LRESULT CALLBACK DemoApp::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 {
                     UINT width = LOWORD(lParam);
                     UINT height = HIWORD(lParam);
-                    pDemoApp->OnResize(width, height);
+                    pMainFrame->OnResize(width, height);
                 }
                 result = 0;
                 wasHandled = true;
@@ -104,7 +108,7 @@ LRESULT CALLBACK DemoApp::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM
 
             case WM_PAINT:
                 {
-                    pDemoApp->OnRender();
+                    pMainFrame->OnRender();
                     ValidateRect(hwnd, NULL);
                 }
                 result = 0;
@@ -130,7 +134,7 @@ LRESULT CALLBACK DemoApp::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM
 	return result;
 }
 
-HRESULT DemoApp::Initialize()
+HRESULT MainFrame::Initialize()
 {
 	HRESULT hr;
 
@@ -143,14 +147,14 @@ HRESULT DemoApp::Initialize()
 		// Register the window class
 		WNDCLASSEX wcex		= { sizeof(WNDCLASSEX) };
 		wcex.style			= CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc	= DemoApp::WndProc;
+		wcex.lpfnWndProc	= MainFrame::WndProc;
 		wcex.cbClsExtra		= 0;
 		wcex.cbWndExtra		= sizeof(LONG_PTR);
 		wcex.hInstance		= HINST_THISCOMPONENT;
 		wcex.hbrBackground	= NULL;
 		wcex.lpszMenuName	= NULL;
 		wcex.hCursor		= LoadCursor(NULL, IDI_APPLICATION);
-		wcex.lpszClassName	= L"D2DDemoApp";
+		wcex.lpszClassName	= L"D2DMainFrame";
 
 		RegisterClassEx(&wcex);
 
@@ -164,8 +168,8 @@ HRESULT DemoApp::Initialize()
 
 		// Create the window
 		m_hwnd = CreateWindow(
-			L"D2DDemoApp",
-			L"Direct2D Demo App",
+			L"D2DMainFrame",
+			L"Direct2D Physics Sandbox",
 			WS_OVERLAPPEDWINDOW,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
@@ -187,7 +191,7 @@ HRESULT DemoApp::Initialize()
 	return hr;
 }
 
-void DemoApp::RunMessageLoop()
+void MainFrame::RunMessageLoop()
 {
 	MSG msg;
 
@@ -198,7 +202,9 @@ void DemoApp::RunMessageLoop()
 	}
 }
 
-HRESULT DemoApp::CreateDeviceIndependentResources()
+
+/********** D2D RESOURCES **********/
+HRESULT MainFrame::CreateDeviceIndependentResources()
 {
 	HRESULT hr = S_OK;
 
@@ -208,7 +214,7 @@ HRESULT DemoApp::CreateDeviceIndependentResources()
 	return hr;
 }
 
-HRESULT DemoApp::CreateDeviceResources()
+HRESULT MainFrame::CreateDeviceResources()
 {
 	HRESULT hr = S_OK;
 	
@@ -250,16 +256,16 @@ HRESULT DemoApp::CreateDeviceResources()
 	return hr;
 }
 
-void DemoApp::DiscardDeviceResources()
+void MainFrame::DiscardDeviceResources()
 {
 	SafeRelease(&m_pRenderTarget);
 	SafeRelease(&m_pLightSlateGrayBrush);
 	SafeRelease(&m_pCornflowerBlueBrush);
 }
 
-/********** EVENT HANDLERS **********/
 
-HRESULT DemoApp::OnRender()
+/********** EVENT HANDLERS **********/
+HRESULT MainFrame::OnRender()
 {
 	HRESULT hr = S_OK;
 
@@ -330,7 +336,7 @@ HRESULT DemoApp::OnRender()
 	return hr;
 }
 
-void DemoApp::OnResize(UINT width, UINT height)
+void MainFrame::OnResize(UINT width, UINT height)
 {
     if (m_pRenderTarget)
     {

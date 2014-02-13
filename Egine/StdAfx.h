@@ -59,3 +59,16 @@ inline void SafeRelease( Interface **ppInterfaceToRelease )
 	EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 	#define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 #endif
+
+typedef struct
+{
+	double x;
+	double y;
+} Point;
+
+enum Shape
+{
+	Circle = 0,
+	Triangle = 1,
+	Square = 2
+};
