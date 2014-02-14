@@ -8,10 +8,9 @@
 #include "Scene.h"
 
 /********** CTORS **********/
-Scene::Scene(int _width, int _height)
+Scene::Scene(MainFrame& _mainFrame)
+	: mainFrame(_mainFrame)
 {
-	width = _width;
-	height = _height;
 }
 
 Scene::~Scene()
@@ -40,9 +39,11 @@ HRESULT Scene::AddObject(PhysicsObject* newObject)
 	if (aabbMin.x < 0 || aabbMin.y < 0 ||
 		aabbMax.x > MainFrame::width || aabbMax.y > MainFrame::height)
 	{
+		MessageBoxA(NULL, "Cannot add object.\nBounding Box extends past scene perimeter.");
 		hr = E_FAIL;
 	}
 
+	// AABB Overlap check
 	if (SUCCEEDED(hr))
 	{
 		//TODO: Left off here

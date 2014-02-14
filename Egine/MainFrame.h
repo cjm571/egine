@@ -6,6 +6,7 @@
 #pragma once
 
 #include "StdAfx.h"
+#include "Scene.h"
 
 class MainFrame
 {
@@ -19,7 +20,7 @@ public:
 
     // Process and dispatch messages
     void RunMessageLoop();
-
+	
 // Methods
 private:
     // Initialize device-independent resources.
@@ -53,8 +54,7 @@ private:
 	HWND m_hwnd;
 	ID2D1Factory* m_pDirect2dFactory;
 	ID2D1HwndRenderTarget* m_pRenderTarget;
-	ID2D1SolidColorBrush* m_pLightSlateGrayBrush;
-	ID2D1SolidColorBrush* m_pCornflowerBlueBrush;
+	Scene m_scene;
 
 // Public Properties
 public:
