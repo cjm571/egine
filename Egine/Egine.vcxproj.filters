@@ -21,18 +21,21 @@
     <ClInclude Include="MainFrame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicsScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PhysicsObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AABB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -55,4 +55,9 @@ private:
 	ID2D1HwndRenderTarget* m_pRenderTarget;
 	ID2D1SolidColorBrush* m_pLightSlateGrayBrush;
 	ID2D1SolidColorBrush* m_pCornflowerBlueBrush;
+
+// Public Properties
+public:
+	static UINT width;
+	static UINT height;
 };

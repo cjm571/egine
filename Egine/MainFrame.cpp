@@ -166,6 +166,9 @@ HRESULT MainFrame::Initialize()
         // to create its own windows.
         m_pDirect2dFactory->GetDesktopDpi(&dpiX, &dpiY);
 
+		MainFrame::width = static_cast<UINT>(ceil(640.f * dpiX / 96.f));
+		MainFrame::height = static_cast<UINT>(ceil(480.f * dpiY / 96.f));
+
 		// Create the window
 		m_hwnd = CreateWindow(
 			L"D2DMainFrame",
@@ -173,8 +176,8 @@ HRESULT MainFrame::Initialize()
 			WS_OVERLAPPEDWINDOW,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
-			static_cast<UINT>(ceil(640.f * dpiX / 96.f)),
-			static_cast<UINT>(ceil(480.f * dpiY / 96.f)),
+			MainFrame::width,
+			MainFrame::height,
 			NULL,
 			NULL,
 			HINST_THISCOMPONENT,
@@ -344,5 +347,8 @@ void MainFrame::OnResize(UINT width, UINT height)
         // error here, because the error will be returned again
         // the next time EndDraw is called.
         m_pRenderTarget->Resize(D2D1::SizeU(width, height));
+		
+		MainFrame::width = width;
+		MainFrame::height = height;
     }
 }

@@ -15,22 +15,24 @@ public:
 	PhysicsObject();
 	~PhysicsObject();
 
-// Methods
-private:
-
+// Public Methods
+public:
+	AABB getAABB() {return m_aabb;};
+	double getMass() {return m_mass;};
+	int getUID() {return m_UID;};
 
 // Properties
 private:
 	// Axis-Aligned Bounding Box for use in collision detection
-	AABB aabb;
+	AABB m_aabb;
 
 	// Mass of object in kg
-	double mass;
+	double m_mass;
 
 	// Display attributes
 	D2D1::ColorF color;
-	Shape shape;
+	Shape m_shape;
 	
 	// Unique identifier of object
-	int UID;
+	int m_UID;
 };

@@ -82,11 +82,12 @@
     <ClInclude Include="AABB.h" />
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="PhysicsObject.h" />
-    <ClInclude Include="PhysicsScene.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrame.cpp" />
+    <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

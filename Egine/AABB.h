@@ -9,12 +9,25 @@
 
 class AABB
 {
+// Ctors
 public:
 	AABB();
 	~AABB();
 
+// Public methods
+public:
+	Point getMin() {return m_min;};
+	Point getMax() {return m_max;};
+	Point getCenter() {return m_center};
+
+// Public fields
 private:
-	// Min and Max X, Y coordinates of AABB
-	Point min;
-	Point max;
+	// X, Y coordinates of AABB
+	Point m_min;
+	Point m_max;
+	Point m_center;
+
+	// Measurements
+	double m_width;
+	double m_height;
 };
