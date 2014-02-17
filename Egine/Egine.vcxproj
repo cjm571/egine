@@ -49,7 +49,7 @@
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
@@ -86,7 +86,9 @@
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AABB.cpp" />
     <ClCompile Include="MainFrame.cpp" />
+    <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

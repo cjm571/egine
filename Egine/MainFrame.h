@@ -32,6 +32,9 @@ private:
     // Release device-dependent resource.
     void DiscardDeviceResources();
 
+	// Renders scene objects in main frame
+	HRESULT RenderScene(Scene);
+
     // Draw content.
     HRESULT OnRender();
 	
@@ -54,7 +57,7 @@ private:
 	HWND m_hwnd;
 	ID2D1Factory* m_pDirect2dFactory;
 	ID2D1HwndRenderTarget* m_pRenderTarget;
-	Scene m_scene;
+	ID2D1SolidColorBrush* m_pSolidBrush;
 
 // Public Properties
 public:

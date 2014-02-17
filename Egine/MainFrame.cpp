@@ -6,12 +6,17 @@
 
 #include "MainFrame.h"
 
+// Initialize frame width and height
+UINT MainFrame::width = 640;
+UINT MainFrame::height = 480;
+
 
 /********** CTORS **********/
 MainFrame::MainFrame() : 
     m_hwnd(NULL),
     m_pDirect2dFactory(NULL),
     m_pRenderTarget(NULL),
+	m_pSolidBrush(NULL)
 {
 }
 
@@ -19,10 +24,11 @@ MainFrame::~MainFrame()
 {
 	SafeRelease(&m_pDirect2dFactory);
     SafeRelease(&m_pRenderTarget);
+	SafeRelease(&m_pSolidBrush);
 }
 
 
-/********** ENTRY POINT AND INITIALIZATION **********/
+/********** ENTRY PhysPoint AND INITIALIZATION **********/
 int WINAPI WinMain(
     HINSTANCE /* hInstance */,
     HINSTANCE /* hPrevInstance */,
@@ -162,18 +168,21 @@ HRESULT MainFrame::Initialize()
         // to create its own windows.
         m_pDirect2dFactory->GetDesktopDpi(&dpiX, &dpiY);
 
-		MainFrame::width = static_cast<UINT>(ceil(640.f * dpiX / 96.f));
-		MainFrame::height = static_cast<UINT>(ceil(480.f * dpiY / 96.f));
+		// Determine window dimensions for desired client-size
+		UINT dpiWidth = static_cast<UINT>(ceil(MainFrame::width * dpiX / 96.f));
+		UINT dpiHeight = static_cast<UINT>(ceil(MainFrame::height * dpiY / 96.f));
+		RECT windowRect = {0, 0, dpiWidth, dpiHeight};
+		AdjustWindowRect(&windowRect, WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);
 
 		// Create the window
 		m_hwnd = CreateWindow(
 			L"D2DMainFrame",
 			L"Direct2D Physics Sandbox",
-			WS_OVERLAPPEDWINDOW,
+			WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
-			MainFrame::width,
-			MainFrame::height,
+			windowRect.right - windowRect.left,
+			windowRect.bottom - windowRect.top,
 			NULL,
 			NULL,
 			HINST_THISCOMPONENT,
@@ -244,6 +253,66 @@ void MainFrame::DiscardDeviceResources()
 }
 
 
+/********** RENDER HELPER FUNCTIONS **********/
+HRESULT MainFrame::RenderScene(Scene scene)
+{
+	HRESULT hr = S_OK;
+
+	std::vector<PhysicsObject*> physicsObjects = scene.GetObjects();
+
+	// Draw objects based on shape/size/etc.
+	std::vector<PhysicsObject*>::iterator poItr;
+	for (poItr = physicsObjects.begin(); poItr != physicsObjects.end(); ++poItr)
+	{
+		PhysicsObject* curObject = (*poItr);
+		
+		// Set brush color
+		D2D1::ColorF::Enum color = curObject->GetColor();
+		hr = m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &m_pSolidBrush);
+
+		// Exit loop on brush-create failure
+		if (FAILED(hr))
+		{
+			break;
+		}
+
+		// Get AABB data to determine dimensions of object
+		AABB aabb = curObject->GetAABB();
+		PhysPoint tl = aabb.GetTL();
+		PhysPoint br = aabb.GetBR();
+		PhysPoint center = aabb.GetTL0Center();
+
+		// Draw the damn thing
+		switch (curObject->GetShape())
+		{
+		case PhysCircle:
+			{
+			continue;
+			}
+		case PhysTriangle:
+			{
+			continue;
+			}
+		case PhysRectangle:
+			{
+			D2D1_RECT_F rect = D2D1::RectF(tl.x, tl.y, br.x, br.y);
+			m_pRenderTarget->FillRectangle(&rect, m_pSolidBrush);
+			continue;
+			}
+		default:
+			{
+			// Invalid shape
+			LPCSTR errMsg = "Invalid shape for UID " + curObject->GetUID();
+			MessageBoxA(NULL, errMsg, NULL, MB_OK);
+			break;
+			}
+		}
+	}
+
+	return hr;
+}
+
+
 /********** EVENT HANDLERS **********/
 HRESULT MainFrame::OnRender()
 {
@@ -256,12 +325,42 @@ HRESULT MainFrame::OnRender()
 		// Clear background
 		m_pRenderTarget->BeginDraw();
 		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-		m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+		m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Aqua));
 
-		D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
+		/***** TEST CODE, DROP THIS SHIT *****/
+#ifdef _DEBUG
+		Scene scene = Scene();
 
+		// Default object (30x30AABB, Black, Circle)
+		PhysicsObject objDefault = PhysicsObject();
 
-		
+		// Tall, Red, Rectangle
+		PhysPoint center = PhysPoint();
+		center.x = 100;
+		center.y = 100;
+		AABB aabb = AABB(center, 10, 30);
+		D2D1::ColorF::Enum red = D2D1::ColorF::Red;
+		PhysicsObject objTall = PhysicsObject(aabb, red, PhysRectangle);
+
+		// Long, Yellow, Rectangle
+		PhysPoint min = PhysPoint();
+		min.x = 150;
+		min.y = 100;
+		PhysPoint max = PhysPoint();
+		max.x = 200;
+		max.y = 125;
+		aabb = AABB(min, max);
+		D2D1::ColorF::Enum yellow = D2D1::ColorF::Yellow;
+		PhysicsObject objLong = PhysicsObject(aabb, yellow, PhysRectangle);
+
+		scene.AddObject(&objDefault);
+		scene.AddObject(&objTall);
+		scene.AddObject(&objLong);
+#endif		
+		/***** TEST CODE, DROP THIS SHIT *****/
+
+		// Render objects in physics scene
+		hr = RenderScene(scene);
 
 		hr = m_pRenderTarget->EndDraw();
 	}
@@ -278,13 +377,13 @@ HRESULT MainFrame::OnRender()
 void MainFrame::OnResize(UINT width, UINT height)
 {
     if (m_pRenderTarget)
-    {
+    {		
+		MainFrame::width = width;
+		MainFrame::height = height;
+
         // Note: This method can fail, but it's okay to ignore the
         // error here, because the error will be returned again
         // the next time EndDraw is called.
-        m_pRenderTarget->Resize(D2D1::SizeU(width, height));
-		
-		MainFrame::width = width;
-		MainFrame::height = height;
+        m_pRenderTarget->Resize(D2D1::SizeU(MainFrame::width, MainFrame::height));	
     }
 }

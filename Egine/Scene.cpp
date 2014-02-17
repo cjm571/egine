@@ -8,21 +8,13 @@
 #include "Scene.h"
 
 /********** CTORS **********/
-Scene::Scene(MainFrame& _mainFrame)
-	: mainFrame(_mainFrame)
+Scene::Scene()
 {
 }
 
 Scene::~Scene()
 {
-	while(!physicsObjects.empty())
-	{
-		delete physicsObjects.back();
-		physicsObjects.pop_back();
-	}
-
-	physicsObjects.clear();
-	delete &physicsObjects;
+	m_physicsObjects.clear();
 }
 
 
@@ -31,26 +23,25 @@ HRESULT Scene::AddObject(PhysicsObject* newObject)
 {
 	HRESULT hr = S_OK;
 
+	PhysPoint aabbMin = newObject->GetAABB().GetMin();
+	PhysPoint aabbMax = newObject->GetAABB().GetMax();
+	
 	// Sanity check new physics object properties, add to list on pass
-	Point aabbMin = newObject->getAABB().getMin();
-	Point aabbMax = newObject->getAABB().getMax();
-
 	// Out-of-bounds check
 	if (aabbMin.x < 0 || aabbMin.y < 0 ||
 		aabbMax.x > MainFrame::width || aabbMax.y > MainFrame::height)
 	{
-		MessageBoxA(NULL, "Cannot add object.\nBounding Box extends past scene perimeter.");
+		MessageBoxA(NULL, "Cannot add object.\nBounding Box extends past scene perimeter.", NULL, MB_OK);
 		hr = E_FAIL;
 	}
 
 	// AABB Overlap check
 	if (SUCCEEDED(hr))
 	{
-		//TODO: Left off here
+		//TODO: Implement
 	}
 
+	m_physicsObjects.push_back(newObject);
 
-	// AABB overlap check
-
-	physicsObjects.push_back(newObject);
+	return hr;
 }

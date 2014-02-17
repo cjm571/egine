@@ -38,5 +38,11 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AABB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

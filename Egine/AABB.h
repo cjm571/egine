@@ -12,22 +12,26 @@ class AABB
 // Ctors
 public:
 	AABB();
+	AABB(PhysPoint, PhysPoint);
+	AABB(PhysPoint, UINT, UINT);
 	~AABB();
 
 // Public methods
 public:
-	Point getMin() {return m_min;};
-	Point getMax() {return m_max;};
-	Point getCenter() {return m_center};
+	// Accessors for physics functions
+	PhysPoint GetMin() {return m_min;};
+	PhysPoint GetMax() {return m_max;};
+	PhysPoint GetCenter() {return m_center;};
+
+	// Accessors for drawing functions
+	PhysPoint GetTL();
+	PhysPoint GetBR();
+	PhysPoint GetTL0Center();
 
 // Public fields
 private:
-	// X, Y coordinates of AABB
-	Point m_min;
-	Point m_max;
-	Point m_center;
-
-	// Measurements
-	double m_width;
-	double m_height;
+	// Bottom-Left-0-based X, Y coordinates of AABB
+	PhysPoint m_min;
+	PhysPoint m_max;
+	PhysPoint m_center;
 };

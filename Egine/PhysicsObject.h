@@ -13,13 +13,16 @@ class PhysicsObject
 // Ctors
 public:
 	PhysicsObject();
+	PhysicsObject(AABB, D2D1::ColorF::Enum, Shape);
 	~PhysicsObject();
 
 // Public Methods
 public:
-	AABB getAABB() {return m_aabb;};
-	double getMass() {return m_mass;};
-	int getUID() {return m_UID;};
+	AABB GetAABB() {return m_aabb;};
+	double GetMass() {return m_mass;};
+	D2D1::ColorF::Enum GetColor() {return m_color;};
+	Shape GetShape() {return m_shape;};
+	ULONG GetUID() {return m_UID;};
 
 // Properties
 private:
@@ -30,9 +33,12 @@ private:
 	double m_mass;
 
 	// Display attributes
-	D2D1::ColorF color;
+	D2D1::ColorF::Enum m_color;
 	Shape m_shape;
 	
 	// Unique identifier of object
-	int m_UID;
+	ULONG m_UID;
+
+	// Tracks previously-assigned UID to avoid collisions
+	static ULONG prevUID;
 };
