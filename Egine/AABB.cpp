@@ -74,7 +74,7 @@ PhysPoint AABB::GetBR()
 	return br;
 }
 
-PhysPoint AABB::GetTL0Center()
+PhysPoint AABB::GetCenter()
 {
 	PhysPoint center = PhysPoint();
 

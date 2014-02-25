@@ -16,7 +16,7 @@ MainFrame::MainFrame() :
     m_hwnd(NULL),
     m_pDirect2dFactory(NULL),
     m_pRenderTarget(NULL),
-	m_pSolidBrush(NULL)
+	m_pFillBrush(NULL)
 {
 }
 
@@ -24,7 +24,7 @@ MainFrame::~MainFrame()
 {
 	SafeRelease(&m_pDirect2dFactory);
     SafeRelease(&m_pRenderTarget);
-	SafeRelease(&m_pSolidBrush);
+	SafeRelease(&m_pFillBrush);
 }
 
 
@@ -266,9 +266,10 @@ HRESULT MainFrame::RenderScene(Scene scene)
 	{
 		PhysicsObject* curObject = (*poItr);
 		
-		// Set brush color
+		// Set brush colors
 		D2D1::ColorF::Enum color = curObject->GetColor();
-		hr = m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &m_pSolidBrush);
+		hr = m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(color), &m_pFillBrush);
+		hr |= m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &m_pOutlineBrush);
 
 		// Exit loop on brush-create failure
 		if (FAILED(hr))
@@ -280,7 +281,6 @@ HRESULT MainFrame::RenderScene(Scene scene)
 		AABB aabb = curObject->GetAABB();
 		PhysPoint tl = aabb.GetTL();
 		PhysPoint br = aabb.GetBR();
-		PhysPoint center = aabb.GetTL0Center();
 
 		// Draw the damn thing
 		switch (curObject->GetShape())
@@ -295,8 +295,9 @@ HRESULT MainFrame::RenderScene(Scene scene)
 			}
 		case PhysRectangle:
 			{
-			D2D1_RECT_F rect = D2D1::RectF(tl.x, tl.y, br.x, br.y);
-			m_pRenderTarget->FillRectangle(&rect, m_pSolidBrush);
+			D2D1_RECT_F rect = D2D1::RectF((float)tl.x, (float)tl.y, (float)br.x, (float)br.y);
+			m_pRenderTarget->FillRectangle(&rect, m_pFillBrush);
+			m_pRenderTarget->DrawRectangle(&rect, m_pOutlineBrush);
 			continue;
 			}
 		default:

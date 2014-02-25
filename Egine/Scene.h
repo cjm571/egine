@@ -28,7 +28,11 @@ public:
 	HRESULT AddObject(PhysicsObject*);
 
 	// Check scene for possible collisions based on AABBs
-	std::vector<std::pair<ULONG/*UID*/,ULONG/*UID*/>> CollisionCheck();
+	// Returns vector of UIDs of possibly-colliding pairs
+	std::vector<std::pair<ULONG/*UID*/,ULONG/*UID*/>> CheckCollisions();
+
+	// Imposes gravitational effects on physics objects
+	HRESULT ImposeGravity();
 
 // Properties
 private:

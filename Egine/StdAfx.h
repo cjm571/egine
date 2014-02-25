@@ -22,6 +22,9 @@
 // Exclude rarely-used items from Windows headers.
 #define WIN32_LEAN_AND_MEAN
 
+// Allow use of math.h #defines
+#define _USE_MATH_DEFINES
+
 // Windows header files
 #include <Windows.h>
 
@@ -59,6 +62,8 @@ inline void SafeRelease( Interface **ppInterfaceToRelease )
 	EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 	#define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 #endif
+
+#define SPEED_OF_LIGHT 299792458
 
 typedef struct
 {

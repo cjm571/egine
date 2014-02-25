@@ -18,15 +18,25 @@ public:
 
 // Public methods
 public:
-	// Accessors for physics functions
+	// ***For physics functions***
+	// Returns bottom-left corner point
 	PhysPoint GetMin() {return m_min;};
+	// ***For physics functions***
+	// Returns top-right corner point
 	PhysPoint GetMax() {return m_max;};
-	PhysPoint GetCenter() {return m_center;};
-
-	// Accessors for drawing functions
+	// ***For physics functions***
+	// Returns center point
+	PhysPoint GetMiddle() {return m_center;};
+	
+	// ***For drawing functions***
+	// Returns top-left corner point
 	PhysPoint GetTL();
+	// ***For drawing functions***
+	// Returns bottom-right corner point
 	PhysPoint GetBR();
-	PhysPoint GetTL0Center();
+	// ***For drawing functions***
+	// Returns center point
+	PhysPoint GetCenter();
 
 // Public fields
 private:
