@@ -67,8 +67,8 @@ inline void SafeRelease( Interface **ppInterfaceToRelease )
 
 typedef struct
 {
-	UINT x;
-	UINT y;
+	double x;
+	double y;
 } PhysPoint;
 
 enum Shape

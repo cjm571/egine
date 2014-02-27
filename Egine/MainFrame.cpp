@@ -279,8 +279,8 @@ HRESULT MainFrame::RenderScene(Scene scene)
 
 		// Get AABB data to determine dimensions of object
 		AABB aabb = curObject->GetAABB();
-		PhysPoint tl = aabb.GetTL();
-		PhysPoint br = aabb.GetBR();
+		PhysPoint tl = aabb.GetTopLeft(AABB::Drawing);
+		PhysPoint br = aabb.GetBottomRight(AABB::Drawing);
 
 		// Draw the damn thing
 		switch (curObject->GetShape())
@@ -344,13 +344,10 @@ HRESULT MainFrame::OnRender()
 		PhysicsObject objTall = PhysicsObject(aabb, red, PhysRectangle);
 
 		// Long, Yellow, Rectangle
-		PhysPoint min = PhysPoint();
-		min.x = 150;
-		min.y = 100;
-		PhysPoint max = PhysPoint();
-		max.x = 200;
-		max.y = 125;
-		aabb = AABB(min, max);
+		PhysPoint centerB = PhysPoint();
+		centerB.x = 400;
+		centerB.y = 250;
+		aabb = AABB(centerB, 100, 40);
 		D2D1::ColorF::Enum yellow = D2D1::ColorF::Yellow;
 		PhysicsObject objLong = PhysicsObject(aabb, yellow, PhysRectangle);
 

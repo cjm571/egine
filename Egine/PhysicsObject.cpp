@@ -27,3 +27,28 @@ PhysicsObject::PhysicsObject(AABB _aabb, D2D1::ColorF::Enum _color, Shape _shape
 PhysicsObject::~PhysicsObject()
 {
 }
+
+
+/********** PUBLIC METHODS **********/
+HRESULT PhysicsObject::ChangeTrajectory(Trajectory newTrajectory)
+{
+	HRESULT hr = S_OK;
+
+	double newDirection = newTrajectory.GetDirection();
+	double newVelocity = newTrajectory.GetVelocity();
+
+	hr |= m_trajectory.SetDirection(newDirection);
+	hr |= m_trajectory.SetVelocity(newVelocity);
+
+	return hr;
+}
+
+HRESULT PhysicsObject::Move()
+{
+	HRESULT hr = S_OK;
+
+	double direction = m_trajectory.GetDirection();
+	double velocity = m_trajectory.GetVelocity();
+
+	return hr;
+}

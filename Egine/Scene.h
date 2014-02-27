@@ -18,6 +18,14 @@ public:
 	Scene();
 	~Scene();
 
+// Helper Functions
+private:
+	// Checks two AABBs for overlap
+	bool CheckOverlap(AABB, AABB);
+
+	// Checks two PhysicsObjects for overlap based on AABBs
+	bool CheckOverlap(PhysicsObject*, PhysicsObject*);
+
 // Public Methods
 public:
 	// Returns vector of physics objects

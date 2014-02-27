@@ -93,6 +93,9 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Trajectory.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\docs\Software_Requirements.docx" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

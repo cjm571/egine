@@ -7,45 +7,27 @@
 #include "AABB.h"
 #include "MainFrame.h"
 
-// NOTE: Default AABB is 30x30, with BL corner at (0,0) Cartesian
+// NOTE: Default AABB is 20x20, with BL corner at (0,0) Cartesian
 
 /********** CTORS **********/
 AABB::AABB()
+	: m_width(20.0), m_height(20.0)
 {
-	m_min = PhysPoint();
-	m_min.x = 0;
-	m_min.y	= 0;
-
-	m_max = PhysPoint();
-	m_max.x = 30;
-	m_max.y = 30;
-
 	m_center = PhysPoint();
-	m_center.x = 15;
-	m_center.y = 15;
+	m_center.x = 10;
+	m_center.y = 10;
 }
 
-AABB::AABB(PhysPoint _min, PhysPoint _max)
-{
-	m_min = PhysPoint(_min);
-	m_max = PhysPoint(_max);
-
-	m_center = PhysPoint();
-	m_center.x = ((m_max.x - m_min.x) / 2) + m_min.x;
-	m_center.y = ((m_max.y - m_min.y) / 2) + m_min.y;
-}
-
-AABB::AABB(PhysPoint _center, UINT _width, UINT _height)
+AABB::AABB(PhysPoint _center)
+	: m_width(20.0), m_height(20.0)
 {
 	m_center = PhysPoint(_center);
+}
 
-	m_min = PhysPoint();
-	m_min.x = m_center.x - (_width/2);
-	m_min.y = m_center.y - (_height/2);
-
-	m_max = PhysPoint();
-	m_max.x = m_center.x + (_width/2);
-	m_max.y = m_center.y + (_height/2);
+AABB::AABB(PhysPoint _center, double _width, double _height)
+	: m_width(_width), m_height(_height)
+{
+	m_center = PhysPoint(_center);
 }
 
 AABB::~AABB()
@@ -53,33 +35,149 @@ AABB::~AABB()
 }
 
 
-/********** ACCESSORS FOR DRAWING FUNCTIONS **********/
-PhysPoint AABB::GetTL()
-{
-	PhysPoint tl = PhysPoint();
-
-	tl.x = m_min.x;
-	tl.y = MainFrame::height - m_max.y;
-
-	return tl;
-}
-
-PhysPoint AABB::GetBR()
-{
-	PhysPoint br = PhysPoint();
-
-	br.x = m_max.x;
-	br.y = MainFrame::height - m_min.y;
-
-	return br;
-}
-
-PhysPoint AABB::GetCenter()
+/********** ACCESSORS **********/
+PhysPoint AABB::GetCenter(CoordFlag flag)
 {
 	PhysPoint center = PhysPoint();
 
-	center.x = m_center.x;
-	center.y = MainFrame::height - m_center.y;
+	switch (flag)
+	{
+	case CoordFlag::Physics:
+		center = m_center;
+		break;
+	case CoordFlag::Drawing:
+		center.x = m_center.x;
+		center.y = MainFrame::height - m_center.y;
+		break;
+	}
 
 	return center;
+}
+
+PhysPoint AABB::GetBottomLeft(CoordFlag flag)
+{
+	PhysPoint blPoint = PhysPoint();
+
+	switch (flag)
+	{
+	case CoordFlag::Physics:
+		blPoint.x = m_center.x - (m_width/2);
+		blPoint.y = m_center.y - (m_height/2);
+		break;
+	case CoordFlag::Drawing:
+		blPoint.x = m_center.x - (m_width/2);
+		blPoint.y = MainFrame::height - (m_center.y - (m_height/2));
+		break;
+	}
+
+	return blPoint;
+}
+
+PhysPoint AABB::GetBottomRight(CoordFlag flag)
+{
+	PhysPoint brPoint = PhysPoint();
+
+	switch (flag)
+	{
+	case CoordFlag::Physics:
+		brPoint.x = m_center.x + (m_width/2);
+		brPoint.y = m_center.y - (m_height/2);
+		break;
+	case CoordFlag::Drawing:
+		brPoint.x = m_center.x + (m_width/2);
+		brPoint.y = MainFrame::height - (m_center.y - (m_height/2));
+		break;
+	}
+
+	return brPoint;
+}
+
+PhysPoint AABB::GetTopLeft(CoordFlag flag)
+{
+	PhysPoint tlPoint = PhysPoint();
+
+	switch (flag)
+	{
+	case CoordFlag::Physics:
+		tlPoint.x = m_center.x - (m_width/2);
+		tlPoint.y = m_center.y + (m_height/2);
+		break;
+	case CoordFlag::Drawing:
+		tlPoint.x = m_center.x - (m_width/2);
+		tlPoint.y = MainFrame::height - (m_center.y + (m_height/2));
+		break;
+	}
+
+	return tlPoint;
+}
+
+PhysPoint AABB::GetTopRight(CoordFlag flag)
+{
+	PhysPoint trPoint = PhysPoint();
+
+	switch (flag)
+	{
+	case CoordFlag::Physics:
+		trPoint.x = m_center.x + (m_width/2);
+		trPoint.y = m_center.y + (m_height/2);
+		break;
+	case CoordFlag::Drawing:
+		trPoint.x = m_center.x + (m_width/2);
+		trPoint.y = MainFrame::height - (m_center.y + (m_height/2));
+		break;
+	}
+
+	return trPoint;
+}
+
+double AABB::GetUpperBound(CoordFlag flag)
+{
+	double upperBound = 0.0;
+
+	switch (flag)
+	{
+	case CoordFlag::Physics:
+		upperBound = m_center.y + (m_height/2);
+		break;
+	case CoordFlag::Drawing:
+		upperBound = MainFrame::height - (m_center.y + (m_height/2));
+		break;
+	}
+
+	return upperBound;
+}
+
+double AABB::GetLowerBound(CoordFlag flag)
+{
+	double lowerBound = 0.0;
+
+	switch (flag)
+	{
+	case CoordFlag::Physics:
+		lowerBound = m_center.y - (m_height/2);
+		break;
+	case CoordFlag::Drawing:
+		lowerBound = MainFrame::height - (m_center.y - (m_height/2));
+		break;
+	}
+
+	return lowerBound;
+}
+
+double AABB::GetLeftBound()
+{
+	double leftBound = 0.0;
+
+	leftBound = m_center.x - (m_width/2);
+
+	return leftBound;
+}
+
+double AABB::GetRightBound()
+{
+	double rightBound = 0.0;
+
+	rightBound = m_center.x + (m_width/2);
+
+	return rightBound;
 }

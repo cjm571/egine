@@ -12,36 +12,55 @@ class AABB
 // Ctors
 public:
 	AABB();
-	AABB(PhysPoint, PhysPoint);
-	AABB(PhysPoint, UINT, UINT);
+	AABB(PhysPoint);
+	AABB(PhysPoint, double, double);
 	~AABB();
+
+public:
+	// Flag indicating desired coordinate system
+	static enum CoordFlag
+	{
+		Physics = 0,
+		Drawing = 1
+	};
 
 // Public methods
 public:
-	// ***For physics functions***
-	// Returns bottom-left corner point
-	PhysPoint GetMin() {return m_min;};
-	// ***For physics functions***
-	// Returns top-right corner point
-	PhysPoint GetMax() {return m_max;};
-	// ***For physics functions***
-	// Returns center point
-	PhysPoint GetMiddle() {return m_center;};
+	// Returns physics or drawing center coords, based on flag
+	PhysPoint GetCenter(CoordFlag);
+
+	// Returns physics or drawing bottom-left coords, based on flag
+	PhysPoint GetBottomLeft(CoordFlag);
 	
-	// ***For drawing functions***
-	// Returns top-left corner point
-	PhysPoint GetTL();
-	// ***For drawing functions***
-	// Returns bottom-right corner point
-	PhysPoint GetBR();
-	// ***For drawing functions***
-	// Returns center point
-	PhysPoint GetCenter();
+	// Returns physics or drawing bottom-right coords, based on flag
+	PhysPoint GetBottomRight(CoordFlag);
+	
+	// Returns physics or drawing top-left coords, based on flag
+	PhysPoint GetTopLeft(CoordFlag);
+	
+	// Returns physics or drawing top-right coords, based on flag
+	PhysPoint GetTopRight(CoordFlag);
+
+	// Returns physcs or drawing upper boundary position, based on flag
+	double GetUpperBound(CoordFlag);
+	
+	// Returns physcs or drawing lower boundary position, based on flag
+	double GetLowerBound(CoordFlag);
+
+	// Returns left boundary position
+	double GetLeftBound();
+
+	// Returns right boundary position
+	double GetRightBound();
 
 // Public fields
 private:
-	// Bottom-Left-0-based X, Y coordinates of AABB
-	PhysPoint m_min;
-	PhysPoint m_max;
+	// Bottom-Left-0-based X, Y coordinates of AABB centerpoint
 	PhysPoint m_center;
+
+	// Width in meters
+	double m_width;
+
+	// Height in meters
+	double m_height;
 };

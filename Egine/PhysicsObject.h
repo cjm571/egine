@@ -26,6 +26,12 @@ public:
 	Shape GetShape()				{return m_shape;};
 	ULONG GetUID()					{return m_UID;};
 
+	// Changes trajectory of object
+	HRESULT ChangeTrajectory(Trajectory);
+
+	// Moves object based on current trajectory and attributes
+	HRESULT Move();
+
 // Properties
 private:
 	// Axis-Aligned Bounding Box for use in collision detection

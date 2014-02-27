@@ -18,13 +18,59 @@ Scene::~Scene()
 }
 
 
+/********** HELPER FUNCTIONS **********/
+bool Scene::CheckOverlap(AABB aabbA, AABB aabbB)
+{
+	bool bOverlapping = false;
+
+	double upBoundA = aabbA.GetUpperBound(AABB::Physics);
+	double lowBoundA = aabbA.GetLowerBound(AABB::Physics);
+	double leftBoundA = aabbA.GetLeftBound();
+	double rightBoundA = aabbA.GetRightBound();
+	double upBoundB = aabbB.GetUpperBound(AABB::Physics);
+	double lowBoundB = aabbB.GetLowerBound(AABB::Physics);
+	double leftBoundB = aabbB.GetLeftBound();
+	double rightBoundB = aabbB.GetRightBound();
+
+	// First check if A and B are aligned vertically
+	if (((upBoundA >= lowBoundB) && (upBoundA <= upBoundB)) ||
+		((lowBoundA >= lowBoundB) && (lowBoundA <= upBoundB)))
+	{
+		// Check for BB overlap presuming A is left of B
+		if (rightBoundA > leftBoundB)
+		{
+			bOverlapping = true;
+		}
+		// Check for BB overlap presuming B is left of A
+		if (rightBoundB > leftBoundA)
+		{
+			bOverlapping = true;
+		}
+	}
+
+	return bOverlapping;
+}
+
+bool Scene::CheckOverlap(PhysicsObject* poA, PhysicsObject* poB)
+{
+	bool bOverlapping = false;
+
+	AABB aabbA = poA->GetAABB();
+	AABB aabbB = poB->GetAABB();
+
+	bOverlapping = CheckOverlap(aabbA, aabbB);
+
+	return bOverlapping;
+}
+
+
 /********** PUBLIC METHODS **********/
 HRESULT Scene::AddObject(PhysicsObject* newObject)
 {
 	HRESULT hr = S_OK;
 
-	PhysPoint aabbMin = newObject->GetAABB().GetMin();
-	PhysPoint aabbMax = newObject->GetAABB().GetMax();
+	PhysPoint aabbMin = newObject->GetAABB().GetBottomLeft(AABB::Physics);
+	PhysPoint aabbMax = newObject->GetAABB().GetTopRight(AABB::Physics);
 	
 	// Sanity check new physics object properties, add to list on pass
 	// Out-of-bounds check
@@ -35,13 +81,28 @@ HRESULT Scene::AddObject(PhysicsObject* newObject)
 		hr = E_FAIL;
 	}
 
-	// AABB Overlap check
+	// AABB-overlap check
 	if (SUCCEEDED(hr))
 	{
-		//TODO: Implement
+		bool bOverlapping = false;
+
+		std::vector<PhysicsObject*>::iterator poItr;
+		for (poItr=m_physicsObjects.begin(); poItr!=m_physicsObjects.end(); ++poItr)
+		{
+			bOverlapping = CheckOverlap(newObject, (*poItr));
+			if (bOverlapping)
+			{
+				hr = E_FAIL;
+				break;
+			}
+		}
 	}
 
-	m_physicsObjects.push_back(newObject);
+	if (SUCCEEDED(hr))
+	{
+		// Sanity checks passed, add object to list
+		m_physicsObjects.push_back(newObject);
+	}
 
 	return hr;
 }
@@ -60,25 +121,9 @@ std::vector<std::pair<ULONG,ULONG>> Scene::CheckCollisions()
 			PhysicsObject* pObjectA = (*poItrA);
 			PhysicsObject* pObjectB = (*poItrB);
 
-			AABB aabbA = pObjectA->GetAABB();
-			AABB aabbB = pObjectB->GetAABB();
-
 			bool bColliding = false;
-			// First check if A and B are aligned vertically
-			if (((aabbA.GetMax().y >= aabbB.GetMin().y) && (aabbA.GetMax().y <= aabbB.GetMax().y)) ||
-				((aabbA.GetMin().y >= aabbB.GetMin().y) && (aabbA.GetMin().y <= aabbB.GetMax().y)))
-			{
-				// Check for BB overlap presuming A is left of B
-				if (aabbA.GetMax().x > aabbB.GetMin().x)
-				{
-					bColliding = true;
-				}
-				// Check for BB overlap presuming B is left of A
-				if (aabbB.GetMax().x > aabbA.GetMin().x)
-				{
-					bColliding = true;
-				}
-			}
+
+			bColliding = CheckOverlap(pObjectA, pObjectB);
 
 			// Add UID pair to vector on collision detect
 			if (bColliding)
