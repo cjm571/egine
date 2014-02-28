@@ -63,6 +63,66 @@ bool Scene::CheckOverlap(PhysicsObject* poA, PhysicsObject* poB)
 	return bOverlapping;
 }
 
+std::vector<std::pair<PhysicsObject*,PhysicsObject*>> Scene::CheckCollisions()
+{
+	std::vector<std::pair<PhysicsObject*,PhysicsObject*>> collidingPairs;
+
+	std::vector<PhysicsObject*>::iterator poItrA;
+	std::vector<PhysicsObject*>::iterator poItrB;
+	for (poItrA=m_physicsObjects.begin(); poItrA!=m_physicsObjects.end(); ++poItrA)
+	{
+		for (poItrB=m_physicsObjects.begin(); poItrB!=m_physicsObjects.end(); ++poItrB)
+		{
+			// Dereference iterators and compare AABBs of contained phys objects
+			PhysicsObject* pObjectA = (*poItrA);
+			PhysicsObject* pObjectB = (*poItrB);
+
+			bool bColliding = false;
+
+			bColliding = CheckOverlap(pObjectA, pObjectB);
+
+			// Add UID pair to vector on collision detect
+			if (bColliding)
+			{
+				std::pair<PhysicsObject*,PhysicsObject*> collidingPair;
+				collidingPair = std::make_pair(pObjectA, pObjectB);
+
+				collidingPairs.push_back(collidingPair);
+			}
+		}
+	}
+
+	return collidingPairs;
+}
+
+std::vector<PhysicsObject*> Scene::CheckOutOfBounds()
+{
+	std::vector<PhysicsObject*> vOutOfBounds;
+
+	std::vector<PhysicsObject*>::iterator poItr;
+	for (poItr=m_physicsObjects.begin(); poItr!=m_physicsObjects.end(); ++poItr)
+	{
+		AABB aabb = (*poItr)->GetAABB();
+		double upBound = aabb.GetUpperBound(AABB::Physics);
+		double lowBound = aabb.GetLowerBound(AABB::Physics);
+		double leftBound = aabb.GetLeftBound();
+		double rightBound = aabb.GetRightBound();
+				
+		// y-coord bounds check
+		if (lowBound < 0.0 || upBound > MainFrame::height)
+		{
+			vOutOfBounds.push_back(*poItr);
+		}
+
+		// x-coord bounds check
+		if (leftBound < 0.0 || rightBound > MainFrame::width)
+		{
+			vOutOfBounds.push_back(*poItr);
+		}
+	}
+
+	return vOutOfBounds;
+}
 
 /********** PUBLIC METHODS **********/
 HRESULT Scene::AddObject(PhysicsObject* newObject)
@@ -107,56 +167,36 @@ HRESULT Scene::AddObject(PhysicsObject* newObject)
 	return hr;
 }
 
-std::vector<std::pair<ULONG,ULONG>> Scene::CheckCollisions()
+void Scene::Step()
 {
-	std::vector<std::pair<ULONG,ULONG>> collidingPairs;
-
-	std::vector<PhysicsObject*>::iterator poItrA;
-	std::vector<PhysicsObject*>::iterator poItrB;
-	for (poItrA=m_physicsObjects.begin(); poItrA!=m_physicsObjects.end(); ++poItrA)
-	{
-		for (poItrB=m_physicsObjects.begin(); poItrB!=m_physicsObjects.end(); ++poItrB)
-		{
-			// Dereference iterators and compare AABBs of contained phys objects
-			PhysicsObject* pObjectA = (*poItrA);
-			PhysicsObject* pObjectB = (*poItrB);
-
-			bool bColliding = false;
-
-			bColliding = CheckOverlap(pObjectA, pObjectB);
-
-			// Add UID pair to vector on collision detect
-			if (bColliding)
-			{
-				ULONG uidA = pObjectA->GetUID();
-				ULONG uidB = pObjectB->GetUID();
-
-				std::pair<ULONG,ULONG> uidPair;
-				uidPair = std::make_pair(uidA, uidB);
-
-				collidingPairs.push_back(uidPair);
-			}
-		}
-	}
-
-	return collidingPairs;
-}
-
-HRESULT Scene::ImposeGravity()
-{
-	HRESULT hr = S_OK;
-
-	std::vector<PhysicsObject*> physicsObjects = GetObjects();
-
+	// Move all phys objects before collision checking
 	std::vector<PhysicsObject*>::iterator poItr;
-	for (poItr = physicsObjects.begin(); poItr != physicsObjects.end(); ++poItr)
+	for (poItr=m_physicsObjects.begin(); poItr!=m_physicsObjects.end(); ++poItr)
 	{
-		PhysicsObject* curObject = (*poItr);
-
-		Trajectory traj = curObject->GetTrajectory();
-
-		//TODO: Calculate trajectory change due to gravity
+		(*poItr)->Move();
 	}
 
-	return hr;
+	// Out-of-bounds checks
+	std::vector<PhysicsObject*> vOutOfBounds;
+	vOutOfBounds = CheckOutOfBounds();
+
+	// Revert movements of all y-coord out-of-bounds objects, and "bounce" them back
+	for (poItr=vOutOfBounds.begin(); poItr!=vOutOfBounds.end(); ++poItr)
+	{
+		(*poItr)->Revert();
+
+		// Invert trajectory direction
+		Trajectory newTraj = (*poItr)->GetTrajectory();
+		double direction = newTraj.GetDirection();
+		newTraj.SetDirection(direction * -1);
+		(*poItr)->ChangeTrajectory(newTraj);
+
+		// Move in new direction
+		(*poItr)->Move();
+	}
+
+	std::vector<std::pair<PhysicsObject*, PhysicsObject*>> vCollidingPairs;
+	vCollidingPairs = CheckCollisions();
+
+	//TODO: Handle collisions
 }

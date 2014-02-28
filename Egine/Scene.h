@@ -26,6 +26,14 @@ private:
 	// Checks two PhysicsObjects for overlap based on AABBs
 	bool CheckOverlap(PhysicsObject*, PhysicsObject*);
 
+	// Check scene for possible collisions based on AABBs
+	// Returns vector of possibly-colliding pairs
+	std::vector<std::pair<PhysicsObject*,PhysicsObject*>> CheckCollisions();
+	
+	// Check scene for out-of-bounds objects
+	// Returns vector of out-of-bounds objects
+	std::vector<PhysicsObject*> CheckOutOfBounds();
+
 // Public Methods
 public:
 	// Returns vector of physics objects
@@ -35,12 +43,9 @@ public:
 	// Returns S_OK on success, E_FAIL on failure
 	HRESULT AddObject(PhysicsObject*);
 
-	// Check scene for possible collisions based on AABBs
-	// Returns vector of UIDs of possibly-colliding pairs
-	std::vector<std::pair<ULONG/*UID*/,ULONG/*UID*/>> CheckCollisions();
-
-	// Imposes gravitational effects on physics objects
-	HRESULT ImposeGravity();
+	// Step physics scene forward
+	// NOTE: Until multithreading implemented, steps forward 0.01s
+	void Step();
 
 // Properties
 private:

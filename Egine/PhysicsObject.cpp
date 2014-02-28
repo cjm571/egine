@@ -43,12 +43,26 @@ HRESULT PhysicsObject::ChangeTrajectory(Trajectory newTrajectory)
 	return hr;
 }
 
-HRESULT PhysicsObject::Move()
+void PhysicsObject::Move()
 {
-	HRESULT hr = S_OK;
-
 	double direction = m_trajectory.GetDirection();
 	double velocity = m_trajectory.GetVelocity();
+	PhysPoint center = m_aabb.GetCenter(AABB::Physics);
 
-	return hr;
+	// Translate centerpoint based on trajectory. Unit circle ftw
+	center.x = center.x + (cos(direction) * velocity * 0.01);
+	center.y = center.y + (sin(direction) * velocity * 0.01);
+	m_aabb.SetCenter(center);
+}
+
+void PhysicsObject::Revert()
+{
+	double direction = m_trajectory.GetDirection();
+	double velocity = m_trajectory.GetVelocity();
+	PhysPoint center = m_aabb.GetCenter(AABB::Physics);
+
+	// Revert translation based on trajectory
+	center.x = center.x - (cos(direction) * velocity * 0.01);
+	center.y = center.y - (sin(direction) * velocity * 0.01);
+	m_aabb.SetCenter(center);
 }

@@ -350,12 +350,17 @@ HRESULT MainFrame::OnRender()
 		aabb = AABB(centerB, 100, 40);
 		D2D1::ColorF::Enum yellow = D2D1::ColorF::Yellow;
 		PhysicsObject objLong = PhysicsObject(aabb, yellow, PhysRectangle);
+		Trajectory traj = Trajectory(1.0, (M_PI/4));
+		objLong.ChangeTrajectory(traj);
 
 		scene.AddObject(&objDefault);
 		scene.AddObject(&objTall);
 		scene.AddObject(&objLong);
 #endif		
 		/***** TEST CODE, DROP THIS SHIT *****/
+
+		// Step the physics scene before rendering
+		scene.Step();
 
 		// Render objects in physics scene
 		hr = RenderScene(scene);

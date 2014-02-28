@@ -181,3 +181,20 @@ double AABB::GetRightBound()
 
 	return rightBound;
 }
+
+
+/********** MUTATORS **********/
+void AABB::SetCenter(PhysPoint newCenter)
+{
+	m_center = newCenter;
+}
+
+void AABB::SetWidth(double newWidth)
+{
+	m_width = newWidth;
+}
+
+void AABB::SetHeight(double newHeight)
+{
+	m_height = newHeight;
+}

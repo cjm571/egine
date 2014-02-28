@@ -30,7 +30,12 @@ public:
 	HRESULT ChangeTrajectory(Trajectory);
 
 	// Moves object based on current trajectory and attributes
-	HRESULT Move();
+	// NOTE: Until multithreading implemented, ticks .01sec in each render loop
+	void Move();
+
+	// Undo the position changes from Move()
+	// NOTE: If trajectory has changed since Move(), this will break simulation accuracy
+	void Revert();
 
 // Properties
 private:

@@ -24,7 +24,7 @@ public:
 		Drawing = 1
 	};
 
-// Public methods
+// Public Accessor Methods
 public:
 	// Returns physics or drawing center coords, based on flag
 	PhysPoint GetCenter(CoordFlag);
@@ -53,7 +53,18 @@ public:
 	// Returns right boundary position
 	double GetRightBound();
 
-// Public fields
+// Public Mutator Methods
+public:
+	// Sets the centerpoint, Bottom-Left-0-based
+	void SetCenter(PhysPoint);
+
+	// Sets width of bounding-box
+	void SetWidth(double);
+
+	// Sets height of bounding-box
+	void SetHeight(double);
+
+// Private data members
 private:
 	// Bottom-Left-0-based X, Y coordinates of AABB centerpoint
 	PhysPoint m_center;
