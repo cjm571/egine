@@ -30,7 +30,7 @@ public:
 	HRESULT ChangeTrajectory(Trajectory);
 
 	// Moves object based on current trajectory and attributes
-	// NOTE: Until multithreading implemented, ticks 0.1sec in each game loop
+	// NOTE: Until multithreading implemented, ticks 1sec in each game loop
 	void Move();
 
 	// Undo the position changes from Move()

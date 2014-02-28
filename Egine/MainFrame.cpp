@@ -43,7 +43,7 @@ int WINAPI WinMain(
     // unlikely event that HeapSetInformation fails.
     HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 
-	if (SUCCEEDED(CoInitialize(NULL)))
+	if (SUCCEEDED(CoInitializeEx(NULL, COINIT_SPEED_OVER_MEMORY)))
 	{
 		{
 			MainFrame app;
@@ -213,7 +213,7 @@ void MainFrame::RunGameLoop()
 		aabb = AABB(centerB, 100, 40);
 		D2D1::ColorF::Enum yellow = D2D1::ColorF::Yellow;
 		PhysicsObject objLong = PhysicsObject(aabb, yellow, PhysRectangle);
-		Trajectory traj = Trajectory(10.0, (M_PI/4));
+		Trajectory traj = Trajectory(1.0, (M_PI/4));
 		objLong.ChangeTrajectory(traj);
 
 		m_scene.AddObject(&objDefault);
@@ -221,8 +221,6 @@ void MainFrame::RunGameLoop()
 		m_scene.AddObject(&objLong);
 #endif		
 /***** TEST CODE, DROP THIS SHIT *****/
-	
-	MSG msg;
 
 	// Render initial state
 	Render();
@@ -230,13 +228,6 @@ void MainFrame::RunGameLoop()
 	// Run until the heat-death of the universe
 	while (1)
 	{
-		// You've got mail! Maybe. If you do, check it.
-		if (GetMessage(&msg, NULL, 0, 0))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-
 		//TODO: UI handling. Y'know, once the UI exists
 
 		// Update game state

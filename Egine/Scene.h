@@ -52,7 +52,7 @@ public:
 	HRESULT AddObject(PhysicsObject*);
 
 	// Step physics scene forward
-	// NOTE: Until multithreading implemented, steps forward 0.1s
+	// NOTE: Until multithreading implemented, steps forward 1s
 	void Step();
 
 // Properties

@@ -50,8 +50,8 @@ void PhysicsObject::Move()
 	PhysPoint center = m_aabb.GetCenter(AABB::Physics);
 
 	// Translate centerpoint based on trajectory. Unit circle ftw
-	center.x = center.x + (cos(direction) * velocity * 0.1);
-	center.y = center.y + (sin(direction) * velocity * 0.1);
+	center.x = center.x + (cos(direction) * velocity);
+	center.y = center.y + (sin(direction) * velocity);
 	m_aabb.SetCenter(center);
 }
 
@@ -62,7 +62,7 @@ void PhysicsObject::Revert()
 	PhysPoint center = m_aabb.GetCenter(AABB::Physics);
 
 	// Revert translation based on trajectory
-	center.x = center.x - (cos(direction) * velocity * 0.1);
-	center.y = center.y - (sin(direction) * velocity * 0.1);
+	center.x = center.x - (cos(direction) * velocity);
+	center.y = center.y - (sin(direction) * velocity);
 	m_aabb.SetCenter(center);
 }
