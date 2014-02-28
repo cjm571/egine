@@ -18,6 +18,14 @@ public:
 	Scene();
 	~Scene();
 
+// Bounds-check flag
+public:
+	static enum BoundsType
+	{
+		XBounds = 0,
+		YBounds = 1
+	};
+
 // Helper Functions
 private:
 	// Checks two AABBs for overlap
@@ -30,9 +38,9 @@ private:
 	// Returns vector of possibly-colliding pairs
 	std::vector<std::pair<PhysicsObject*,PhysicsObject*>> CheckCollisions();
 	
-	// Check scene for out-of-bounds objects
+	// Check scene for out-of-bounds objects based on type param
 	// Returns vector of out-of-bounds objects
-	std::vector<PhysicsObject*> CheckOutOfBounds();
+	std::vector<PhysicsObject*> CheckOutOfBounds(BoundsType);
 
 // Public Methods
 public:
@@ -44,7 +52,7 @@ public:
 	HRESULT AddObject(PhysicsObject*);
 
 	// Step physics scene forward
-	// NOTE: Until multithreading implemented, steps forward 0.01s
+	// NOTE: Until multithreading implemented, steps forward 0.1s
 	void Step();
 
 // Properties

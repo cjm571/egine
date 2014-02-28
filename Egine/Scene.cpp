@@ -95,7 +95,7 @@ std::vector<std::pair<PhysicsObject*,PhysicsObject*>> Scene::CheckCollisions()
 	return collidingPairs;
 }
 
-std::vector<PhysicsObject*> Scene::CheckOutOfBounds()
+std::vector<PhysicsObject*> Scene::CheckOutOfBounds(BoundsType boundsType)
 {
 	std::vector<PhysicsObject*> vOutOfBounds;
 
@@ -107,17 +107,23 @@ std::vector<PhysicsObject*> Scene::CheckOutOfBounds()
 		double lowBound = aabb.GetLowerBound(AABB::Physics);
 		double leftBound = aabb.GetLeftBound();
 		double rightBound = aabb.GetRightBound();
-				
-		// y-coord bounds check
-		if (lowBound < 0.0 || upBound > MainFrame::height)
+		
+		switch (boundsType)
 		{
-			vOutOfBounds.push_back(*poItr);
-		}
-
-		// x-coord bounds check
-		if (leftBound < 0.0 || rightBound > MainFrame::width)
-		{
-			vOutOfBounds.push_back(*poItr);
+		// X-coord check
+		case Scene::XBounds:
+			if (leftBound < 0.0 || rightBound > MainFrame::width)
+			{
+				vOutOfBounds.push_back(*poItr);
+			}
+			break;
+		// Y-coord check
+		case Scene::YBounds:
+			if (lowBound < 0.0 || upBound > MainFrame::height)
+			{
+				vOutOfBounds.push_back(*poItr);
+			}
+			break;
 		}
 	}
 
@@ -177,19 +183,38 @@ void Scene::Step()
 	}
 
 	// Out-of-bounds checks
-	std::vector<PhysicsObject*> vOutOfBounds;
-	vOutOfBounds = CheckOutOfBounds();
+	std::vector<PhysicsObject*> vOutOfBoundsX;
+	std::vector<PhysicsObject*> vOutOfBoundsY;
+	vOutOfBoundsX = CheckOutOfBounds(Scene::XBounds);
+	vOutOfBoundsY = CheckOutOfBounds(Scene::YBounds);
 
-	// Revert movements of all y-coord out-of-bounds objects, and "bounce" them back
-	for (poItr=vOutOfBounds.begin(); poItr!=vOutOfBounds.end(); ++poItr)
+	// Revert movements of all x-coord out-of-bounds objects, and "bounce" them back
+	for (poItr=vOutOfBoundsX.begin(); poItr!=vOutOfBoundsX.end(); ++poItr)
 	{
 		(*poItr)->Revert();
 
 		// Invert trajectory direction
-		Trajectory newTraj = (*poItr)->GetTrajectory();
-		double direction = newTraj.GetDirection();
-		newTraj.SetDirection(direction * -1);
-		(*poItr)->ChangeTrajectory(newTraj);
+		Trajectory trajectory = (*poItr)->GetTrajectory();
+		double direction = trajectory.GetDirection();
+		double velocity = trajectory.GetVelocity();
+		trajectory.SetDirection(direction * -1);
+		trajectory.SetVelocity(velocity * -1);
+		(*poItr)->ChangeTrajectory(trajectory);
+
+		// Move in new direction
+		(*poItr)->Move();
+	}
+
+	// Revert movements of all y-coord out-of-bounds objects, and "bounce" them back
+	for (poItr=vOutOfBoundsY.begin(); poItr!=vOutOfBoundsY.end(); ++poItr)
+	{
+		(*poItr)->Revert();
+
+		// Invert trajectory direction
+		Trajectory trajectory = (*poItr)->GetTrajectory();
+		double direction = trajectory.GetDirection();
+		trajectory.SetDirection(direction * -1);
+		(*poItr)->ChangeTrajectory(trajectory);
 
 		// Move in new direction
 		(*poItr)->Move();

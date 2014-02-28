@@ -50,7 +50,7 @@ int WINAPI WinMain(
 
 			if (SUCCEEDED(app.Initialize()))
 			{
-				app.RunMessageLoop();
+				app.RunGameLoop();
 			}
 		}
 		CoUninitialize();
@@ -90,16 +90,6 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPAR
 		{
 			switch (message)
             {
-            case WM_SIZE:
-                {
-                    UINT width = LOWORD(lParam);
-                    UINT height = HIWORD(lParam);
-                    pMainFrame->OnResize(width, height);
-                }
-                result = 0;
-                wasHandled = true;
-                break;
-
             case WM_DISPLAYCHANGE:
                 {
                     InvalidateRect(hwnd, NULL, FALSE);
@@ -110,7 +100,7 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPAR
 
             case WM_PAINT:
                 {
-                    pMainFrame->OnRender();
+                    pMainFrame->Render();
                     ValidateRect(hwnd, NULL);
                 }
                 result = 0;
@@ -199,14 +189,61 @@ HRESULT MainFrame::Initialize()
 	return hr;
 }
 
-void MainFrame::RunMessageLoop()
+void MainFrame::RunGameLoop()
 {
+/***** TEST CODE, DROP THIS SHIT *****/
+#ifdef _DEBUG
+		m_scene = Scene();
+
+		// Default object
+		PhysicsObject objDefault = PhysicsObject();
+
+		// Tall, Red, Rectangle
+		PhysPoint center = PhysPoint();
+		center.x = 100;
+		center.y = 100;
+		AABB aabb = AABB(center, 10, 30);
+		D2D1::ColorF::Enum red = D2D1::ColorF::Red;
+		PhysicsObject objTall = PhysicsObject(aabb, red, PhysRectangle);
+
+		// Long, Yellow, Rectangle
+		PhysPoint centerB = PhysPoint();
+		centerB.x = 400;
+		centerB.y = 250;
+		aabb = AABB(centerB, 100, 40);
+		D2D1::ColorF::Enum yellow = D2D1::ColorF::Yellow;
+		PhysicsObject objLong = PhysicsObject(aabb, yellow, PhysRectangle);
+		Trajectory traj = Trajectory(10.0, (M_PI/4));
+		objLong.ChangeTrajectory(traj);
+
+		m_scene.AddObject(&objDefault);
+		m_scene.AddObject(&objTall);
+		m_scene.AddObject(&objLong);
+#endif		
+/***** TEST CODE, DROP THIS SHIT *****/
+	
 	MSG msg;
 
-	while (GetMessage(&msg, NULL, 0, 0))
+	// Render initial state
+	Render();
+
+	// Run until the heat-death of the universe
+	while (1)
 	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		// You've got mail! Maybe. If you do, check it.
+		if (GetMessage(&msg, NULL, 0, 0))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+
+		//TODO: UI handling. Y'know, once the UI exists
+
+		// Update game state
+		m_scene.Step();
+
+		// Render.. duh?
+		Render();
 	}
 }
 
@@ -254,11 +291,11 @@ void MainFrame::DiscardDeviceResources()
 
 
 /********** RENDER HELPER FUNCTIONS **********/
-HRESULT MainFrame::RenderScene(Scene scene)
+HRESULT MainFrame::RenderScene()
 {
 	HRESULT hr = S_OK;
 
-	std::vector<PhysicsObject*> physicsObjects = scene.GetObjects();
+	std::vector<PhysicsObject*> physicsObjects = m_scene.GetObjects();
 
 	// Draw objects based on shape/size/etc.
 	std::vector<PhysicsObject*>::iterator poItr;
@@ -315,7 +352,7 @@ HRESULT MainFrame::RenderScene(Scene scene)
 
 
 /********** EVENT HANDLERS **********/
-HRESULT MainFrame::OnRender()
+HRESULT MainFrame::Render()
 {
 	HRESULT hr = S_OK;
 
@@ -327,43 +364,9 @@ HRESULT MainFrame::OnRender()
 		m_pRenderTarget->BeginDraw();
 		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 		m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Aqua));
-
-		/***** TEST CODE, DROP THIS SHIT *****/
-#ifdef _DEBUG
-		Scene scene = Scene();
-
-		// Default object (30x30AABB, Black, Circle)
-		PhysicsObject objDefault = PhysicsObject();
-
-		// Tall, Red, Rectangle
-		PhysPoint center = PhysPoint();
-		center.x = 100;
-		center.y = 100;
-		AABB aabb = AABB(center, 10, 30);
-		D2D1::ColorF::Enum red = D2D1::ColorF::Red;
-		PhysicsObject objTall = PhysicsObject(aabb, red, PhysRectangle);
-
-		// Long, Yellow, Rectangle
-		PhysPoint centerB = PhysPoint();
-		centerB.x = 400;
-		centerB.y = 250;
-		aabb = AABB(centerB, 100, 40);
-		D2D1::ColorF::Enum yellow = D2D1::ColorF::Yellow;
-		PhysicsObject objLong = PhysicsObject(aabb, yellow, PhysRectangle);
-		Trajectory traj = Trajectory(1.0, (M_PI/4));
-		objLong.ChangeTrajectory(traj);
-
-		scene.AddObject(&objDefault);
-		scene.AddObject(&objTall);
-		scene.AddObject(&objLong);
-#endif		
-		/***** TEST CODE, DROP THIS SHIT *****/
-
-		// Step the physics scene before rendering
-		scene.Step();
-
+		
 		// Render objects in physics scene
-		hr = RenderScene(scene);
+		hr = RenderScene();
 
 		hr = m_pRenderTarget->EndDraw();
 	}
@@ -375,18 +378,4 @@ HRESULT MainFrame::OnRender()
     }
 
 	return hr;
-}
-
-void MainFrame::OnResize(UINT width, UINT height)
-{
-    if (m_pRenderTarget)
-    {		
-		MainFrame::width = width;
-		MainFrame::height = height;
-
-        // Note: This method can fail, but it's okay to ignore the
-        // error here, because the error will be returned again
-        // the next time EndDraw is called.
-        m_pRenderTarget->Resize(D2D1::SizeU(MainFrame::width, MainFrame::height));	
-    }
 }

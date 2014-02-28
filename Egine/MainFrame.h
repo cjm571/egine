@@ -18,10 +18,18 @@ public:
 	// Register the window class and call methods for instantiating drawing resources
     HRESULT Initialize();
 
-    // Process and dispatch messages
-    void RunMessageLoop();
+	// Runs the main game loop
+	void RunGameLoop();
 	
-// Methods
+// Helper Functions
+private:
+	// Renders physics scene defined by m_scene
+	HRESULT RenderScene();
+
+	// Renders all components of the game
+	HRESULT Render();
+
+// D2D Resource Functions
 private:
     // Initialize device-independent resources.
     HRESULT CreateDeviceIndependentResources();
@@ -32,18 +40,8 @@ private:
     // Release device-dependent resource.
     void DiscardDeviceResources();
 
-	// Renders scene objects in main frame
-	HRESULT RenderScene(Scene);
-
-    // Draw content.
-    HRESULT OnRender();
-	
-    // Resize the render target.
-    void OnResize(
-		UINT width,
-		UINT height
-		);
-
+// Windows Callback Functions
+private:
 	// The windows procedure.
     static LRESULT CALLBACK WndProc(
         HWND hWnd,
@@ -59,6 +57,7 @@ private:
 	ID2D1HwndRenderTarget* m_pRenderTarget;
 	ID2D1SolidColorBrush* m_pFillBrush;
 	ID2D1SolidColorBrush* m_pOutlineBrush;
+	Scene m_scene;
 
 // Public Properties
 public:
