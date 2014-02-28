@@ -221,20 +221,28 @@ void MainFrame::RunGameLoop()
 		m_scene.AddObject(&objLong);
 #endif		
 /***** TEST CODE, DROP THIS SHIT *****/
+	MSG msg;
 
 	// Render initial state
 	Render();
 
-	// Run until the heat-death of the universe
-	while (1)
+	// Run until main window is closed
+	while (IsWindow(m_hwnd))
 	{
-		//TODO: UI handling. Y'know, once the UI exists
+		// Check for messages w/o blocking
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
 
 		// Update game state
 		m_scene.Step();
 
 		// Render.. duh?
 		Render();
+
+		
 	}
 }
 
@@ -307,14 +315,23 @@ HRESULT MainFrame::RenderScene()
 
 		// Get AABB data to determine dimensions of object
 		AABB aabb = curObject->GetAABB();
+		PhysPoint center = aabb.GetCenter(AABB::Drawing);
 		PhysPoint tl = aabb.GetTopLeft(AABB::Drawing);
 		PhysPoint br = aabb.GetBottomRight(AABB::Drawing);
+		double width = aabb.GetWidth();
+		double height = aabb.GetHeight();
 
 		// Draw the damn thing
 		switch (curObject->GetShape())
 		{
 		case PhysCircle:
 			{
+			D2D1_POINT_2F d2dCenter;
+			d2dCenter.x = (float)center.x;
+			d2dCenter.y = (float)center.y;
+			D2D1_ELLIPSE circle = D2D1::Ellipse(d2dCenter, (float)(width/2), (float)(height/2));
+			m_pRenderTarget->FillEllipse(&circle, m_pFillBrush);
+			m_pRenderTarget->DrawEllipse(&circle, m_pOutlineBrush);
 			continue;
 			}
 		case PhysTriangle:

@@ -26,6 +26,9 @@ public:
 
 // Public Accessor Methods
 public:
+	double GetWidth() {return m_width;};
+	double GetHeight() {return m_height;};
+
 	// Returns physics or drawing center coords, based on flag
 	PhysPoint GetCenter(CoordFlag);
 
