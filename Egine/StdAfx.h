@@ -77,3 +77,12 @@ enum Shape
 	PhysTriangle = 1,
 	PhysRectangle = 2
 };
+
+// Denotes axis of collision
+enum eCollisionAxis
+{
+	XAxis = 0,
+	YAxis = 1,
+	BothAxes = 2,
+	AxisErr = -1
+};

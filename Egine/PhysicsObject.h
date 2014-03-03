@@ -37,6 +37,10 @@ public:
 	// NOTE: If trajectory has changed since Move(), this will break simulation accuracy
 	void Revert();
 
+	// Resets an object's trajectory after collision on the given axis
+	// NOTE: does NOT Revert() previous movement, nor does it perform the subsequent Move()
+	void Rebound(eCollisionAxis);
+
 // Properties
 private:
 	// Axis-Aligned Bounding Box for use in collision detection

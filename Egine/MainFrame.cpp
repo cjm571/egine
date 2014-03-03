@@ -240,9 +240,7 @@ void MainFrame::RunGameLoop()
 		m_scene.Step();
 
 		// Render.. duh?
-		Render();
-
-		
+		Render();		
 	}
 }
 

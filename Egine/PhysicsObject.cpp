@@ -66,3 +66,22 @@ void PhysicsObject::Revert()
 	center.y = center.y - (sin(direction) * velocity);
 	m_aabb.SetCenter(center);
 }
+
+void PhysicsObject::Rebound(eCollisionAxis axis)
+{
+	// X-axis rebounds constitute velocity and direction inversion
+	if (axis == XAxis || axis == BothAxes)
+	{
+		double direction = m_trajectory.GetDirection();
+		double velocity = m_trajectory.GetVelocity();
+		m_trajectory.SetDirection(direction * -1);
+		m_trajectory.SetVelocity(velocity * -1);
+	}
+	// Y-axis rebounds constitute direction inversion
+	if (axis == YAxis || axis == BothAxes)
+	{
+		double direction = m_trajectory.GetDirection();
+		m_trajectory.SetDirection(direction * -1);
+		ChangeTrajectory(m_trajectory);
+	}
+}

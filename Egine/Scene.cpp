@@ -7,6 +7,8 @@
 #include "MainFrame.h"
 #include "Scene.h"
 
+const double Scene::CornerHitMargin = 0.1;
+
 /********** CTORS **********/
 Scene::Scene()
 {
@@ -77,6 +79,12 @@ std::vector<std::pair<PhysicsObject*,PhysicsObject*>> Scene::CheckCollisions()
 			PhysicsObject* pObjectA = (*poItrA);
 			PhysicsObject* pObjectB = (*poItrB);
 
+			// Skip pair on UID match
+			if (pObjectA->GetUID() == pObjectB->GetUID())
+			{
+				continue;
+			}
+
 			bool bColliding = false;
 
 			bColliding = CheckOverlap(pObjectA, pObjectB);
@@ -95,7 +103,7 @@ std::vector<std::pair<PhysicsObject*,PhysicsObject*>> Scene::CheckCollisions()
 	return collidingPairs;
 }
 
-std::vector<PhysicsObject*> Scene::CheckOutOfBounds(BoundsType boundsType)
+std::vector<PhysicsObject*> Scene::CheckOutOfBounds(eCollisionAxis axis)
 {
 	std::vector<PhysicsObject*> vOutOfBounds;
 
@@ -108,17 +116,17 @@ std::vector<PhysicsObject*> Scene::CheckOutOfBounds(BoundsType boundsType)
 		double leftBound = aabb.GetLeftBound();
 		double rightBound = aabb.GetRightBound();
 		
-		switch (boundsType)
+		switch (axis)
 		{
 		// X-coord check
-		case Scene::XBounds:
+		case XAxis:
 			if (leftBound < 0.0 || rightBound > MainFrame::width)
 			{
 				vOutOfBounds.push_back(*poItr);
 			}
 			break;
 		// Y-coord check
-		case Scene::YBounds:
+		case YAxis:
 			if (lowBound < 0.0 || upBound > MainFrame::height)
 			{
 				vOutOfBounds.push_back(*poItr);
@@ -128,6 +136,65 @@ std::vector<PhysicsObject*> Scene::CheckOutOfBounds(BoundsType boundsType)
 	}
 
 	return vOutOfBounds;
+}
+
+eCollisionAxis Scene::CheckCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*> poPair)
+{
+	eCollisionAxis axis = AxisErr;
+
+	AABB aabbA = poPair.first->GetAABB();
+	AABB aabbB = poPair.second->GetAABB();
+
+	// Determine orientation by comparing the depth of the AABB overlap in each axis
+	double yDepth = 0.0;
+	double xDepth = 0.0;
+
+	// A above and right of B
+	if (aabbA.GetCenter(AABB::Physics).y >= aabbB.GetUpperBound(AABB::Physics) &&
+		aabbA.GetCenter(AABB::Physics).x >= aabbB.GetRightBound())
+	{
+		yDepth = aabbB.GetUpperBound(AABB::Physics) - aabbA.GetLowerBound(AABB::Physics);
+		xDepth = aabbB.GetRightBound() - aabbA.GetLeftBound();
+	}
+	// A above and left of B
+	if (aabbA.GetCenter(AABB::Physics).y >= aabbB.GetUpperBound(AABB::Physics) &&
+		aabbA.GetCenter(AABB::Physics).x <= aabbB.GetLeftBound())
+	{
+		yDepth = aabbB.GetUpperBound(AABB::Physics) - aabbA.GetLowerBound(AABB::Physics);
+		xDepth = aabbB.GetLeftBound() - aabbA.GetRightBound();
+	}
+	// A below and right of B
+	if (aabbA.GetCenter(AABB::Physics).y <= aabbB.GetLowerBound(AABB::Physics) &&
+		aabbA.GetCenter(AABB::Physics).x >= aabbB.GetRightBound())
+	{
+		yDepth = aabbB.GetLowerBound(AABB::Physics) - aabbA.GetUpperBound(AABB::Physics);
+		xDepth = aabbB.GetRightBound() - aabbA.GetLeftBound();
+	}
+	// A below and left of B
+	if (aabbA.GetCenter(AABB::Physics).y <= aabbB.GetLowerBound(AABB::Physics) &&
+		aabbA.GetCenter(AABB::Physics).x <= aabbB.GetLeftBound())
+	{
+		yDepth = aabbB.GetLowerBound(AABB::Physics) - aabbA.GetUpperBound(AABB::Physics);
+		xDepth = aabbB.GetLeftBound() - aabbA.GetRightBound();
+	}
+
+	// Corner-hit
+	if (1-abs(yDepth/xDepth) < CornerHitMargin)
+	{
+		axis = BothAxes;
+	}
+	// Y-collision
+	else if (yDepth < xDepth)
+	{
+		axis = YAxis;
+	}
+	// X-collision
+	else if (xDepth < yDepth)
+	{
+		axis = XAxis;
+	}
+
+	return axis;
 }
 
 /********** PUBLIC METHODS **********/
@@ -182,26 +249,17 @@ void Scene::Step()
 		(*poItr)->Move();
 	}
 
-	// Out-of-bounds checks
+	/*** BEGIN Out-of-bounds checks ***/
 	std::vector<PhysicsObject*> vOutOfBoundsX;
 	std::vector<PhysicsObject*> vOutOfBoundsY;
-	vOutOfBoundsX = CheckOutOfBounds(Scene::XBounds);
-	vOutOfBoundsY = CheckOutOfBounds(Scene::YBounds);
+	vOutOfBoundsX = CheckOutOfBounds(XAxis);
+	vOutOfBoundsY = CheckOutOfBounds(YAxis);
 
 	// Revert movements of all x-coord out-of-bounds objects, and "bounce" them back
 	for (poItr=vOutOfBoundsX.begin(); poItr!=vOutOfBoundsX.end(); ++poItr)
 	{
 		(*poItr)->Revert();
-
-		// Invert trajectory direction
-		Trajectory trajectory = (*poItr)->GetTrajectory();
-		double direction = trajectory.GetDirection();
-		double velocity = trajectory.GetVelocity();
-		trajectory.SetDirection(direction * -1);
-		trajectory.SetVelocity(velocity * -1);
-		(*poItr)->ChangeTrajectory(trajectory);
-
-		// Move in new direction
+		(*poItr)->Rebound(XAxis);
 		(*poItr)->Move();
 	}
 
@@ -209,19 +267,44 @@ void Scene::Step()
 	for (poItr=vOutOfBoundsY.begin(); poItr!=vOutOfBoundsY.end(); ++poItr)
 	{
 		(*poItr)->Revert();
-
-		// Invert trajectory direction
-		Trajectory trajectory = (*poItr)->GetTrajectory();
-		double direction = trajectory.GetDirection();
-		trajectory.SetDirection(direction * -1);
-		(*poItr)->ChangeTrajectory(trajectory);
-
-		// Move in new direction
+		(*poItr)->Rebound(YAxis);
 		(*poItr)->Move();
 	}
+	/*** END Out-of-bounds checks ***/
 
+	/*** BEGIN Collision Handling ***/
 	std::vector<std::pair<PhysicsObject*, PhysicsObject*>> vCollidingPairs;
+	std::vector<std::pair<PhysicsObject*, PhysicsObject*>>::iterator vPairsItr;
 	vCollidingPairs = CheckCollisions();
 
-	//TODO: Handle collisions
+	for (vPairsItr=vCollidingPairs.begin(); vPairsItr!=vCollidingPairs.end(); ++vPairsItr)
+	{
+		std::pair<PhysicsObject*, PhysicsObject*> poPair = (*vPairsItr);
+
+		// Determine axis of collision, corner hits will rebound on both axes
+		eCollisionAxis axis = CheckCollisionAxis(poPair);
+
+		// Y-axis collision, revert movement and rebound both objects in y-direction
+		if (axis == YAxis || axis == BothAxes)
+		{
+			poPair.first->Revert();
+			poPair.second->Revert();
+			poPair.first->Rebound(YAxis);
+			poPair.second->Rebound(YAxis);
+			poPair.first->Move();
+			poPair.second->Move();			
+		}
+		
+		// X-axis collision, revert movement and rebound both objects in x-direction
+		if (axis == XAxis || axis == BothAxes)
+		{
+			poPair.first->Revert();
+			poPair.second->Revert();
+			poPair.first->Rebound(XAxis);
+			poPair.second->Rebound(XAxis);
+			poPair.first->Move();
+			poPair.second->Move();
+		}
+	}
+	/*** END Collision Handling ***/
 }

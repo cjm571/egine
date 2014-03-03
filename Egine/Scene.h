@@ -18,13 +18,10 @@ public:
 	Scene();
 	~Scene();
 
-// Bounds-check flag
+// Static data members
 public:
-	static enum BoundsType
-	{
-		XBounds = 0,
-		YBounds = 1
-	};
+	// Margin for determining corner-hits
+	static const double CornerHitMargin;
 
 // Helper Functions
 private:
@@ -40,7 +37,11 @@ private:
 	
 	// Check scene for out-of-bounds objects based on type param
 	// Returns vector of out-of-bounds objects
-	std::vector<PhysicsObject*> CheckOutOfBounds(BoundsType);
+	std::vector<PhysicsObject*> CheckOutOfBounds(eCollisionAxis);
+
+	// Determine collision axis of a pair of physics objects
+	// Returns axis enum value
+	eCollisionAxis CheckCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*>);
 
 // Public Methods
 public:
