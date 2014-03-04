@@ -29,22 +29,24 @@ bool Scene::CheckOverlap(AABB aabbA, AABB aabbB)
 	double lowBoundA = aabbA.GetLowerBound(AABB::Physics);
 	double leftBoundA = aabbA.GetLeftBound();
 	double rightBoundA = aabbA.GetRightBound();
+	PhysPoint centerA = aabbA.GetCenter(AABB::Physics);
 	double upBoundB = aabbB.GetUpperBound(AABB::Physics);
 	double lowBoundB = aabbB.GetLowerBound(AABB::Physics);
 	double leftBoundB = aabbB.GetLeftBound();
 	double rightBoundB = aabbB.GetRightBound();
+	PhysPoint centerB = aabbB.GetCenter(AABB::Physics);
 
 	// First check if A and B are aligned vertically
 	if (((upBoundA >= lowBoundB) && (upBoundA <= upBoundB)) ||
 		((lowBoundA >= lowBoundB) && (lowBoundA <= upBoundB)))
 	{
-		// Check for BB overlap presuming A is left of B
-		if (rightBoundA > leftBoundB)
+		// Check for BB overlap if A is left of B
+		if ((centerA.x < centerB.x) && (rightBoundA > leftBoundB))
 		{
 			bOverlapping = true;
 		}
-		// Check for BB overlap presuming B is left of A
-		if (rightBoundB > leftBoundA)
+		// Check for BB overlap if B is left of A
+		if ((centerB.x < centerA.x) && (rightBoundB > leftBoundA))
 		{
 			bOverlapping = true;
 		}

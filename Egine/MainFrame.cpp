@@ -197,6 +197,8 @@ void MainFrame::RunGameLoop()
 
 		// Default object
 		PhysicsObject objDefault = PhysicsObject();
+		Trajectory defTraj = Trajectory(0.1, 0.0);
+		objDefault.ChangeTrajectory(defTraj);
 
 		// Tall, Red, Rectangle
 		PhysPoint center = PhysPoint();
@@ -205,6 +207,8 @@ void MainFrame::RunGameLoop()
 		AABB aabb = AABB(center, 10, 30);
 		D2D1::ColorF::Enum red = D2D1::ColorF::Red;
 		PhysicsObject objTall = PhysicsObject(aabb, red, PhysRectangle);
+		Trajectory tallTraj = Trajectory(0.5, (3*M_PI/4));
+		objTall.ChangeTrajectory(tallTraj);
 
 		// Long, Yellow, Rectangle
 		PhysPoint centerB = PhysPoint();
