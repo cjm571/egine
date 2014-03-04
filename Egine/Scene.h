@@ -60,4 +60,13 @@ public:
 private:
 	// List of all objects existing in the scene
 	std::vector<PhysicsObject*> m_physicsObjects;
+
+// Public Properties
+public:
+	// Scene width in meters
+	static UINT WIDTH;
+
+	// Scene height in meters
+	// NOTE: currently 1m = 1px, but this will be abstracted later
+	static UINT HEIGHT;
 };

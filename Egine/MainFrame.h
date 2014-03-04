@@ -58,9 +58,4 @@ private:
 	ID2D1SolidColorBrush* m_pFillBrush;
 	ID2D1SolidColorBrush* m_pOutlineBrush;
 	Scene m_scene;
-
-// Public Properties
-public:
-	static UINT width;
-	static UINT height;
 };

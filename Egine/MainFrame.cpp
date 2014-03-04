@@ -6,11 +6,6 @@
 
 #include "MainFrame.h"
 
-// Initialize frame width and height
-UINT MainFrame::width = 640;
-UINT MainFrame::height = 480;
-
-
 /********** CTORS **********/
 MainFrame::MainFrame() : 
     m_hwnd(NULL),
@@ -159,8 +154,8 @@ HRESULT MainFrame::Initialize()
         m_pDirect2dFactory->GetDesktopDpi(&dpiX, &dpiY);
 
 		// Determine window dimensions for desired client-size
-		UINT dpiWidth = static_cast<UINT>(ceil(MainFrame::width * dpiX / 96.f));
-		UINT dpiHeight = static_cast<UINT>(ceil(MainFrame::height * dpiY / 96.f));
+		UINT dpiWidth = static_cast<UINT>(ceil(Scene::WIDTH * dpiX / 96.f));
+		UINT dpiHeight = static_cast<UINT>(ceil(Scene::HEIGHT * dpiY / 96.f));
 		RECT windowRect = {0, 0, dpiWidth, dpiHeight};
 		AdjustWindowRect(&windowRect, WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);
 
