@@ -6,7 +6,6 @@
 #pragma once
 
 #include "StdAfx.h"
-#include "Scene.h"
 
 class MainFrame
 {

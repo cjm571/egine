@@ -63,14 +63,13 @@ inline void SafeRelease( Interface **ppInterfaceToRelease )
 	#define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 #endif
 
-#define SPEED_OF_LIGHT 299792458
-
 typedef struct
 {
 	double x;
 	double y;
 } PhysPoint;
 
+// Enumeration of valid physics object shapes
 enum Shape
 {
 	PhysCircle = 0,
@@ -86,3 +85,12 @@ enum eCollisionAxis
 	BothAxes = 2,
 	AxisErr = -1
 };
+
+// Scene width in meters (03/07/14 currently 1m = 1px)
+extern double SCENE_WIDTH;
+
+// Scene height in meters (03/07/14 currently 1m = 1px)
+extern double SCENE_HEIGHT;
+
+// Speed of light in m/s
+extern UINT C;

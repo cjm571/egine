@@ -4,12 +4,9 @@
 * Created on: 2014-02-13 *
 *************************/
 
-#include "MainFrame.h"
 #include "Scene.h"
 
 // Initialize static members
-UINT Scene::WIDTH = 640;
-UINT Scene::HEIGHT = 480;
 const double Scene::CornerHitMargin = 0.1;
 
 /********** CTORS **********/
@@ -125,14 +122,14 @@ std::vector<PhysicsObject*> Scene::CheckOutOfBounds(eCollisionAxis axis)
 		{
 		// X-coord check
 		case XAxis:
-			if (leftBound < 0.0 || rightBound > WIDTH)
+			if (leftBound < 0.0 || rightBound > SCENE_WIDTH)
 			{
 				vOutOfBounds.push_back(*poItr);
 			}
 			break;
 		// Y-coord check
 		case YAxis:
-			if (lowBound < 0.0 || upBound > HEIGHT)
+			if (lowBound < 0.0 || upBound > SCENE_HEIGHT)
 			{
 				vOutOfBounds.push_back(*poItr);
 			}
@@ -213,7 +210,7 @@ HRESULT Scene::AddObject(PhysicsObject* newObject)
 	// Sanity check new physics object properties, add to list on pass
 	// Out-of-bounds check
 	if (aabbMin.x < 0 || aabbMin.y < 0 ||
-		aabbMax.x > WIDTH || aabbMax.y > HEIGHT)
+		aabbMax.x > SCENE_WIDTH || aabbMax.y > SCENE_HEIGHT)
 	{
 		MessageBoxA(NULL, "Cannot add object.\nBounding Box extends past scene perimeter.", NULL, MB_OK);
 		hr = E_FAIL;

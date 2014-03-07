@@ -5,7 +5,6 @@
 *************************/
 
 #include "AABB.h"
-#include "MainFrame.h"
 
 // NOTE: Default AABB is 20x20, with BL corner at (0,0) Cartesian
 
@@ -47,7 +46,7 @@ PhysPoint AABB::GetCenter(CoordFlag flag)
 		break;
 	case CoordFlag::Drawing:
 		center.x = m_center.x;
-		center.y = Scene::HEIGHT - m_center.y;
+		center.y = SCENE_HEIGHT - m_center.y;
 		break;
 	}
 
@@ -66,7 +65,7 @@ PhysPoint AABB::GetBottomLeft(CoordFlag flag)
 		break;
 	case CoordFlag::Drawing:
 		blPoint.x = m_center.x - (m_width/2);
-		blPoint.y = Scene::HEIGHT - (m_center.y - (m_height/2));
+		blPoint.y = SCENE_HEIGHT - (m_center.y - (m_height/2));
 		break;
 	}
 
@@ -85,7 +84,7 @@ PhysPoint AABB::GetBottomRight(CoordFlag flag)
 		break;
 	case CoordFlag::Drawing:
 		brPoint.x = m_center.x + (m_width/2);
-		brPoint.y = Scene::HEIGHT - (m_center.y - (m_height/2));
+		brPoint.y = SCENE_HEIGHT - (m_center.y - (m_height/2));
 		break;
 	}
 
@@ -104,7 +103,7 @@ PhysPoint AABB::GetTopLeft(CoordFlag flag)
 		break;
 	case CoordFlag::Drawing:
 		tlPoint.x = m_center.x - (m_width/2);
-		tlPoint.y = Scene::HEIGHT - (m_center.y + (m_height/2));
+		tlPoint.y = SCENE_HEIGHT - (m_center.y + (m_height/2));
 		break;
 	}
 
@@ -123,7 +122,7 @@ PhysPoint AABB::GetTopRight(CoordFlag flag)
 		break;
 	case CoordFlag::Drawing:
 		trPoint.x = m_center.x + (m_width/2);
-		trPoint.y = Scene::HEIGHT - (m_center.y + (m_height/2));
+		trPoint.y = SCENE_HEIGHT - (m_center.y + (m_height/2));
 		break;
 	}
 
@@ -140,7 +139,7 @@ double AABB::GetUpperBound(CoordFlag flag)
 		upperBound = m_center.y + (m_height/2);
 		break;
 	case CoordFlag::Drawing:
-		upperBound = Scene::HEIGHT - (m_center.y + (m_height/2));
+		upperBound = SCENE_HEIGHT - (m_center.y + (m_height/2));
 		break;
 	}
 
@@ -157,7 +156,7 @@ double AABB::GetLowerBound(CoordFlag flag)
 		lowerBound = m_center.y - (m_height/2);
 		break;
 	case CoordFlag::Drawing:
-		lowerBound = Scene::HEIGHT - (m_center.y - (m_height/2));
+		lowerBound = SCENE_HEIGHT - (m_center.y - (m_height/2));
 		break;
 	}
 
