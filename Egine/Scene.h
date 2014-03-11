@@ -16,6 +16,7 @@ class Scene
 // Ctors
 public:
 	Scene();
+	Scene(UINT _creationFlags);
 	~Scene();
 
 // Static data members
@@ -45,6 +46,9 @@ private:
 
 // Public Methods
 public:
+	// Returns scene gravity in m/s^2
+	double GetGravity() {return m_gravity;};
+
 	// Returns vector of physics objects
 	std::vector<PhysicsObject*> GetObjects() {return m_physicsObjects;};
 
@@ -60,4 +64,7 @@ public:
 private:
 	// List of all objects existing in the scene
 	std::vector<PhysicsObject*> m_physicsObjects;
+
+	// Gravity in the scene in m/s^2
+	double m_gravity;
 };

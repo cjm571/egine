@@ -86,11 +86,31 @@ enum eCollisionAxis
 	AxisErr = -1
 };
 
+
+/***** SCENE PARAMETERS *****/
+
 // Scene width in meters (03/07/14 currently 1m = 1px)
 extern double SCENE_WIDTH;
 
 // Scene height in meters (03/07/14 currently 1m = 1px)
 extern double SCENE_HEIGHT;
+
+
+/***** SCENE CREATION FLAGS *****/
+
+// Created Scene will have gravity
+extern UINT SC_GRAVITY_ON;
+
+// Created Scene will have 0 gravity
+extern UINT SC_GRAVITY_OFF;
+
+
+/***** SCENE CREATION MASKS *****/
+
+// Gravity on/off mask
+extern UINT SC_GRAVITY_MASK;
+
+/***** CONSTANTS *****/
 
 // Speed of light in m/s
 extern UINT C;

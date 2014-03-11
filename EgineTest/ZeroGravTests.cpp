@@ -1,19 +1,24 @@
+/*************************
+* Author: CJ McAllister  *
+*                        *
+* Created on: 2014-03-11 *
+*************************/
+
 #include "stdafx.h"
 #include "CppUnitTest.h"
-
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace EgineTest
-{		
-	TEST_CLASS(UnitTest1)
+{
+	// 0-gravity Tests
+	TEST_CLASS(ZeroGravity)
 	{
 	public:
-		
-		TEST_METHOD(TestMethod1)
+		// Collision test
+		TEST_METHOD(CollisionTest)
 		{
-			Scene testScene = Scene();
-
+			Scene testScene = Scene(SC_GRAVITY_OFF);
 			// Default object
 			PhysicsObject objDefault = PhysicsObject();
 			Trajectory defTraj = Trajectory(0.1, 0.0);
@@ -48,6 +53,5 @@ namespace EgineTest
 			Assert::IsNotNull(&objTall);
 			Assert::IsNotNull(&objLong);
 		}
-
 	};
 }

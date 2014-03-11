@@ -91,7 +91,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="unittest1.cpp" />
+    <ClCompile Include="ZeroGravTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Egine\Egine.vcxproj">

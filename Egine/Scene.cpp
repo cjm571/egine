@@ -11,7 +11,18 @@ const double Scene::CornerHitMargin = 0.1;
 
 /********** CTORS **********/
 Scene::Scene()
+	: m_gravity(9.8)
 {
+}
+
+Scene::Scene(UINT _creationFlags)
+	: m_gravity(9.8)
+{
+	// 0-gravity
+	if ((_creationFlags & SC_GRAVITY_MASK) == SC_GRAVITY_OFF)
+	{
+		m_gravity = 0.0;
+	}
 }
 
 Scene::~Scene()
