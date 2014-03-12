@@ -60,7 +60,7 @@ bool Scene::CheckOverlap(AABB aabbA, AABB aabbB)
 
 bool Scene::CheckOverlap(PhysicsObject* poA, PhysicsObject* poB)
 {
-	bool bOverlapping = false;
+	bool bOverlapping = false; 
 
 	AABB aabbA = poA->GetAABB();
 	AABB aabbB = poB->GetAABB();
