@@ -11,14 +11,20 @@ class AABB
 {
 // Ctors
 public:
+	// Default Constructor
+	// Creates 20x20 AABB at Physics (10,10) 
 	AABB();
-	AABB(PhysPoint);
-	AABB(PhysPoint, double, double);
+
+	// Creates 20x20 AABB at Physics _center
+	AABB(PhysPoint _center);
+
+	// Creates _widthx_height AABB at Physics _center
+	AABB(PhysPoint _center, double _width, double _height);
 	~AABB();
 
 public:
 	// Flag indicating desired coordinate system
-	static enum CoordFlag
+	static enum CoordSys
 	{
 		Physics = 0,
 		Drawing = 1
@@ -30,25 +36,25 @@ public:
 	double GetHeight() {return m_height;};
 
 	// Returns physics or drawing center coords, based on flag
-	PhysPoint GetCenter(CoordFlag);
+	PhysPoint GetCenter(CoordSys);
 
 	// Returns physics or drawing bottom-left coords, based on flag
-	PhysPoint GetBottomLeft(CoordFlag);
+	PhysPoint GetBottomLeft(CoordSys);
 	
 	// Returns physics or drawing bottom-right coords, based on flag
-	PhysPoint GetBottomRight(CoordFlag);
+	PhysPoint GetBottomRight(CoordSys);
 	
 	// Returns physics or drawing top-left coords, based on flag
-	PhysPoint GetTopLeft(CoordFlag);
+	PhysPoint GetTopLeft(CoordSys);
 	
 	// Returns physics or drawing top-right coords, based on flag
-	PhysPoint GetTopRight(CoordFlag);
+	PhysPoint GetTopRight(CoordSys);
 
 	// Returns physcs or drawing upper boundary position, based on flag
-	double GetUpperBound(CoordFlag);
+	double GetUpperBound(CoordSys);
 	
 	// Returns physcs or drawing lower boundary position, based on flag
-	double GetLowerBound(CoordFlag);
+	double GetLowerBound(CoordSys);
 
 	// Returns left boundary position
 	double GetLeftBound();

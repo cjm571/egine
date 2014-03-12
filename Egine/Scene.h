@@ -15,8 +15,14 @@ class Scene
 {
 // Ctors
 public:
+	// Default Constructor
+	// Creates Scene with 9.8m/s^2 gravity
 	Scene();
+
+	// Creates zero-gravity Scene
 	Scene(UINT _creationFlags);
+
+	// Default destructor
 	~Scene();
 
 // Static data members
@@ -42,7 +48,7 @@ private:
 
 	// Determine collision axis of a pair of physics objects
 	// Returns axis enum value
-	eCollisionAxis CheckCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*>);
+	eCollisionAxis GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*>);
 
 // Public Methods
 public:
@@ -52,7 +58,7 @@ public:
 	// Returns vector of physics objects
 	std::vector<PhysicsObject*> GetObjects() {return m_physicsObjects;};
 
-	// Add object to the scene at specified coords
+	// Add object to the scene
 	// Returns S_OK on success, E_FAIL on failure
 	HRESULT AddObject(PhysicsObject*);
 

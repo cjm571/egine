@@ -114,3 +114,6 @@ extern UINT SC_GRAVITY_MASK;
 
 // Speed of light in m/s
 extern UINT C;
+
+// Acceptable error for collision detection
+extern double ERR_COLLISION;

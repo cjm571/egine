@@ -34,36 +34,35 @@ Scene::~Scene()
 /********** HELPER FUNCTIONS **********/
 bool Scene::CheckOverlap(AABB aabbA, AABB aabbB)
 {
-	bool bOverlapping = false;
+	bool overlapping = false;
+	bool alignedTop = false;
+	bool alignedBottom = false;
 
-	double upBoundA = aabbA.GetUpperBound(AABB::Physics);
-	double lowBoundA = aabbA.GetLowerBound(AABB::Physics);
-	double leftBoundA = aabbA.GetLeftBound();
-	double rightBoundA = aabbA.GetRightBound();
-	PhysPoint centerA = aabbA.GetCenter(AABB::Physics);
-	double upBoundB = aabbB.GetUpperBound(AABB::Physics);
-	double lowBoundB = aabbB.GetLowerBound(AABB::Physics);
-	double leftBoundB = aabbB.GetLeftBound();
-	double rightBoundB = aabbB.GetRightBound();
-	PhysPoint centerB = aabbB.GetCenter(AABB::Physics);
+	// Vertical alignment
+	// alignedA: B lowerbound within error bounds of A upperbound
+	alignedTop = (aabbB.GetLowerBound(AABB::Physics) - aabbA.GetUpperBound(AABB::Physics)) <= ERR_COLLISION;
+	
+	// alignedB: B upperbound within error bounds of A lowerbound
+	alignedBottom = (aabbA.GetLowerBound(AABB::Physics) - aabbB.GetUpperBound(AABB::Physics)) <= ERR_COLLISION;
 
-	// First check if A and B are aligned vertically
-	if (((upBoundA >= lowBoundB) && (upBoundA <= upBoundB)) ||
-		((lowBoundA >= lowBoundB) && (lowBoundA <= upBoundB)))
+	if (alignedTop && alignedBottom)
 	{
-		// Check for BB overlap if A is left of B
-		if ((centerA.x < centerB.x) && (rightBoundA > leftBoundB))
+		// Horizontal overlap
+		// A left of B
+		if (((aabbB.GetLeftBound() - aabbA.GetRightBound()) <= ERR_COLLISION) &&
+			(aabbA.GetCenter(AABB::Physics).x < aabbB.GetCenter(AABB::Physics).x))
 		{
-			bOverlapping = true;
+			overlapping = true;
 		}
-		// Check for BB overlap if B is left of A
-		if ((centerB.x < centerA.x) && (rightBoundB > leftBoundA))
+		// B left of A
+		if (((aabbA.GetLeftBound() - aabbB.GetRightBound()) <= ERR_COLLISION) &&
+			(aabbA.GetCenter(AABB::Physics).x > aabbB.GetCenter(AABB::Physics).x))
 		{
-			bOverlapping = true;
+			overlapping = true;
 		}
 	}
 
-	return bOverlapping;
+	return overlapping;
 }
 
 bool Scene::CheckOverlap(PhysicsObject* poA, PhysicsObject* poB)
@@ -81,6 +80,7 @@ bool Scene::CheckOverlap(PhysicsObject* poA, PhysicsObject* poB)
 std::vector<std::pair<PhysicsObject*,PhysicsObject*>> Scene::CheckCollisions()
 {
 	std::vector<std::pair<PhysicsObject*,PhysicsObject*>> collidingPairs;
+	std::vector<std::pair<PhysicsObject*,PhysicsObject*>>::iterator pairsItr;
 
 	std::vector<PhysicsObject*>::iterator poItrA;
 	std::vector<PhysicsObject*>::iterator poItrB;
@@ -92,8 +92,24 @@ std::vector<std::pair<PhysicsObject*,PhysicsObject*>> Scene::CheckCollisions()
 			PhysicsObject* pObjectA = (*poItrA);
 			PhysicsObject* pObjectB = (*poItrB);
 
+			bool skipPair = false;
 			// Skip pair on UID match
 			if (pObjectA->GetUID() == pObjectB->GetUID())
+			{
+				skipPair = true;
+			}
+
+			// Skip pair on already-exists
+			for (pairsItr = collidingPairs.begin(); pairsItr != collidingPairs.end(); ++pairsItr)
+			{
+				if ((pObjectA->GetUID()==pairsItr->first->GetUID() && pObjectB->GetUID()==pairsItr->second->GetUID()) ||
+					(pObjectB->GetUID()==pairsItr->first->GetUID() && pObjectA->GetUID()==pairsItr->second->GetUID()))
+				{
+					skipPair = true;
+				}
+			}
+
+			if (skipPair)
 			{
 				continue;
 			}
@@ -151,7 +167,7 @@ std::vector<PhysicsObject*> Scene::CheckOutOfBounds(eCollisionAxis axis)
 	return vOutOfBounds;
 }
 
-eCollisionAxis Scene::CheckCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*> poPair)
+eCollisionAxis Scene::GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*> poPair)
 {
 	eCollisionAxis axis = AxisErr;
 
@@ -162,6 +178,7 @@ eCollisionAxis Scene::CheckCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*
 	double yDepth = 0.0;
 	double xDepth = 0.0;
 
+	/*
 	// A above and right of B
 	if (aabbA.GetCenter(AABB::Physics).y >= aabbB.GetUpperBound(AABB::Physics) &&
 		aabbA.GetCenter(AABB::Physics).x >= aabbB.GetRightBound())
@@ -190,9 +207,34 @@ eCollisionAxis Scene::CheckCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*
 		yDepth = aabbB.GetLowerBound(AABB::Physics) - aabbA.GetUpperBound(AABB::Physics);
 		xDepth = aabbB.GetLeftBound() - aabbA.GetRightBound();
 	}
+	*/
+
+	/*** Y-DEPTH **/
+	// B below A
+	if ((aabbA.GetLowerBound(AABB::Physics) - aabbB.GetLowerBound(AABB::Physics)) >= ERR_COLLISION)
+	{
+		yDepth = abs(aabbA.GetLowerBound(AABB::Physics) - aabbB.GetUpperBound(AABB::Physics));
+	}
+	// B above A
+	else
+	{
+		yDepth = abs(aabbA.GetUpperBound(AABB::Physics) - aabbB.GetLowerBound(AABB::Physics));
+	}
+
+	/*** X-DEPTH ***/
+	// B right of A
+	if ((aabbA.GetLeftBound() - aabbB.GetLeftBound()) <= ERR_COLLISION)
+	{
+		xDepth = abs(aabbA.GetRightBound() - aabbB.GetLeftBound());
+	}
+	// B left of A
+	else
+	{
+		xDepth = abs(aabbA.GetLeftBound() - aabbB.GetRightBound());
+	}
 
 	// Corner-hit
-	if (1-abs(yDepth/xDepth) < CornerHitMargin)
+	if (abs(1-abs(yDepth/xDepth)) < CornerHitMargin)
 	{
 		axis = BothAxes;
 	}
@@ -295,13 +337,11 @@ void Scene::Step()
 		std::pair<PhysicsObject*, PhysicsObject*> poPair = (*vPairsItr);
 
 		// Determine axis of collision, corner hits will rebound on both axes
-		eCollisionAxis axis = CheckCollisionAxis(poPair);
+		eCollisionAxis axis = GetCollisionAxis(poPair);
 
 		// Y-axis collision, revert movement and rebound both objects in y-direction
 		if (axis == YAxis || axis == BothAxes)
 		{
-			poPair.first->Revert();
-			poPair.second->Revert();
 			poPair.first->Rebound(YAxis);
 			poPair.second->Rebound(YAxis);
 			poPair.first->Move();
@@ -311,8 +351,6 @@ void Scene::Step()
 		// X-axis collision, revert movement and rebound both objects in x-direction
 		if (axis == XAxis || axis == BothAxes)
 		{
-			poPair.first->Revert();
-			poPair.second->Revert();
 			poPair.first->Rebound(XAxis);
 			poPair.second->Rebound(XAxis);
 			poPair.first->Move();

@@ -15,43 +15,53 @@ namespace EgineTest
 	TEST_CLASS(ZeroGravity)
 	{
 	public:
-		// Collision test
-		TEST_METHOD(CollisionTest)
+		/***** COLLISION TESTS *****/
+		TEST_METHOD(XParallelCollision)
 		{
+			// Create 0-gravity Scene
 			Scene testScene = Scene(SC_GRAVITY_OFF);
-			// Default object
-			PhysicsObject objDefault = PhysicsObject();
-			Trajectory defTraj = Trajectory(0.1, 0.0);
-			objDefault.ChangeTrajectory(defTraj);
-
-			// Tall, Red, Rectangle
-			PhysPoint center = PhysPoint();
-			center.x = 100;
-			center.y = 100;
-			AABB aabb = AABB(center, 10, 30);
-			D2D1::ColorF::Enum red = D2D1::ColorF::Red;
-			PhysicsObject objTall = PhysicsObject(aabb, red, PhysRectangle);
-			Trajectory tallTraj = Trajectory(0.5, (3*M_PI/4));
-			objTall.ChangeTrajectory(tallTraj);
-
-			// Long, Yellow, Rectangle
-			PhysPoint centerB = PhysPoint();
-			centerB.x = 400;
-			centerB.y = 250;
-			aabb = AABB(centerB, 100, 40);
-			D2D1::ColorF::Enum yellow = D2D1::ColorF::Yellow;
-			PhysicsObject objLong = PhysicsObject(aabb, yellow, PhysRectangle);
-			Trajectory traj = Trajectory(1.0, (M_PI/4));
-			objLong.ChangeTrajectory(traj);
-
-			testScene.AddObject(&objDefault);
-			testScene.AddObject(&objTall);
-			testScene.AddObject(&objLong);
 			
-			Assert::IsNotNull(&testScene);
-			Assert::IsNotNull(&objDefault);
-			Assert::IsNotNull(&objTall);
-			Assert::IsNotNull(&objLong);
+			// Create 2 default objects, parallel on X axis
+			PhysPoint centerA = {50, 100};
+			PhysicsObject objA = PhysicsObject(centerA);
+			PhysPoint centerB = {100, 100};
+			PhysicsObject objB = PhysicsObject(centerB);
+
+			// Set 0.1m/s trajectories toward each other
+			Trajectory trajA = Trajectory(0.1, 0.0);
+			Trajectory trajB = Trajectory(0.1, M_PI);
+			objA.SetTrajectory(trajA);
+			objB.SetTrajectory(trajB);
+
+			// Add objects to Scene
+			testScene.AddObject(&objA);
+			testScene.AddObject(&objB);
+
+			// Step scene until collision occurs
+			// At 0.1m/s, objects should collide in 150 steps
+			for (int stepsTaken=0; stepsTaken<150; stepsTaken++)
+			{
+				testScene.Step();
+			}
+
+			// Assert that trajectories have reversed
+			double reversedA = trajA.GetDirection() + M_PI;
+			double reversedB = 0;
+			Assert::AreEqual(objA.GetTrajectory().GetDirection(), reversedA);
+			Assert::AreEqual(objB.GetTrajectory().GetDirection(), reversedB); 
+
+			// Step 10 more times, check object centerpoints
+			for (int stepsTaken=0; stepsTaken<9; stepsTaken++)
+			{
+				testScene.Step();
+			}
+
+			// Object bounds should be 2m apart
+			double separation = abs(objA.GetAABB().GetRightBound() - objB.GetAABB().GetLeftBound());
+			
+			// Allowable error: 0.001m
+			double error = abs(separation - 2.0);
+			Assert::IsTrue(error <= 0.001);
 		}
 	};
 }

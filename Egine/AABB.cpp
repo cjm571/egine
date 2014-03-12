@@ -6,8 +6,6 @@
 
 #include "AABB.h"
 
-// NOTE: Default AABB is 20x20, with BL corner at (0,0) Cartesian
-
 /********** CTORS **********/
 AABB::AABB()
 	: m_width(20.0), m_height(20.0)
@@ -35,16 +33,16 @@ AABB::~AABB()
 
 
 /********** ACCESSORS **********/
-PhysPoint AABB::GetCenter(CoordFlag flag)
+PhysPoint AABB::GetCenter(CoordSys flag)
 {
 	PhysPoint center = PhysPoint();
 
 	switch (flag)
 	{
-	case CoordFlag::Physics:
+	case CoordSys::Physics:
 		center = m_center;
 		break;
-	case CoordFlag::Drawing:
+	case CoordSys::Drawing:
 		center.x = m_center.x;
 		center.y = SCENE_HEIGHT - m_center.y;
 		break;
@@ -53,17 +51,17 @@ PhysPoint AABB::GetCenter(CoordFlag flag)
 	return center;
 }
 
-PhysPoint AABB::GetBottomLeft(CoordFlag flag)
+PhysPoint AABB::GetBottomLeft(CoordSys flag)
 {
 	PhysPoint blPoint = PhysPoint();
 
 	switch (flag)
 	{
-	case CoordFlag::Physics:
+	case CoordSys::Physics:
 		blPoint.x = m_center.x - (m_width/2);
 		blPoint.y = m_center.y - (m_height/2);
 		break;
-	case CoordFlag::Drawing:
+	case CoordSys::Drawing:
 		blPoint.x = m_center.x - (m_width/2);
 		blPoint.y = SCENE_HEIGHT - (m_center.y - (m_height/2));
 		break;
@@ -72,17 +70,17 @@ PhysPoint AABB::GetBottomLeft(CoordFlag flag)
 	return blPoint;
 }
 
-PhysPoint AABB::GetBottomRight(CoordFlag flag)
+PhysPoint AABB::GetBottomRight(CoordSys flag)
 {
 	PhysPoint brPoint = PhysPoint();
 
 	switch (flag)
 	{
-	case CoordFlag::Physics:
+	case CoordSys::Physics:
 		brPoint.x = m_center.x + (m_width/2);
 		brPoint.y = m_center.y - (m_height/2);
 		break;
-	case CoordFlag::Drawing:
+	case CoordSys::Drawing:
 		brPoint.x = m_center.x + (m_width/2);
 		brPoint.y = SCENE_HEIGHT - (m_center.y - (m_height/2));
 		break;
@@ -91,17 +89,17 @@ PhysPoint AABB::GetBottomRight(CoordFlag flag)
 	return brPoint;
 }
 
-PhysPoint AABB::GetTopLeft(CoordFlag flag)
+PhysPoint AABB::GetTopLeft(CoordSys flag)
 {
 	PhysPoint tlPoint = PhysPoint();
 
 	switch (flag)
 	{
-	case CoordFlag::Physics:
+	case CoordSys::Physics:
 		tlPoint.x = m_center.x - (m_width/2);
 		tlPoint.y = m_center.y + (m_height/2);
 		break;
-	case CoordFlag::Drawing:
+	case CoordSys::Drawing:
 		tlPoint.x = m_center.x - (m_width/2);
 		tlPoint.y = SCENE_HEIGHT - (m_center.y + (m_height/2));
 		break;
@@ -110,17 +108,17 @@ PhysPoint AABB::GetTopLeft(CoordFlag flag)
 	return tlPoint;
 }
 
-PhysPoint AABB::GetTopRight(CoordFlag flag)
+PhysPoint AABB::GetTopRight(CoordSys flag)
 {
 	PhysPoint trPoint = PhysPoint();
 
 	switch (flag)
 	{
-	case CoordFlag::Physics:
+	case CoordSys::Physics:
 		trPoint.x = m_center.x + (m_width/2);
 		trPoint.y = m_center.y + (m_height/2);
 		break;
-	case CoordFlag::Drawing:
+	case CoordSys::Drawing:
 		trPoint.x = m_center.x + (m_width/2);
 		trPoint.y = SCENE_HEIGHT - (m_center.y + (m_height/2));
 		break;
@@ -129,16 +127,16 @@ PhysPoint AABB::GetTopRight(CoordFlag flag)
 	return trPoint;
 }
 
-double AABB::GetUpperBound(CoordFlag flag)
+double AABB::GetUpperBound(CoordSys flag)
 {
 	double upperBound = 0.0;
 
 	switch (flag)
 	{
-	case CoordFlag::Physics:
+	case CoordSys::Physics:
 		upperBound = m_center.y + (m_height/2);
 		break;
-	case CoordFlag::Drawing:
+	case CoordSys::Drawing:
 		upperBound = SCENE_HEIGHT - (m_center.y + (m_height/2));
 		break;
 	}
@@ -146,16 +144,16 @@ double AABB::GetUpperBound(CoordFlag flag)
 	return upperBound;
 }
 
-double AABB::GetLowerBound(CoordFlag flag)
+double AABB::GetLowerBound(CoordSys flag)
 {
 	double lowerBound = 0.0;
 
 	switch (flag)
 	{
-	case CoordFlag::Physics:
+	case CoordSys::Physics:
 		lowerBound = m_center.y - (m_height/2);
 		break;
-	case CoordFlag::Drawing:
+	case CoordSys::Drawing:
 		lowerBound = SCENE_HEIGHT - (m_center.y - (m_height/2));
 		break;
 	}

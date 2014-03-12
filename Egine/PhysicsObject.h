@@ -13,8 +13,20 @@ class PhysicsObject
 {
 // Ctors
 public:
+	// Default constructor
+	// Creates a 1kg black circle at bottom-left corner of containing Scene
 	PhysicsObject();
-	PhysicsObject(AABB, D2D1::ColorF::Enum, Shape);
+
+	// Creates a 1kg black circle w/ 10m radius at centerpoint _center
+	PhysicsObject(PhysPoint _center);
+
+	// Creates a 1kg black circle contained in boundaries of _aabb
+	PhysicsObject(AABB _aabb);
+
+	// Creates a 1kg object with specified attributes
+	PhysicsObject(AABB _aabb, D2D1::ColorF::Enum _color, Shape _shape);
+	
+	// Destructor
 	~PhysicsObject();
 
 // Public Methods
@@ -27,7 +39,7 @@ public:
 	ULONG GetUID()					{return m_UID;};
 
 	// Changes trajectory of object
-	HRESULT ChangeTrajectory(Trajectory);
+	HRESULT SetTrajectory(Trajectory);
 
 	// Moves object based on current trajectory and attributes
 	// NOTE: Until multithreading implemented, ticks 1sec in each game loop
