@@ -34,7 +34,7 @@ HRESULT Trajectory::SetVelocity(double newVelocity)
 	
 	// Sanity check
 	// Speed of light
-	if (newVelocity > SPEED_OF_LIGHT )
+	if (newVelocity > C )
 	{
 		hr = E_FAIL;
 		MessageBoxA(NULL,"Object exceeding speed of light!", "Causality Violation", MB_OK);
