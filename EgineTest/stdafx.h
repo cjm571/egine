@@ -12,3 +12,9 @@
 
 // TODO: reference additional headers your program requires here
 #include "..\Egine\Scene.h"
+
+/*** CONSTANTS ***/
+extern double ALLOWABLE_ERROR;
+
+/*** TEST SCENE OBJECT ***/
+extern Scene testScene;

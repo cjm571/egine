@@ -32,9 +32,9 @@ Scene::~Scene()
 
 
 /********** HELPER FUNCTIONS **********/
-bool Scene::CheckOverlap(AABB aabbA, AABB aabbB)
+bool Scene::CheckOverlap(AABB a, AABB b)
 {
-	bool overlapping = false;
+	/*
 	bool alignedTop = false;
 	bool alignedBottom = false;
 
@@ -61,8 +61,24 @@ bool Scene::CheckOverlap(AABB aabbA, AABB aabbB)
 			overlapping = true;
 		}
 	}
+	*/
 
-	return overlapping;
+	double centerDist;
+
+	// Rule out overlap on X-axis
+	centerDist = abs(a.GetCenter(AABB::Physics).x - b.GetCenter(AABB::Physics).x);
+	if ((centerDist - (a.GetWidth()/2 + b.GetWidth()/2)) >= ERR_COLLISION)
+	{
+		// Rule out overlap on Y-axis
+		centerDist = abs(a.GetCenter(AABB::Physics).y - b.GetCenter(AABB::Physics).y);
+		if ((centerDist - (a.GetHeight()/2 + b.GetHeight()/2)) >= ERR_COLLISION)
+		{
+			return false;
+		}
+	}
+
+	// Overlap cannot be ruled out on any axis, therefore overlap is occurring
+	return true;
 }
 
 bool Scene::CheckOverlap(PhysicsObject* poA, PhysicsObject* poB)
