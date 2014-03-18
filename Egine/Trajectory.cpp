@@ -50,9 +50,15 @@ HRESULT Trajectory::SetDirection(double newDirection)
 	HRESULT hr = S_OK;
 
 	// Wrap around at 2pi
-	while (newDirection >= (2 * M_PI))
+	while (newDirection >= 2*M_PI)
 	{
-		newDirection -= (2 * M_PI);
+		newDirection -= 2*M_PI;
+	}
+
+	// Wrap around at 0
+	while (newDirection < 0)
+	{
+		newDirection += 2*M_PI;
 	}
 
 	direction = newDirection;

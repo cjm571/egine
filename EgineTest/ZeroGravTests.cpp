@@ -27,8 +27,8 @@ namespace EgineTest
 		}
 		
 
-		/***** COLLISION TESTS *****/
-		TEST_METHOD(XParallelCollision)
+		/***** X-AXIS COLLISION TESTS *****/
+		TEST_METHOD(X0DegCollision)
 		{
 			// Create 2 default objects, parallel on X axis
 			PhysPoint centerA = {50, 100};
@@ -66,14 +66,46 @@ namespace EgineTest
 			}
 
 			// Object bounds should be 2m apart
-			double separation = abs(objA.GetAABB().GetRightBound() - objB.GetAABB().GetLeftBound());
+			double separation = abs(objA.GetAABB().GetRightBound() -
+									objB.GetAABB().GetLeftBound());
 			
-			// Allowable error: 0.001m
+			// Check if object separation is within error bounds
 			double error = abs(separation - 2.0);
 			Assert::IsTrue(error <= ALLOWABLE_ERROR);
 		}
 
-		TEST_METHOD(YParallelCollision)
+		TEST_METHOD(X30DegCollision)
+		{
+			Assert::IsTrue(false);
+		}
+		
+		TEST_METHOD(X45DegCollision)
+		{
+			Assert::IsTrue(false);
+		}
+		
+		TEST_METHOD(X60DegCollision)
+		{
+			Assert::IsTrue(false);
+		}
+		
+		TEST_METHOD(X120DegCollision)
+		{
+			Assert::IsTrue(false);
+		}
+		
+		TEST_METHOD(X135DegCollision)
+		{
+			Assert::IsTrue(false);
+		}
+		
+		TEST_METHOD(X150DegCollision)
+		{
+			Assert::IsTrue(false);
+		}
+		
+		/***** Y-AXIS COLLISION TESTS *****/
+		TEST_METHOD(Y90DegCollision)
 		{
 			// Create 2 default objects, parallel on Y axis
 			PhysPoint centerA = {100, 50};
@@ -93,14 +125,10 @@ namespace EgineTest
 
 			// Step scene until collision occurs
 			// At 0.1m/s, objects should collide in 150 steps
-			for (int stepsTaken=0; stepsTaken<149; stepsTaken++)
+			for (int stepsTaken=0; stepsTaken<150; stepsTaken++)
 			{
 				testScene.Step();
 			}
-
-			// DEBUG!!!!!!!
-			testScene.Step();
-			// DEBUG!!!!!!!
 
 			// Assert that trajectories have reversed
 			double reversedA = 3*M_PI/2;
@@ -118,9 +146,39 @@ namespace EgineTest
 			double separation = abs(objA.GetAABB().GetUpperBound(AABB::Physics) -
 									objB.GetAABB().GetLowerBound(AABB::Physics));
 			
-			// Allowable error: 0.001m
+			// Check if object separation is within error bounds
 			double error = abs(separation - 2.0);
 			Assert::IsTrue(error <= ALLOWABLE_ERROR);
+		}
+		
+		TEST_METHOD(Y120DegCollision)
+		{
+			Assert::IsTrue(false);
+		}
+		
+		TEST_METHOD(Y135DegCollision)
+		{
+			Assert::IsTrue(false);
+		}
+		
+		TEST_METHOD(Y150DegCollision)
+		{
+			Assert::IsTrue(false);
+		}
+
+		TEST_METHOD(Y210DegCollision)
+		{
+			Assert::IsTrue(false);
+		}
+		
+		TEST_METHOD(Y225DegCollision)
+		{
+			Assert::IsTrue(false);
+		}
+		
+		TEST_METHOD(Y240DegCollision)
+		{
+			Assert::IsTrue(false);
 		}
 	};
 }

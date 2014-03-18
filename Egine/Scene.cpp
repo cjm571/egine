@@ -63,22 +63,28 @@ bool Scene::CheckOverlap(AABB a, AABB b)
 	}
 	*/
 
-	double centerDist;
+	double centerDist = 0.0;
+	bool xOverlap = false;
+	bool yOverlap = false;
+	bool isOverlapping = false;
 
-	// Rule out overlap on X-axis
+	// Check X-axis overlap
 	centerDist = abs(a.GetCenter(AABB::Physics).x - b.GetCenter(AABB::Physics).x);
-	if ((centerDist - (a.GetWidth()/2 + b.GetWidth()/2)) >= ERR_COLLISION)
+	if (centerDist - ((a.GetWidth()/2 + b.GetWidth()/2)) <= ERR_COLLISION)
 	{
-		// Rule out overlap on Y-axis
-		centerDist = abs(a.GetCenter(AABB::Physics).y - b.GetCenter(AABB::Physics).y);
-		if ((centerDist - (a.GetHeight()/2 + b.GetHeight()/2)) >= ERR_COLLISION)
-		{
-			return false;
-		}
+		xOverlap = true;
 	}
 
-	// Overlap cannot be ruled out on any axis, therefore overlap is occurring
-	return true;
+	// Check Y-axis overlap
+	centerDist = abs(a.GetCenter(AABB::Physics).y - b.GetCenter(AABB::Physics).y);
+	if ((centerDist - (a.GetHeight()/2 + b.GetHeight()/2)) <= ERR_COLLISION)
+	{
+		yOverlap = true;
+	}
+	
+	// AABBs must overlap on ALL AXES for actual overlap to occur
+	isOverlapping = xOverlap && yOverlap;
+	return isOverlapping;
 }
 
 bool Scene::CheckOverlap(PhysicsObject* poA, PhysicsObject* poB)
@@ -361,7 +367,7 @@ void Scene::Step()
 			poPair.first->Rebound(YAxis);
 			poPair.second->Rebound(YAxis);
 			poPair.first->Move();
-			poPair.second->Move();			
+			poPair.second->Move();
 		}
 		
 		// X-axis collision, revert movement and rebound both objects in x-direction
