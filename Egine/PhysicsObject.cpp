@@ -17,7 +17,7 @@ PhysicsObject::PhysicsObject()
 	m_UID = ++prevUID;
 }
 
-PhysicsObject::PhysicsObject(PhysPoint _center)
+PhysicsObject::PhysicsObject(CartPoint _center)
 	: m_color(D2D1::ColorF::Black), m_mass(1.0), m_shape(PhysCircle)
 {
 	m_aabb = AABB(_center);
@@ -54,7 +54,7 @@ void PhysicsObject::Move()
 {
 	double direction = m_trajectory.GetDirection();
 	double velocity = m_trajectory.GetVelocity();
-	PhysPoint center = m_aabb.GetCenter(AABB::Physics);
+	CartPoint center = m_aabb.GetCenter(AABB::Physics);
 
 	// Translate centerpoint based on trajectory. Unit circle ftw
 	center.x = center.x + (cos(direction) * velocity);
@@ -66,7 +66,7 @@ void PhysicsObject::Revert()
 {
 	double direction = m_trajectory.GetDirection();
 	double velocity = m_trajectory.GetVelocity();
-	PhysPoint center = m_aabb.GetCenter(AABB::Physics);
+	CartPoint center = m_aabb.GetCenter(AABB::Physics);
 
 	// Revert translation based on trajectory
 	center.x = center.x - (cos(direction) * velocity);
@@ -80,7 +80,6 @@ void PhysicsObject::Rebound(eCollisionAxis axis)
 	if (axis == XAxis || axis == BothAxes)
 	{
 		double direction = m_trajectory.GetDirection();
-		double velocity = m_trajectory.GetVelocity();
 		m_trajectory.SetDirection((direction * -1) + M_PI);
 	}
 	// Y-axis rebounds reflect direction about pi

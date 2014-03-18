@@ -18,7 +18,7 @@ public:
 	PhysicsObject();
 
 	// Creates a 1kg black circle w/ 10m radius at centerpoint _center
-	PhysicsObject(PhysPoint _center);
+	PhysicsObject(CartPoint _center);
 
 	// Creates a 1kg black circle contained in boundaries of _aabb
 	PhysicsObject(AABB _aabb);

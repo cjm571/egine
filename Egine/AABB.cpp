@@ -10,21 +10,21 @@
 AABB::AABB()
 	: m_width(20.0), m_height(20.0)
 {
-	m_center = PhysPoint();
+	m_center = CartPoint();
 	m_center.x = 10;
 	m_center.y = 10;
 }
 
-AABB::AABB(PhysPoint _center)
+AABB::AABB(CartPoint _center)
 	: m_width(20.0), m_height(20.0)
 {
-	m_center = PhysPoint(_center);
+	m_center = CartPoint(_center);
 }
 
-AABB::AABB(PhysPoint _center, double _width, double _height)
+AABB::AABB(CartPoint _center, double _width, double _height)
 	: m_width(_width), m_height(_height)
 {
-	m_center = PhysPoint(_center);
+	m_center = CartPoint(_center);
 }
 
 AABB::~AABB()
@@ -33,9 +33,9 @@ AABB::~AABB()
 
 
 /********** ACCESSORS **********/
-PhysPoint AABB::GetCenter(CoordSys flag)
+CartPoint AABB::GetCenter(CoordSys flag)
 {
-	PhysPoint center = PhysPoint();
+	CartPoint center = CartPoint();
 
 	switch (flag)
 	{
@@ -51,9 +51,9 @@ PhysPoint AABB::GetCenter(CoordSys flag)
 	return center;
 }
 
-PhysPoint AABB::GetBottomLeft(CoordSys flag)
+CartPoint AABB::GetBottomLeft(CoordSys flag)
 {
-	PhysPoint blPoint = PhysPoint();
+	CartPoint blPoint = CartPoint();
 
 	switch (flag)
 	{
@@ -70,9 +70,9 @@ PhysPoint AABB::GetBottomLeft(CoordSys flag)
 	return blPoint;
 }
 
-PhysPoint AABB::GetBottomRight(CoordSys flag)
+CartPoint AABB::GetBottomRight(CoordSys flag)
 {
-	PhysPoint brPoint = PhysPoint();
+	CartPoint brPoint = CartPoint();
 
 	switch (flag)
 	{
@@ -89,9 +89,9 @@ PhysPoint AABB::GetBottomRight(CoordSys flag)
 	return brPoint;
 }
 
-PhysPoint AABB::GetTopLeft(CoordSys flag)
+CartPoint AABB::GetTopLeft(CoordSys flag)
 {
-	PhysPoint tlPoint = PhysPoint();
+	CartPoint tlPoint = CartPoint();
 
 	switch (flag)
 	{
@@ -108,9 +108,9 @@ PhysPoint AABB::GetTopLeft(CoordSys flag)
 	return tlPoint;
 }
 
-PhysPoint AABB::GetTopRight(CoordSys flag)
+CartPoint AABB::GetTopRight(CoordSys flag)
 {
-	PhysPoint trPoint = PhysPoint();
+	CartPoint trPoint = CartPoint();
 
 	switch (flag)
 	{
@@ -181,7 +181,7 @@ double AABB::GetRightBound()
 
 
 /********** MUTATORS **********/
-void AABB::SetCenter(PhysPoint newCenter)
+void AABB::SetCenter(CartPoint newCenter)
 {
 	m_center = newCenter;
 }

@@ -8,6 +8,33 @@
 // Generates Egine.pch precompiled header and StdAfx.obj for precompiled type info
 #include "stdafx.h"
 
+/***** GLOBAL HELPER FUNCTIONS *****/
+PolarPoint CartToPolar(CartPoint cPoint)
+{
+	double r = 0.0;
+	double theta = 0.0;
+
+	r = sqrt((cPoint.x*cPoint.x) + (cPoint.y*cPoint.y));
+	theta = atan(cPoint.y / cPoint.x);
+
+	PolarPoint pPoint = {r, theta};
+
+	return pPoint;
+}
+CartPoint PolarToCart(PolarPoint pPoint)
+{
+	double x = 0.0;
+	double y = 0.0;
+
+	x = pPoint.r * cos(pPoint.theta);
+	y = pPoint.r * sin(pPoint.theta);
+
+	CartPoint cPoint = {x, y};
+
+	return cPoint;
+}
+
+/***** SCENE PARAMETERS *****/
 double SCENE_WIDTH =	640.0;
 double SCENE_HEIGHT =	480.0;
 

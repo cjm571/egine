@@ -63,11 +63,27 @@ inline void SafeRelease( Interface **ppInterfaceToRelease )
 	#define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 #endif
 
+/***** GLOBAL TYPES *****/
+// Represents Cartesian (x,y) coordinates of a physics object
 typedef struct
 {
 	double x;
 	double y;
-} PhysPoint;
+} CartPoint;
+
+// Represents Polar (r,theta) coordinates of a physics object
+typedef struct
+{
+	double r;
+	double theta;
+} PolarPoint;
+
+
+/***** GLOBAL HELPER FUNCTIONS *****/
+// Converts Cartesian coordinates to Polar
+extern PolarPoint CartToPolar(CartPoint cPoint);
+// Converts Polar coordinates to Cartesian
+extern CartPoint PolarToCart(PolarPoint pPoint);
 
 // Enumeration of valid physics object shapes
 enum Shape
@@ -88,32 +104,26 @@ enum eCollisionAxis
 
 
 /***** SCENE PARAMETERS *****/
-
-// Scene width in meters (03/07/14 currently 1m = 1px)
+// Scene width in meters
+// 03/07/14: currently 1m = 1px
 extern double SCENE_WIDTH;
-
 // Scene height in meters (03/07/14 currently 1m = 1px)
 extern double SCENE_HEIGHT;
 
 
 /***** SCENE CREATION FLAGS *****/
-
 // Created Scene will have gravity
 extern UINT SC_GRAVITY_ON;
-
 // Created Scene will have 0 gravity
 extern UINT SC_GRAVITY_OFF;
 
 
 /***** SCENE CREATION MASKS *****/
-
 // Gravity on/off mask
 extern UINT SC_GRAVITY_MASK;
 
 /***** CONSTANTS *****/
-
 // Speed of light in m/s
 extern UINT C;
-
 // Acceptable error for collision detection
 extern double ERR_COLLISION;

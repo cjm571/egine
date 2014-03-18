@@ -279,8 +279,8 @@ HRESULT Scene::AddObject(PhysicsObject* newObject)
 {
 	HRESULT hr = S_OK;
 
-	PhysPoint aabbMin = newObject->GetAABB().GetBottomLeft(AABB::Physics);
-	PhysPoint aabbMax = newObject->GetAABB().GetTopRight(AABB::Physics);
+	CartPoint aabbMin = newObject->GetAABB().GetBottomLeft(AABB::Physics);
+	CartPoint aabbMax = newObject->GetAABB().GetTopRight(AABB::Physics);
 	
 	// Sanity check new physics object properties, add to list on pass
 	// Out-of-bounds check
