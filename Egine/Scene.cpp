@@ -34,35 +34,6 @@ Scene::~Scene()
 /********** HELPER FUNCTIONS **********/
 bool Scene::CheckOverlap(AABB a, AABB b)
 {
-	/*
-	bool alignedTop = false;
-	bool alignedBottom = false;
-
-	// Vertical alignment
-	// alignedA: B lowerbound within error bounds of A upperbound
-	alignedTop = (aabbB.GetLowerBound(AABB::Physics) - aabbA.GetUpperBound(AABB::Physics)) <= ERR_COLLISION;
-	
-	// alignedB: B upperbound within error bounds of A lowerbound
-	alignedBottom = (aabbA.GetLowerBound(AABB::Physics) - aabbB.GetUpperBound(AABB::Physics)) <= ERR_COLLISION;
-
-	if (alignedTop && alignedBottom)
-	{
-		// Horizontal overlap
-		// A left of B
-		if (((aabbB.GetLeftBound() - aabbA.GetRightBound()) <= ERR_COLLISION) &&
-			(aabbA.GetCenter(AABB::Physics).x < aabbB.GetCenter(AABB::Physics).x))
-		{
-			overlapping = true;
-		}
-		// B left of A
-		if (((aabbA.GetLeftBound() - aabbB.GetRightBound()) <= ERR_COLLISION) &&
-			(aabbA.GetCenter(AABB::Physics).x > aabbB.GetCenter(AABB::Physics).x))
-		{
-			overlapping = true;
-		}
-	}
-	*/
-
 	double centerDist = 0.0;
 	bool xOverlap = false;
 	bool yOverlap = false;

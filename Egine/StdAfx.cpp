@@ -33,6 +33,22 @@ CartPoint PolarToCart(PolarPoint pPoint)
 
 	return cPoint;
 }
+double WrapAngle(double angle)
+{
+	// Wrap around at 2pi
+	while (angle >= 2*M_PI)
+	{
+		angle -= 2*M_PI;
+	}
+
+	// Wrap around at 0
+	while (angle < 0)
+	{
+		angle += 2*M_PI;
+	}
+
+	return angle;
+}
 
 /***** SCENE PARAMETERS *****/
 double SCENE_WIDTH =	640.0;

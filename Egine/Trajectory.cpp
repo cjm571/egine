@@ -8,17 +8,17 @@
 
 /********** CTORS **********/
 Trajectory::Trajectory()
-	: velocity(0.0), direction(0.0)
+	: m_velocity(0.0), m_direction(0.0)
 {
 }
 
 Trajectory::Trajectory(double _velocity)
-	: velocity(_velocity), direction(0.0)
+	: m_velocity(_velocity), m_direction(0.0)
 {
 }
 
 Trajectory::Trajectory(double _velocity, double _direction)
-	: velocity(_velocity), direction(_direction)
+	: m_velocity(_velocity), m_direction(_direction)
 {
 }
 
@@ -40,7 +40,7 @@ HRESULT Trajectory::SetVelocity(double newVelocity)
 		MessageBoxA(NULL,"Object exceeding speed of light!", "Causality Violation", MB_OK);
 	}
 
-	velocity = newVelocity;
+	m_velocity = newVelocity;
 
 	return hr;
 }
@@ -49,19 +49,7 @@ HRESULT Trajectory::SetDirection(double newDirection)
 {
 	HRESULT hr = S_OK;
 
-	// Wrap around at 2pi
-	while (newDirection >= 2*M_PI)
-	{
-		newDirection -= 2*M_PI;
-	}
-
-	// Wrap around at 0
-	while (newDirection < 0)
-	{
-		newDirection += 2*M_PI;
-	}
-
-	direction = newDirection;
+	m_direction = WrapAngle(newDirection);
 
 	return hr;
 }

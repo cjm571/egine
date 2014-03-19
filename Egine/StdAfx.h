@@ -84,6 +84,8 @@ typedef struct
 extern PolarPoint CartToPolar(CartPoint cPoint);
 // Converts Polar coordinates to Cartesian
 extern CartPoint PolarToCart(PolarPoint pPoint);
+// Wraps angles between 0 and 2pi
+extern double WrapAngle(double angle);
 
 // Enumeration of valid physics object shapes
 enum Shape

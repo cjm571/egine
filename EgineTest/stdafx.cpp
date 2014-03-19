@@ -5,10 +5,10 @@
 #include "stdafx.h"
 
 /*** CONSTANTS ***/
-const double ALLOWABLE_ERROR = 0.001;
+const double ALLOWABLE_ERROR = 0.1;
 const CartPoint EPICENTER = {100.0, 100.0};
 const PolarPoint EPICENTER_POLAR = CartToPolar(EPICENTER);
-const double EPICENTER_OFFSET = 10.0;
+const double EPICENTER_OFFSET = 25.0;
 const double OBJECT_VELOCITY = 0.1;
 const double SEPARATION_DISTANCE = 5.0;
 

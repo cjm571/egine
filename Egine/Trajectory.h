@@ -18,8 +18,8 @@ public:
 
 // Accessors
 public:
-	double GetVelocity() {return velocity;};
-	double GetDirection() {return direction;};
+	double GetVelocity() {return m_velocity;};
+	double GetDirection() {return m_direction;};
 
 // Public methods
 public:
@@ -29,8 +29,8 @@ public:
 // Properties
 private:
 	// Velocity in m/s
-	double velocity;
+	double m_velocity;
 	
 	// Direction in radians
-	double direction;
+	double m_direction;
 };
