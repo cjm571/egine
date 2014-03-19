@@ -18,20 +18,19 @@ namespace EgineTest
 		// Helper function for X-axis collisions at 'angle' collision angle (radians)
 		static void XCollision(double angle)
 		{
-			// Create 2 default objects
-			PhysicsObject objA = PhysicsObject();
-			PhysicsObject objB = PhysicsObject();
+			// Create reference object
+			PhysicsObject refObj = PhysicsObject();
 			// Offset object A from epicenter along X-axis
-			double halfwidth = objA.GetAABB().GetWidth()/2;
+			double halfwidth = refObj.GetAABB().GetWidth()/2;
 			CartPoint centerA = {EPICENTER.x + EPICENTER_OFFSET+halfwidth, EPICENTER.y};
-			objA.GetAABB().SetCenter(centerA);
+			PhysicsObject objA = PhysicsObject(centerA);
 
 			// Offset object B from epicenter along 0rad-reflection of collision angle
 			double reflAngle = angle + M_PI;
 			double xOffset = (EPICENTER_OFFSET+halfwidth) * cos(reflAngle);
 			double yOffset = (EPICENTER_OFFSET+halfwidth) * sin(reflAngle);
 			CartPoint centerB = {EPICENTER.x + xOffset, EPICENTER.y + yOffset};
-			objB.GetAABB().SetCenter(centerB);
+			PhysicsObject objB = PhysicsObject(centerB);
 
 			// Set trajectories
 			Trajectory trajA = Trajectory(OBJECT_VELOCITY, M_PI);
@@ -40,34 +39,41 @@ namespace EgineTest
 			objB.SetTrajectory(trajB);
 
 			// Add objects to Scene
-			testScene.AddObject(&objA);
-			testScene.AddObject(&objB);
+			Assert::AreEqual(testScene.AddObject(&objA), S_OK);
+			Assert::AreEqual(testScene.AddObject(&objB), S_OK);
 
-			// TODO: Pick up here, calculate steps until collision
+			// Calculate steps required for collision
+			// TODO: this is broken :( appears to go past collision
+			double boundsDist = sqrt(pow((centerA.x-halfwidth) - (centerB.x+halfwidth), 2) + pow(centerA.y - centerB.y, 2));
+			UINT stepsTillCollision = (UINT) (boundsDist / (2*OBJECT_VELOCITY));
+
 			// Step scene until collision occurs
-			for (int stepsTaken=0; stepsTaken<150; stepsTaken++)
+			for (UINT stepsTaken=0; stepsTaken<stepsTillCollision; stepsTaken++)
 			{
 				testScene.Step();
 			}
 
 			// Assert that trajectories have reversed
-			double reversedA = M_PI;
-			double reversedB = 0;
+			double reversedA = 0;
+			double reversedB = (angle * -1) + M_PI;
 			Assert::AreEqual(objA.GetTrajectory().GetDirection(), reversedA);
 			Assert::AreEqual(objB.GetTrajectory().GetDirection(), reversedB); 
 
-			// Step 10 more times, check object centerpoints
-			for (int stepsTaken=0; stepsTaken<9; stepsTaken++)
+			// Calculate steps to reach SEPARATION_DISTANCE separation between centerpoints
+			UINT stepsTillSeparation = (UINT) (SEPARATION_DISTANCE / (2*OBJECT_VELOCITY));
+
+			// Step until SEPARATION_DISTANCE should be reached
+			for (UINT stepsTaken=0; stepsTaken<stepsTillSeparation; stepsTaken++)
 			{
 				testScene.Step();
 			}
 
-			// Object bounds should be 2m apart
-			double separation = abs(objA.GetAABB().GetRightBound() -
-									objB.GetAABB().GetLeftBound());
+			// Assert that SEPARATION_DSITANCE was actually reached
+			double separation = sqrt(pow((objA.GetAABB().GetCenter(AABB::Physics).x - objB.GetAABB().GetCenter(AABB::Physics).x), 2) +
+									 pow((objA.GetAABB().GetCenter(AABB::Physics).y - objB.GetAABB().GetCenter(AABB::Physics).y), 2));
 			
 			// Check if object separation is within error bounds
-			double error = abs(separation - 2.0);
+			double error = abs(separation - SEPARATION_DISTANCE);
 			Assert::IsTrue(error <= ALLOWABLE_ERROR);
 		}
 
@@ -87,7 +93,7 @@ namespace EgineTest
 		/***** X-AXIS COLLISION TESTS *****/
 		TEST_METHOD(X60DegCollision)
 		{
-			Assert::IsTrue(false);
+			XCollision(M_PI/6);
 		}
 		
 		TEST_METHOD(X45DegCollision)
