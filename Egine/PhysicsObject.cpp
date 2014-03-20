@@ -74,7 +74,7 @@ void PhysicsObject::Revert()
 	m_aabb.SetCenter(center);
 }
 
-void PhysicsObject::Rebound(eCollisionAxis axis)
+void PhysicsObject::Rebound(eAxis axis)
 {
 	// X-axis rebounds reflect direction about pi/2
 	if (axis == XAxis || axis == BothAxes)

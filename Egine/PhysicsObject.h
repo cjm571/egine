@@ -51,7 +51,7 @@ public:
 
 	// Resets an object's trajectory after collision on the given axis
 	// NOTE: does NOT Revert() previous movement, nor does it perform the subsequent Move()
-	void Rebound(eCollisionAxis);
+	void Rebound(eAxis);
 
 // Properties
 private:

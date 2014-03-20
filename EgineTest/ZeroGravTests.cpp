@@ -15,8 +15,8 @@ namespace EgineTest
 	TEST_CLASS(ZeroGravity)
 	{
 	private:
-		// Helper function for X-axis collisions at 'angle' collision angle (radians)
-		static void XCollision(double angle)
+		// Helper function for 'axis'-axis collisions at 'angle' collision angle (radians)
+		static void Collision(eAxis axis, double angle)
 		{
 			// Create reference object
 			PhysicsObject refObj = PhysicsObject();
@@ -33,7 +33,6 @@ namespace EgineTest
 			CartPoint centerB = {EPICENTER.x + EPICENTER_OFFSET+halfwidth, EPICENTER.y};
 			PhysicsObject objB = PhysicsObject(centerB);
 			
-
 			// Set trajectories
 			Trajectory trajA = Trajectory(OBJECT_VELOCITY, angle);
 			Trajectory trajB = Trajectory(OBJECT_VELOCITY, M_PI);

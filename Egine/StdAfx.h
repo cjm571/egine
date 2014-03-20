@@ -96,7 +96,7 @@ enum Shape
 };
 
 // Denotes axis of collision
-enum eCollisionAxis
+enum eAxis
 {
 	XAxis = 0,
 	YAxis = 1,

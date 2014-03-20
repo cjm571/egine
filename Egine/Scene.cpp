@@ -125,7 +125,7 @@ std::vector<std::pair<PhysicsObject*,PhysicsObject*>> Scene::CheckCollisions()
 	return collidingPairs;
 }
 
-std::vector<PhysicsObject*> Scene::CheckOutOfBounds(eCollisionAxis axis)
+std::vector<PhysicsObject*> Scene::CheckOutOfBounds(eAxis axis)
 {
 	std::vector<PhysicsObject*> vOutOfBounds;
 
@@ -160,9 +160,9 @@ std::vector<PhysicsObject*> Scene::CheckOutOfBounds(eCollisionAxis axis)
 	return vOutOfBounds;
 }
 
-eCollisionAxis Scene::GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*> poPair)
+eAxis Scene::GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*> poPair)
 {
-	eCollisionAxis axis = AxisErr;
+	eAxis axis = AxisErr;
 
 	AABB aabbA = poPair.first->GetAABB();
 	AABB aabbB = poPair.second->GetAABB();
@@ -330,7 +330,7 @@ void Scene::Step()
 		std::pair<PhysicsObject*, PhysicsObject*> poPair = (*vPairsItr);
 
 		// Determine axis of collision, corner hits will rebound on both axes
-		eCollisionAxis axis = GetCollisionAxis(poPair);
+		eAxis axis = GetCollisionAxis(poPair);
 
 		// Y-axis collision, revert movement and rebound both objects in y-direction
 		if (axis == YAxis || axis == BothAxes)

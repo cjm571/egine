@@ -44,11 +44,11 @@ private:
 	
 	// Check scene for out-of-bounds objects based on type param
 	// Returns vector of out-of-bounds objects
-	std::vector<PhysicsObject*> CheckOutOfBounds(eCollisionAxis);
+	std::vector<PhysicsObject*> CheckOutOfBounds(eAxis);
 
 	// Determine collision axis of a pair of physics objects
 	// Returns axis enum value
-	eCollisionAxis GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*>);
+	eAxis GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*>);
 
 // Public Methods
 public:
