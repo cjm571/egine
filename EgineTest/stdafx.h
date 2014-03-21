@@ -23,7 +23,7 @@ extern const PolarPoint EPICENTER_POLAR;
 // Distance (in meters) from collision epicenter
 extern const double EPICENTER_OFFSET;
 // Velocity of colliding object in m/s
-extern const double OBJECT_VELOCITY;
+extern const double DEFAULT_VELOCITY;
 // Distance (in meters) between centerpoints when separation check is performed
 extern const double SEPARATION_DISTANCE;
 

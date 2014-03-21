@@ -9,7 +9,7 @@ const double ALLOWABLE_ERROR = 0.1;
 const CartPoint EPICENTER = {100.0, 100.0};
 const PolarPoint EPICENTER_POLAR = CartToPolar(EPICENTER);
 const double EPICENTER_OFFSET = 25.0;
-const double OBJECT_VELOCITY = 0.1;
+const double DEFAULT_VELOCITY = 0.1;
 const double SEPARATION_DISTANCE = 25.0;
 
 /*** TEST SCENE OBJECT ***/

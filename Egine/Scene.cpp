@@ -16,12 +16,19 @@ Scene::Scene()
 }
 
 Scene::Scene(UINT _creationFlags)
-	: m_gravity(9.8)
 {
-	// 0-gravity
-	if ((_creationFlags & SC_GRAVITY_MASK) == SC_GRAVITY_OFF)
+
+	switch (_creationFlags & SC_GRAVITY_MASK)
 	{
+	case SC_GRAVITY_OFF:	// zero-gravity
 		m_gravity = 0.0;
+		break;
+	case SC_GRAVITY_EARTH:	// Earth gravity
+		m_gravity = 9.8;
+		break;
+	case SC_GRAVITY_MOON:	// Moon gravity
+		m_gravity = 1.622;
+		break;
 	}
 }
 

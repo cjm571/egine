@@ -29,5 +29,8 @@
     <ClCompile Include="ZeroGravTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EarthGravTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

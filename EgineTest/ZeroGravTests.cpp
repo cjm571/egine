@@ -69,18 +69,18 @@ namespace EgineTest
 			PhysicsObject objB = PhysicsObject(centerB);
 			
 			// Set trajectories
-			Trajectory trajA = Trajectory(OBJECT_VELOCITY, angle);
+			Trajectory trajA = Trajectory(DEFAULT_VELOCITY, angle);
 			Trajectory trajB;
 			switch (axis)
 			{
 			case XAxis:
-				trajB = Trajectory(OBJECT_VELOCITY, M_PI);
+				trajB = Trajectory(DEFAULT_VELOCITY, M_PI);
 				break;
 			case YAxis:
-				trajB = Trajectory(OBJECT_VELOCITY, 3*M_PI/2);
+				trajB = Trajectory(DEFAULT_VELOCITY, 3*M_PI/2);
 				break;
 			case BothAxes:
-				trajB = Trajectory(OBJECT_VELOCITY, reflAngle);
+				trajB = Trajectory(DEFAULT_VELOCITY, reflAngle);
 				break;
 			default: // AxisErr
 				Assert::Fail();
@@ -101,12 +101,12 @@ namespace EgineTest
 			case XAxis:
 				boundsDist = abs((objA.GetAABB().GetRightBound()) -
 								 (objB.GetAABB().GetLeftBound()));
-				velObjA = abs(OBJECT_VELOCITY * cos(objA.GetTrajectory().GetDirection()));
+				velObjA = abs(DEFAULT_VELOCITY * cos(objA.GetTrajectory().GetDirection()));
 				break;
 			case YAxis:
 				boundsDist = abs((objA.GetAABB().GetUpperBound(Physics)) -
 								 (objB.GetAABB().GetLowerBound(Physics)));
-				velObjA = abs(OBJECT_VELOCITY * sin(objA.GetTrajectory().GetDirection()));
+				velObjA = abs(DEFAULT_VELOCITY * sin(objA.GetTrajectory().GetDirection()));
 				break;
 			case BothAxes:
 				// TODO: properly calculate corner distance, velocity
@@ -117,7 +117,7 @@ namespace EgineTest
 				break;
 			}
 			// TODO: handle both-axes collisions
-			UINT stepsTillCollision = static_cast<UINT>(ceil(boundsDist / (velObjA + OBJECT_VELOCITY)));
+			UINT stepsTillCollision = static_cast<UINT>(ceil(boundsDist / (velObjA + DEFAULT_VELOCITY)));
 
 			// Step scene until collision occurs
 			for (UINT stepsTaken=0; stepsTaken<stepsTillCollision; stepsTaken++)

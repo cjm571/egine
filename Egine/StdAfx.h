@@ -121,18 +121,23 @@ extern double SCENE_HEIGHT;
 
 
 /***** SCENE CREATION FLAGS *****/
-// Created Scene will have gravity
-extern UINT SC_GRAVITY_ON;
-// Created Scene will have 0 gravity
-extern UINT SC_GRAVITY_OFF;
+enum SceneGravityFlags
+{
+	// Created Scene will have 0 gravity
+	SC_GRAVITY_OFF		= 0x00000000,
+	// Created Scene will have Earth gravity
+	SC_GRAVITY_EARTH	= 0x00000001,
+	// Created Scene will have Moon gravity
+	SC_GRAVITY_MOON		= 0x00000002
+};
 
 
 /***** SCENE CREATION MASKS *****/
 // Gravity on/off mask
-extern UINT SC_GRAVITY_MASK;
+extern const UINT SC_GRAVITY_MASK;
 
 /***** CONSTANTS *****/
 // Speed of light in m/s
-extern UINT C;
+extern const UINT C;
 // Acceptable error for collision detection
 extern double ERR_COLLISION;

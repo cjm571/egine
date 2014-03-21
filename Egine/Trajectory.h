@@ -12,8 +12,8 @@ class Trajectory
 // Ctors
 public:
 	Trajectory();
-	Trajectory(double);
-	Trajectory(double, double);
+	Trajectory(double _velocity);
+	Trajectory(double _velocity, double _direction);
 	~Trajectory();
 
 // Accessors
@@ -23,8 +23,8 @@ public:
 
 // Public methods
 public:
-	HRESULT SetVelocity(double);
-	HRESULT SetDirection(double);
+	HRESULT SetVelocity(double newVelocity);
+	HRESULT SetDirection(double newDirection);
 
 // Properties
 private:
