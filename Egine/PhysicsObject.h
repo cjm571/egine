@@ -24,7 +24,7 @@ public:
 	PhysicsObject(AABB _aabb);
 
 	// Creates a 1kg object with specified attributes
-	PhysicsObject(AABB _aabb, D2D1::ColorF::Enum _color, Shape _shape);
+	PhysicsObject(AABB _aabb, D2D1::ColorF::Enum _color, eShape _eShape);
 	
 	// Destructor
 	~PhysicsObject();
@@ -35,7 +35,7 @@ public:
 	Trajectory GetTrajectory()		{return m_trajectory;};
 	double GetMass()				{return m_mass;};
 	D2D1::ColorF::Enum GetColor()	{return m_color;};
-	Shape GetShape()				{return m_shape;};
+	eShape GeteShape()				{return m_eShape;};
 	ULONG GetUID()					{return m_UID;};
 
 	// Changes trajectory of object
@@ -66,7 +66,7 @@ private:
 
 	// Display attributes
 	D2D1::ColorF::Enum m_color;
-	Shape m_shape;
+	eShape m_eShape;
 	
 	// Unique identifier of object
 	ULONG m_UID;

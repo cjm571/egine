@@ -40,14 +40,14 @@ bool Scene::CheckOverlap(AABB a, AABB b)
 	bool isOverlapping = false;
 
 	// Check X-axis overlap
-	centerDist = abs(a.GetCenter(AABB::Physics).x - b.GetCenter(AABB::Physics).x);
+	centerDist = abs(a.GetCenter(Physics).x - b.GetCenter(Physics).x);
 	if (centerDist - ((a.GetWidth()/2 + b.GetWidth()/2)) <= ERR_COLLISION)
 	{
 		xOverlap = true;
 	}
 
 	// Check Y-axis overlap
-	centerDist = abs(a.GetCenter(AABB::Physics).y - b.GetCenter(AABB::Physics).y);
+	centerDist = abs(a.GetCenter(Physics).y - b.GetCenter(Physics).y);
 	if ((centerDist - (a.GetHeight()/2 + b.GetHeight()/2)) <= ERR_COLLISION)
 	{
 		yOverlap = true;
@@ -133,8 +133,8 @@ std::vector<PhysicsObject*> Scene::CheckOutOfBounds(eAxis axis)
 	for (poItr=m_physicsObjects.begin(); poItr!=m_physicsObjects.end(); ++poItr)
 	{
 		AABB aabb = (*poItr)->GetAABB();
-		double upBound = aabb.GetUpperBound(AABB::Physics);
-		double lowBound = aabb.GetLowerBound(AABB::Physics);
+		double upBound = aabb.GetUpperBound(Physics);
+		double lowBound = aabb.GetLowerBound(Physics);
 		double leftBound = aabb.GetLeftBound();
 		double rightBound = aabb.GetRightBound();
 		
@@ -170,48 +170,17 @@ eAxis Scene::GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*> poPair)
 	// Determine orientation by comparing the depth of the AABB overlap in each axis
 	double yDepth = 0.0;
 	double xDepth = 0.0;
-
-	/*
-	// A above and right of B
-	if (aabbA.GetCenter(AABB::Physics).y >= aabbB.GetUpperBound(AABB::Physics) &&
-		aabbA.GetCenter(AABB::Physics).x >= aabbB.GetRightBound())
-	{
-		yDepth = aabbB.GetUpperBound(AABB::Physics) - aabbA.GetLowerBound(AABB::Physics);
-		xDepth = aabbB.GetRightBound() - aabbA.GetLeftBound();
-	}
-	// A above and left of B
-	if (aabbA.GetCenter(AABB::Physics).y >= aabbB.GetUpperBound(AABB::Physics) &&
-		aabbA.GetCenter(AABB::Physics).x <= aabbB.GetLeftBound())
-	{
-		yDepth = aabbB.GetUpperBound(AABB::Physics) - aabbA.GetLowerBound(AABB::Physics);
-		xDepth = aabbB.GetLeftBound() - aabbA.GetRightBound();
-	}
-	// A below and right of B
-	if (aabbA.GetCenter(AABB::Physics).y <= aabbB.GetLowerBound(AABB::Physics) &&
-		aabbA.GetCenter(AABB::Physics).x >= aabbB.GetRightBound())
-	{
-		yDepth = aabbB.GetLowerBound(AABB::Physics) - aabbA.GetUpperBound(AABB::Physics);
-		xDepth = aabbB.GetRightBound() - aabbA.GetLeftBound();
-	}
-	// A below and left of B
-	if (aabbA.GetCenter(AABB::Physics).y <= aabbB.GetLowerBound(AABB::Physics) &&
-		aabbA.GetCenter(AABB::Physics).x <= aabbB.GetLeftBound())
-	{
-		yDepth = aabbB.GetLowerBound(AABB::Physics) - aabbA.GetUpperBound(AABB::Physics);
-		xDepth = aabbB.GetLeftBound() - aabbA.GetRightBound();
-	}
-	*/
-
+	
 	/*** Y-DEPTH **/
 	// B below A
-	if ((aabbA.GetLowerBound(AABB::Physics) - aabbB.GetLowerBound(AABB::Physics)) >= ERR_COLLISION)
+	if ((aabbA.GetLowerBound(Physics) - aabbB.GetLowerBound(Physics)) >= ERR_COLLISION)
 	{
-		yDepth = abs(aabbA.GetLowerBound(AABB::Physics) - aabbB.GetUpperBound(AABB::Physics));
+		yDepth = abs(aabbA.GetLowerBound(Physics) - aabbB.GetUpperBound(Physics));
 	}
 	// B above A
 	else
 	{
-		yDepth = abs(aabbA.GetUpperBound(AABB::Physics) - aabbB.GetLowerBound(AABB::Physics));
+		yDepth = abs(aabbA.GetUpperBound(Physics) - aabbB.GetLowerBound(Physics));
 	}
 
 	/*** X-DEPTH ***/
@@ -250,8 +219,8 @@ HRESULT Scene::AddObject(PhysicsObject* newObject)
 {
 	HRESULT hr = S_OK;
 
-	CartPoint aabbMin = newObject->GetAABB().GetBottomLeft(AABB::Physics);
-	CartPoint aabbMax = newObject->GetAABB().GetTopRight(AABB::Physics);
+	CartPoint aabbMin = newObject->GetAABB().GetBottomLeft(Physics);
+	CartPoint aabbMax = newObject->GetAABB().GetTopRight(Physics);
 	
 	// Sanity check new physics object properties, add to list on pass
 	// Out-of-bounds check

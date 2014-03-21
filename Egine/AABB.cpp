@@ -33,16 +33,16 @@ AABB::~AABB()
 
 
 /********** ACCESSORS **********/
-CartPoint AABB::GetCenter(CoordSys flag)
+CartPoint AABB::GetCenter(eCoordSys flag)
 {
 	CartPoint center = CartPoint();
 
 	switch (flag)
 	{
-	case CoordSys::Physics:
+	case eCoordSys::Physics:
 		center = m_center;
 		break;
-	case CoordSys::Drawing:
+	case eCoordSys::Drawing:
 		center.x = m_center.x;
 		center.y = SCENE_HEIGHT - m_center.y;
 		break;
@@ -51,17 +51,17 @@ CartPoint AABB::GetCenter(CoordSys flag)
 	return center;
 }
 
-CartPoint AABB::GetBottomLeft(CoordSys flag)
+CartPoint AABB::GetBottomLeft(eCoordSys flag)
 {
 	CartPoint blPoint = CartPoint();
 
 	switch (flag)
 	{
-	case CoordSys::Physics:
+	case eCoordSys::Physics:
 		blPoint.x = m_center.x - (m_width/2);
 		blPoint.y = m_center.y - (m_height/2);
 		break;
-	case CoordSys::Drawing:
+	case eCoordSys::Drawing:
 		blPoint.x = m_center.x - (m_width/2);
 		blPoint.y = SCENE_HEIGHT - (m_center.y - (m_height/2));
 		break;
@@ -70,17 +70,17 @@ CartPoint AABB::GetBottomLeft(CoordSys flag)
 	return blPoint;
 }
 
-CartPoint AABB::GetBottomRight(CoordSys flag)
+CartPoint AABB::GetBottomRight(eCoordSys flag)
 {
 	CartPoint brPoint = CartPoint();
 
 	switch (flag)
 	{
-	case CoordSys::Physics:
+	case eCoordSys::Physics:
 		brPoint.x = m_center.x + (m_width/2);
 		brPoint.y = m_center.y - (m_height/2);
 		break;
-	case CoordSys::Drawing:
+	case eCoordSys::Drawing:
 		brPoint.x = m_center.x + (m_width/2);
 		brPoint.y = SCENE_HEIGHT - (m_center.y - (m_height/2));
 		break;
@@ -89,17 +89,17 @@ CartPoint AABB::GetBottomRight(CoordSys flag)
 	return brPoint;
 }
 
-CartPoint AABB::GetTopLeft(CoordSys flag)
+CartPoint AABB::GetTopLeft(eCoordSys flag)
 {
 	CartPoint tlPoint = CartPoint();
 
 	switch (flag)
 	{
-	case CoordSys::Physics:
+	case eCoordSys::Physics:
 		tlPoint.x = m_center.x - (m_width/2);
 		tlPoint.y = m_center.y + (m_height/2);
 		break;
-	case CoordSys::Drawing:
+	case eCoordSys::Drawing:
 		tlPoint.x = m_center.x - (m_width/2);
 		tlPoint.y = SCENE_HEIGHT - (m_center.y + (m_height/2));
 		break;
@@ -108,17 +108,17 @@ CartPoint AABB::GetTopLeft(CoordSys flag)
 	return tlPoint;
 }
 
-CartPoint AABB::GetTopRight(CoordSys flag)
+CartPoint AABB::GetTopRight(eCoordSys flag)
 {
 	CartPoint trPoint = CartPoint();
 
 	switch (flag)
 	{
-	case CoordSys::Physics:
+	case eCoordSys::Physics:
 		trPoint.x = m_center.x + (m_width/2);
 		trPoint.y = m_center.y + (m_height/2);
 		break;
-	case CoordSys::Drawing:
+	case eCoordSys::Drawing:
 		trPoint.x = m_center.x + (m_width/2);
 		trPoint.y = SCENE_HEIGHT - (m_center.y + (m_height/2));
 		break;
@@ -127,16 +127,16 @@ CartPoint AABB::GetTopRight(CoordSys flag)
 	return trPoint;
 }
 
-double AABB::GetUpperBound(CoordSys flag)
+double AABB::GetUpperBound(eCoordSys flag)
 {
 	double upperBound = 0.0;
 
 	switch (flag)
 	{
-	case CoordSys::Physics:
+	case eCoordSys::Physics:
 		upperBound = m_center.y + (m_height/2);
 		break;
-	case CoordSys::Drawing:
+	case eCoordSys::Drawing:
 		upperBound = SCENE_HEIGHT - (m_center.y + (m_height/2));
 		break;
 	}
@@ -144,16 +144,16 @@ double AABB::GetUpperBound(CoordSys flag)
 	return upperBound;
 }
 
-double AABB::GetLowerBound(CoordSys flag)
+double AABB::GetLowerBound(eCoordSys flag)
 {
 	double lowerBound = 0.0;
 
 	switch (flag)
 	{
-	case CoordSys::Physics:
+	case eCoordSys::Physics:
 		lowerBound = m_center.y - (m_height/2);
 		break;
-	case CoordSys::Drawing:
+	case eCoordSys::Drawing:
 		lowerBound = SCENE_HEIGHT - (m_center.y - (m_height/2));
 		break;
 	}

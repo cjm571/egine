@@ -11,21 +11,21 @@ ULONG PhysicsObject::prevUID = 0;
 
 /********** CTORS **********/
 PhysicsObject::PhysicsObject()
-	: m_color(D2D1::ColorF::Black), m_mass(1.0), m_shape(PhysCircle)
+	: m_color(D2D1::ColorF::Black), m_mass(1.0), m_eShape(PhysCircle)
 {
 	m_aabb = AABB();
 	m_UID = ++prevUID;
 }
 
 PhysicsObject::PhysicsObject(CartPoint _center)
-	: m_color(D2D1::ColorF::Black), m_mass(1.0), m_shape(PhysCircle)
+	: m_color(D2D1::ColorF::Black), m_mass(1.0), m_eShape(PhysCircle)
 {
 	m_aabb = AABB(_center);
 	m_UID = ++prevUID;
 }
 
-PhysicsObject::PhysicsObject(AABB _aabb, D2D1::ColorF::Enum _color, Shape _shape)
-	: m_color(_color), m_mass(1.0), m_shape(_shape)
+PhysicsObject::PhysicsObject(AABB _aabb, D2D1::ColorF::Enum _color, eShape _eShape)
+	: m_color(_color), m_mass(1.0), m_eShape(_eShape)
 {
 	m_aabb = AABB(_aabb);
 	m_UID = ++prevUID;
@@ -54,7 +54,7 @@ void PhysicsObject::Move()
 {
 	double direction = m_trajectory.GetDirection();
 	double velocity = m_trajectory.GetVelocity();
-	CartPoint center = m_aabb.GetCenter(AABB::Physics);
+	CartPoint center = m_aabb.GetCenter(Physics);
 
 	// Translate centerpoint based on trajectory. Unit circle ftw
 	center.x = center.x + (cos(direction) * velocity);
@@ -66,7 +66,7 @@ void PhysicsObject::Revert()
 {
 	double direction = m_trajectory.GetDirection();
 	double velocity = m_trajectory.GetVelocity();
-	CartPoint center = m_aabb.GetCenter(AABB::Physics);
+	CartPoint center = m_aabb.GetCenter(Physics);
 
 	// Revert translation based on trajectory
 	center.x = center.x - (cos(direction) * velocity);

@@ -87,8 +87,8 @@ extern CartPoint PolarToCart(PolarPoint pPoint);
 // Wraps angles between 0 and 2pi
 extern double WrapAngle(double angle);
 
-// Enumeration of valid physics object shapes
-enum Shape
+// Enumeration of valid physics object Shapes
+enum eShape
 {
 	PhysCircle = 0,
 	PhysTriangle = 1,
@@ -102,6 +102,13 @@ enum eAxis
 	YAxis = 1,
 	BothAxes = 2,
 	AxisErr = -1
+};
+
+// Flag indicating desired coordinate system
+enum eCoordSys
+{
+	Physics = 0,
+	Drawing = 1
 };
 
 

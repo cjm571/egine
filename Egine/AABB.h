@@ -22,39 +22,31 @@ public:
 	AABB(CartPoint _center, double _width, double _height);
 	~AABB();
 
-public:
-	// Flag indicating desired coordinate system
-	static enum CoordSys
-	{
-		Physics = 0,
-		Drawing = 1
-	};
-
 // Public Accessor Methods
 public:
 	double GetWidth() {return m_width;};
 	double GetHeight() {return m_height;};
 
 	// Returns physics or drawing center coords, based on flag
-	CartPoint GetCenter(CoordSys);
+	CartPoint GetCenter(eCoordSys);
 
 	// Returns physics or drawing bottom-left coords, based on flag
-	CartPoint GetBottomLeft(CoordSys);
+	CartPoint GetBottomLeft(eCoordSys);
 	
 	// Returns physics or drawing bottom-right coords, based on flag
-	CartPoint GetBottomRight(CoordSys);
+	CartPoint GetBottomRight(eCoordSys);
 	
 	// Returns physics or drawing top-left coords, based on flag
-	CartPoint GetTopLeft(CoordSys);
+	CartPoint GetTopLeft(eCoordSys);
 	
 	// Returns physics or drawing top-right coords, based on flag
-	CartPoint GetTopRight(CoordSys);
+	CartPoint GetTopRight(eCoordSys);
 
 	// Returns physcs or drawing upper boundary position, based on flag
-	double GetUpperBound(CoordSys);
+	double GetUpperBound(eCoordSys);
 	
 	// Returns physcs or drawing lower boundary position, based on flag
-	double GetLowerBound(CoordSys);
+	double GetLowerBound(eCoordSys);
 
 	// Returns left boundary position
 	double GetLeftBound();
