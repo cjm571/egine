@@ -41,6 +41,9 @@ namespace EgineTest
 			Trajectory traj0 = Trajectory(v0, theta0);
 			obj.SetTrajectory(traj0);
 
+			// Add object to scene
+			Assert::AreEqual(testScene.AddObject(&obj), S_OK);
+
 			// Calculate steps required until collision
 			double dist = -1.0;
 			if (bottomRebound)
@@ -52,9 +55,39 @@ namespace EgineTest
 				dist = min(obj.GetAABB().GetLeftBound(), SCENE_WIDTH - obj.GetAABB().GetRightBound());
 			}
 			double g = testScene.GetGravity();
-			// TODO: Quadratic formula helper function
 			
+			// Solve for time (t) in d = v0*t + .5*g*t^2 using quadratic formula
+			double coeffA = 0.5 * g;
+			double coeffB = abs(v0 * sin(theta0));
+			double coeffC = -1 * dist;
+			Quadratic objPath = Quadratic(coeffA, coeffB, coeffC);
+			std::pair<double,double> roots = objPath.GetRoots();
+			
+			// Use the positive root, since negative time doesn't make sense (here)
+			double time = max(roots.first, roots.second);
+			UINT steps = static_cast<UINT>(ceil(time));
 
+			// Step until rebound
+			for (int i=0; i<steps; i++)
+			{
+				testScene.Step();
+			}
+
+			// Calculate expected post-rebound angle
+			double preRBAngle = objPath.GetTangentSlope(time);
+			double expectedAngle = preRBAngle * -1;
+
+			// Assert that actual post-rebound angle within error bounds of expected
+			double actualAngle = obj.GetTrajectory().GetDirection();
+			double error = abs(expectedAngle - actualAngle);
+			Assert::IsTrue(error <= ANGLE_ERROR);
+			
+			// Calculate expected post-rebound velocity
+			double yVel = dist / (time - 0.5*g*pow(time,2));
+			double expectedVel = yVel + (v0 * cos(theta0));
+			double actualVel = obj.GetTrajectory().GetVelocity();
+			error = abs(expectedVel - actualVel);
+			Assert::IsTrue(error <= VELOCITY_ERROR);
 		}
 
 	public:
@@ -73,7 +106,8 @@ namespace EgineTest
 		/***** SCENE-BOTTOM REBOUND TESTS *****/
 		TEST_METHOD(SBParallelRebound)
 		{
-			Assert::Fail();
+			CartPoint cPoint = {100, 75};
+			SERebound(0.0, 0.0, cPoint);
 		}
 
 		/***** SCENE-SIDE REBOUND TESTS *****/

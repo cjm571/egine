@@ -11,21 +11,21 @@ ULONG PhysicsObject::prevUID = 0;
 
 /********** CTORS **********/
 PhysicsObject::PhysicsObject()
-	: m_color(D2D1::ColorF::Black), m_mass(1.0), m_eShape(PhysCircle)
+	: m_color(D2D1::ColorF::Black), m_mass(1.0), m_shape(PhysCircle)
 {
 	m_aabb = AABB();
 	m_UID = ++prevUID;
 }
 
 PhysicsObject::PhysicsObject(CartPoint _center)
-	: m_color(D2D1::ColorF::Black), m_mass(1.0), m_eShape(PhysCircle)
+	: m_color(D2D1::ColorF::Black), m_mass(1.0), m_shape(PhysCircle)
 {
 	m_aabb = AABB(_center);
 	m_UID = ++prevUID;
 }
 
-PhysicsObject::PhysicsObject(AABB _aabb, D2D1::ColorF::Enum _color, eShape _eShape)
-	: m_color(_color), m_mass(1.0), m_eShape(_eShape)
+PhysicsObject::PhysicsObject(AABB _aabb, D2D1::ColorF::Enum _color, eShape _shape)
+	: m_color(_color), m_mass(1.0), m_shape(_shape)
 {
 	m_aabb = AABB(_aabb);
 	m_UID = ++prevUID;

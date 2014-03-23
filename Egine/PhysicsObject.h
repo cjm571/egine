@@ -35,13 +35,14 @@ public:
 	Trajectory GetTrajectory()		{return m_trajectory;};
 	double GetMass()				{return m_mass;};
 	D2D1::ColorF::Enum GetColor()	{return m_color;};
-	eShape GeteShape()				{return m_eShape;};
+	eShape GeteShape()				{return m_shape;};
 	ULONG GetUID()					{return m_UID;};
 
 	// Changes trajectory of object
 	HRESULT SetTrajectory(Trajectory);
 
 	// Moves object based on current trajectory and attributes
+	// Takes in force of gravity from containing Scene
 	// NOTE: Until multithreading implemented, ticks 1sec in each game loop
 	void Move();
 
@@ -66,7 +67,7 @@ private:
 
 	// Display attributes
 	D2D1::ColorF::Enum m_color;
-	eShape m_eShape;
+	eShape m_shape;
 	
 	// Unique identifier of object
 	ULONG m_UID;

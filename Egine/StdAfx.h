@@ -40,6 +40,9 @@
 #include <dwrite.h>
 #include <wincodec.h>
 
+// Utility classes
+#include "Quadratic.h"
+
 template <class Interface>
 inline void SafeRelease( Interface **ppInterfaceToRelease )
 {
@@ -86,6 +89,8 @@ extern PolarPoint CartToPolar(CartPoint cPoint);
 extern CartPoint PolarToCart(PolarPoint pPoint);
 // Wraps angles between 0 and 2pi
 extern double WrapAngle(double angle);
+// Returns roots of a quadratic function ax^2 + bx + c = 0
+extern std::pair<double,double> SolveQuadratic(double a, double b, double c);
 
 // Enumeration of valid physics object Shapes
 enum eShape

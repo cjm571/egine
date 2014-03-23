@@ -14,8 +14,12 @@
 #include "..\Egine\Scene.h"
 
 /*** CONSTANTS ***/
-// Error bounds
-extern const double ALLOWABLE_ERROR;
+// Error bounds for distance measurements
+extern const double DISTANCE_ERROR;
+// Error bounds for angle measurements
+extern const double ANGLE_ERROR;
+// Error bounds for velocity measurements
+extern const double VELOCITY_ERROR;
 // Collision epicenter in Cartesian (x,y) coordinates
 extern const CartPoint EPICENTER;
 // Collision epicenter in Polar (r, theta) coordinates
