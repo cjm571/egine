@@ -7,17 +7,18 @@
 #include "Trajectory.h"
 
 /********** CTORS **********/
-Trajectory::Trajectory()
-	: m_velocity(0.0), m_direction(0.0)
+Trajectory::Trajectory(double _gravity, CartPoint p0)
+	: m_Vx(0.0), m_Vy(0.0), m_g(_gravity)
 {
+	
 }
 
-Trajectory::Trajectory(double _velocity)
+Trajectory::Trajectory(double _gravity, double _velocity)
 	: m_velocity(_velocity), m_direction(0.0)
 {
 }
 
-Trajectory::Trajectory(double _velocity, double _direction)
+Trajectory::Trajectory(double _gravity, double _velocity, double _direction)
 	: m_velocity(_velocity), m_direction(_direction)
 {
 }

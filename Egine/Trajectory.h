@@ -7,13 +7,18 @@
 
 #include "StdAfx.h"
 
-class Trajectory
+class Trajectory : public Quadratic
 {
 // Ctors
 public:
-	Trajectory();
-	Trajectory(double _velocity);
-	Trajectory(double _velocity, double _direction);
+	// Defines initially at-rest trajectory
+	Trajectory(double _gravity, CartPoint p0);
+	// Defines trajectory moving at given velocity along 0-rad line
+	Trajectory(double _gravity, double _velocity);
+	// Defines trajectory moving at given velocity in given direction
+	Trajectory(double _gravity, double _velocity, double _direction);
+
+	// Destructor
 	~Trajectory();
 
 // Accessors
@@ -28,9 +33,10 @@ public:
 
 // Properties
 private:
-	// Velocity in m/s
-	double m_velocity;
-	
-	// Direction in radians
-	double m_direction;
+	// X-component of velocity vector
+	double m_Vx;
+	// Y-component of velocity vectory
+	double m_Vy;
+	// Current gravity imposed on trajectory
+	double m_g;
 };
