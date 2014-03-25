@@ -36,6 +36,9 @@
     <ClInclude Include="Quadratic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Parametric.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Scene.cpp">
@@ -54,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Quadratic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Parametric.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -83,6 +83,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AABB.h" />
+    <ClInclude Include="Parametric.h" />
     <ClInclude Include="PhysicsObject.h" />
     <ClInclude Include="Quadratic.h" />
     <ClInclude Include="Scene.h" />
@@ -91,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AABB.cpp" />
+    <ClCompile Include="Parametric.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="Quadratic.cpp" />
     <ClCompile Include="Scene.cpp" />

@@ -41,7 +41,7 @@
 #include <wincodec.h>
 
 // Utility classes
-#include "Quadratic.h"
+#include "Parametric.h"
 
 template <class Interface>
 inline void SafeRelease( Interface **ppInterfaceToRelease )

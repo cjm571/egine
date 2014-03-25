@@ -41,10 +41,10 @@ HRESULT PhysicsObject::SetTrajectory(Trajectory newTrajectory)
 {
 	HRESULT hr = S_OK;
 
-	double newDirection = newTrajectory.GetDirection();
+	double newTheta = newTrajectory.GetTheta();
 	double newVelocity = newTrajectory.GetVelocity();
 
-	hr |= m_trajectory.SetDirection(newDirection);
+	hr |= m_trajectory.SetTheta(newTheta);
 	hr |= m_trajectory.SetVelocity(newVelocity);
 
 	return hr;
@@ -52,7 +52,7 @@ HRESULT PhysicsObject::SetTrajectory(Trajectory newTrajectory)
 
 void PhysicsObject::Move()
 {
-	double direction = m_trajectory.GetDirection();
+	double direction = m_trajectory.GetTheta();
 	double velocity = m_trajectory.GetVelocity();
 	CartPoint center = m_aabb.GetCenter(Physics);
 
@@ -64,7 +64,7 @@ void PhysicsObject::Move()
 
 void PhysicsObject::Revert()
 {
-	double direction = m_trajectory.GetDirection();
+	double direction = m_trajectory.GetTheta();
 	double velocity = m_trajectory.GetVelocity();
 	CartPoint center = m_aabb.GetCenter(Physics);
 
@@ -79,14 +79,14 @@ void PhysicsObject::Rebound(eAxis axis)
 	// X-axis rebounds reflect direction about pi/2
 	if (axis == XAxis || axis == BothAxes)
 	{
-		double direction = m_trajectory.GetDirection();
-		m_trajectory.SetDirection((direction * -1) + M_PI);
+		double direction = m_trajectory.GetTheta();
+		m_trajectory.SetTheta((direction * -1) + M_PI);
 	}
 	// Y-axis rebounds reflect direction about pi
 	if (axis == YAxis || axis == BothAxes)
 	{
-		double direction = m_trajectory.GetDirection();
-		m_trajectory.SetDirection(direction * -1);
+		double direction = m_trajectory.GetTheta();
+		m_trajectory.SetTheta(direction * -1);
 		SetTrajectory(m_trajectory);
 	}
 }

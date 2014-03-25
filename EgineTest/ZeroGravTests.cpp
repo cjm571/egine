@@ -101,12 +101,12 @@ namespace EgineTest
 			case XAxis:
 				boundsDist = abs((objA.GetAABB().GetRightBound()) -
 								 (objB.GetAABB().GetLeftBound()));
-				velObjA = abs(DEFAULT_VELOCITY * cos(objA.GetTrajectory().GetDirection()));
+				velObjA = abs(DEFAULT_VELOCITY * cos(objA.GetTrajectory().GetTheta()));
 				break;
 			case YAxis:
 				boundsDist = abs((objA.GetAABB().GetUpperBound(Physics)) -
 								 (objB.GetAABB().GetLowerBound(Physics)));
-				velObjA = abs(DEFAULT_VELOCITY * sin(objA.GetTrajectory().GetDirection()));
+				velObjA = abs(DEFAULT_VELOCITY * sin(objA.GetTrajectory().GetTheta()));
 				break;
 			case BothAxes:
 				// TODO: properly calculate corner distance, velocity
@@ -146,8 +146,8 @@ namespace EgineTest
 				Assert::Fail();
 				break;
 			}
-			Assert::AreEqual(reversedA, objA.GetTrajectory().GetDirection());
-			Assert::AreEqual(reversedB, objB.GetTrajectory().GetDirection());
+			Assert::AreEqual(reversedA, objA.GetTrajectory().GetTheta());
+			Assert::AreEqual(reversedB, objB.GetTrajectory().GetTheta());
 		}
 
 	public:

@@ -7,29 +7,36 @@
 
 #include "StdAfx.h"
 
-class Trajectory : public Quadratic
+class Trajectory : public Parametric
 {
 // Ctors
 public:
+	// Default Construct
+	// Defines initially at-rest trajactory in zero-gravity
+	Trajectory();
 	// Defines initially at-rest trajectory
-	Trajectory(double _gravity, CartPoint p0);
+	Trajectory(double _g);
 	// Defines trajectory moving at given velocity along 0-rad line
-	Trajectory(double _gravity, double _velocity);
+	Trajectory(double _g, double _v0);
 	// Defines trajectory moving at given velocity in given direction
-	Trajectory(double _gravity, double _velocity, double _direction);
+	Trajectory(double _g, double _v0, double _theta0);
 
 	// Destructor
 	~Trajectory();
 
 // Accessors
 public:
-	double GetVelocity() {return m_velocity;};
-	double GetDirection() {return m_direction;};
+	double GetXVelocity() {return m_Vx;};
+	double GetYVelocity() {return m_Vy;};
+	double GetTheta() {return m_theta;};
+
+	double GetVelocity();
 
 // Public methods
 public:
-	HRESULT SetVelocity(double newVelocity);
-	HRESULT SetDirection(double newDirection);
+	HRESULT SetVx(double newVx);
+	HRESULT SetVy(double newVy);
+	HRESULT SetTheta(double newTheta);
 
 // Properties
 private:
@@ -37,6 +44,8 @@ private:
 	double m_Vx;
 	// Y-component of velocity vectory
 	double m_Vy;
+	// Direction of movement
+	double m_theta;
 	// Current gravity imposed on trajectory
 	double m_g;
 };

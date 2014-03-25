@@ -78,7 +78,7 @@ namespace EgineTest
 			double expectedAngle = preRBAngle * -1;
 
 			// Assert that actual post-rebound angle within error bounds of expected
-			double actualAngle = obj.GetTrajectory().GetDirection();
+			double actualAngle = obj.GetTrajectory().GetTheta();
 			double error = abs(expectedAngle - actualAngle);
 			Assert::IsTrue(error <= ANGLE_ERROR);
 			
