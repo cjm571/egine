@@ -41,36 +41,32 @@ HRESULT PhysicsObject::SetTrajectory(Trajectory newTrajectory)
 {
 	HRESULT hr = S_OK;
 
-	double newTheta = newTrajectory.GetTheta();
-	double newVelocity = newTrajectory.GetVelocity();
-
-	hr |= m_trajectory.SetTheta(newTheta);
-	hr |= m_trajectory.SetVelocity(newVelocity);
+	m_trajectory = newTrajectory;
 
 	return hr;
 }
 
 void PhysicsObject::Move()
 {
-	double direction = m_trajectory.GetTheta();
-	double velocity = m_trajectory.GetVelocity();
+	double xMovement = m_trajectory.GetXVelocity() * PHYSICS_EPSILON;
+	double yMovement = m_trajectory.GetYVelocity() * PHYSICS_EPSILON;
 	CartPoint center = m_aabb.GetCenter(Physics);
 
 	// Translate centerpoint based on trajectory. Unit circle ftw
-	center.x = center.x + (cos(direction) * velocity);
-	center.y = center.y + (sin(direction) * velocity);
+	center.x = center.x + xMovement;
+	center.y = center.y + yMovement;
 	m_aabb.SetCenter(center);
 }
 
 void PhysicsObject::Revert()
 {
-	double direction = m_trajectory.GetTheta();
-	double velocity = m_trajectory.GetVelocity();
+	double xMovement = m_trajectory.GetXVelocity() * PHYSICS_EPSILON;
+	double yMovement = m_trajectory.GetYVelocity() * PHYSICS_EPSILON;
 	CartPoint center = m_aabb.GetCenter(Physics);
 
 	// Revert translation based on trajectory
-	center.x = center.x - (cos(direction) * velocity);
-	center.y = center.y - (sin(direction) * velocity);
+	center.x = center.x - xMovement;
+	center.y = center.y - yMovement;
 	m_aabb.SetCenter(center);
 }
 
@@ -79,14 +75,13 @@ void PhysicsObject::Rebound(eAxis axis)
 	// X-axis rebounds reflect direction about pi/2
 	if (axis == XAxis || axis == BothAxes)
 	{
-		double direction = m_trajectory.GetTheta();
-		m_trajectory.SetTheta((direction * -1) + M_PI);
+		double theta = m_trajectory.GetTheta();
+		m_trajectory.SetTheta((theta * -1) + M_PI);
 	}
 	// Y-axis rebounds reflect direction about pi
 	if (axis == YAxis || axis == BothAxes)
 	{
-		double direction = m_trajectory.GetTheta();
-		m_trajectory.SetTheta(direction * -1);
-		SetTrajectory(m_trajectory);
+		double theta = m_trajectory.GetTheta();
+		m_trajectory.SetTheta(theta * -1);
 	}
 }

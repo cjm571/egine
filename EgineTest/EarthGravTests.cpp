@@ -38,7 +38,7 @@ namespace EgineTest
 			PhysicsObject obj = PhysicsObject(EPICENTER);
 
 			// Set trajectory
-			Trajectory traj0 = Trajectory(v0, theta0);
+			Trajectory traj0 = Trajectory(testScene.GetGravity(), v0, theta0);
 			obj.SetTrajectory(traj0);
 
 			// Add object to scene

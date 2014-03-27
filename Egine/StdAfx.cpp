@@ -49,6 +49,57 @@ double WrapAngle(double angle)
 
 	return angle;
 }
+HRESULT Pythag(double a, double b, double* c)
+{
+	HRESULT hr = S_OK;
+
+	// Check for negatives
+	if (pow(a,2) + pow(b,2))
+	{
+		hr = E_FAIL;
+	}
+	
+	if (SUCCEEDED(hr))
+	{
+		*c = sqrt(pow(a,2) + pow(b,2));
+	}
+
+	return hr;
+}
+HRESULT Pythag(double a, double* b, double c)
+{
+	HRESULT hr = S_OK;
+
+	// Check for negatives
+	if (pow(c,2) - pow(a,2))
+	{
+		hr = E_FAIL;
+	}
+	
+	if (SUCCEEDED(hr))
+	{
+		*b = sqrt(pow(c,2) - pow(a,2));
+	}
+
+	return hr;
+}
+HRESULT Pythag(double* a, double b, double c)
+{
+	HRESULT hr = S_OK;
+
+	// Check for negatives
+	if (pow(c,2) - pow(b,2))
+	{
+		hr = E_FAIL;
+	}
+	
+	if (SUCCEEDED(hr))
+	{
+		*a = sqrt(pow(c,2) - pow(b,2));
+	}
+
+	return hr;
+}
 
 /***** SCENE PARAMETERS *****/
 double SCENE_WIDTH =	640.0;
@@ -60,5 +111,6 @@ UINT const SC_GRAVITY_MASK =	0x00000001;
 
 
 /***** CONSTANTS *****/
-UINT const C = 299792458;
-double ERR_COLLISION = 0.0001;
+const UINT C = 299792458;
+const double PHYSICS_EPSILON = 1.0;
+const double ERR_COLLISION = 0.0001;

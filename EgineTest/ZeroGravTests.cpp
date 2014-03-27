@@ -69,18 +69,18 @@ namespace EgineTest
 			PhysicsObject objB = PhysicsObject(centerB);
 			
 			// Set trajectories
-			Trajectory trajA = Trajectory(DEFAULT_VELOCITY, angle);
+			Trajectory trajA = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, angle);
 			Trajectory trajB;
 			switch (axis)
 			{
 			case XAxis:
-				trajB = Trajectory(DEFAULT_VELOCITY, M_PI);
+				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, M_PI);
 				break;
 			case YAxis:
-				trajB = Trajectory(DEFAULT_VELOCITY, 3*M_PI/2);
+				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, 3*M_PI/2);
 				break;
 			case BothAxes:
-				trajB = Trajectory(DEFAULT_VELOCITY, reflAngle);
+				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, reflAngle);
 				break;
 			default: // AxisErr
 				Assert::Fail();
@@ -96,17 +96,20 @@ namespace EgineTest
 			// Calculate steps required for collision
 			double boundsDist = -1.0;
 			double velObjA = -1.0;
+			double velObjB = -1.0;
 			switch (axis)
 			{
 			case XAxis:
 				boundsDist = abs((objA.GetAABB().GetRightBound()) -
 								 (objB.GetAABB().GetLeftBound()));
-				velObjA = abs(DEFAULT_VELOCITY * cos(objA.GetTrajectory().GetTheta()));
+				velObjA = abs(objA.GetTrajectory().GetXVelocity());
+				velObjB = abs(objB.GetTrajectory().GetXVelocity());
 				break;
 			case YAxis:
 				boundsDist = abs((objA.GetAABB().GetUpperBound(Physics)) -
 								 (objB.GetAABB().GetLowerBound(Physics)));
-				velObjA = abs(DEFAULT_VELOCITY * sin(objA.GetTrajectory().GetTheta()));
+				velObjA = abs(objA.GetTrajectory().GetYVelocity());
+				velObjB = abs(objB.GetTrajectory().GetYVelocity());
 				break;
 			case BothAxes:
 				// TODO: properly calculate corner distance, velocity
@@ -117,7 +120,7 @@ namespace EgineTest
 				break;
 			}
 			// TODO: handle both-axes collisions
-			UINT stepsTillCollision = static_cast<UINT>(ceil(boundsDist / (velObjA + DEFAULT_VELOCITY)));
+			UINT stepsTillCollision = static_cast<UINT>(ceil(boundsDist / (velObjA + velObjB)));
 
 			// Step scene until collision occurs
 			for (UINT stepsTaken=0; stepsTaken<stepsTillCollision; stepsTaken++)
@@ -146,8 +149,11 @@ namespace EgineTest
 				Assert::Fail();
 				break;
 			}
-			Assert::AreEqual(reversedA, objA.GetTrajectory().GetTheta());
-			Assert::AreEqual(reversedB, objB.GetTrajectory().GetTheta());
+			
+			double actualA = objA.GetTrajectory().GetTheta();
+			double actualB = objB.GetTrajectory().GetTheta();
+			Assert::AreEqual(reversedA, actualA);
+			Assert::AreEqual(reversedB, actualB);
 		}
 
 	public:

@@ -20,6 +20,9 @@ public:
 
 // Public Methods
 public:
+	double GetA() {return m_a;};
+	double GetB() {return m_b;};
+	double GetC() {return m_c;};
 	void SetA(double newA);
 	void SetB(double newB);
 	void SetC(double newC);

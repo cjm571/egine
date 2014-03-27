@@ -26,24 +26,27 @@ public:
 
 // Accessors
 public:
-	double GetXVelocity() {return m_Vx;};
-	double GetYVelocity() {return m_Vy;};
-	double GetTheta() {return m_theta;};
+	double GetXVelocity()	{return m_x.GetB();};
+	double GetYVelocity()	{return m_y.GetB();};
+	double GetTheta()		{return m_theta;};
+	double GetGravity()		{return m_g;};
 
+	// Returns scalar velocity, or -1.0 on error
+	// TODO: maybe this should return HRESULT, for style consistency
 	double GetVelocity();
 
 // Public methods
 public:
 	HRESULT SetVx(double newVx);
 	HRESULT SetVy(double newVy);
+	HRESULT SetVelocity(double newV);
 	HRESULT SetTheta(double newTheta);
+	HRESULT SetGravity(double newG);
 
 // Properties
 private:
-	// X-component of velocity vector
-	double m_Vx;
-	// Y-component of velocity vectory
-	double m_Vy;
+	// NOTE: Velocity components are stored in inherited Quadratics' (m_x, m_y) member m_b
+
 	// Direction of movement
 	double m_theta;
 	// Current gravity imposed on trajectory

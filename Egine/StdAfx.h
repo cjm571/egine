@@ -91,6 +91,12 @@ extern CartPoint PolarToCart(PolarPoint pPoint);
 extern double WrapAngle(double angle);
 // Returns roots of a quadratic function ax^2 + bx + c = 0
 extern std::pair<double,double> SolveQuadratic(double a, double b, double c);
+// Sets value of c (pointer parameter) by solving Pythagorean Theorem
+extern HRESULT Pythag(double a, double b, double* c);
+// Sets value of b (pointer parameter) by solving Pythagorean Theorem
+extern HRESULT Pythag(double a, double* b, double c);
+// Sets value of a (pointer parameter) by solving Pythagorean Theorem
+extern HRESULT Pythag(double* a, double b, double c);
 
 // Enumeration of valid physics object Shapes
 enum eShape
@@ -144,5 +150,7 @@ extern const UINT SC_GRAVITY_MASK;
 /***** CONSTANTS *****/
 // Speed of light in m/s
 extern const UINT C;
+// Amount of time in seconds between each physics calculation
+extern const double PHYSICS_EPSILON;
 // Acceptable error for collision detection
-extern double ERR_COLLISION;
+extern const double ERR_COLLISION;
