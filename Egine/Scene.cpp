@@ -11,16 +11,17 @@ const double Scene::CornerHitMargin = 0.1;
 
 /********** CTORS **********/
 Scene::Scene()
-	: m_gravity(9.8)
+	: m_gravity(9.8), m_elapsed(0.0)
 {
 }
 
 Scene::Scene(UINT _creationFlags)
+	: m_elapsed(0.0)
 {
 
 	switch (_creationFlags & SC_GRAVITY_MASK)
 	{
-	case SC_GRAVITY_OFF:	// zero-gravity
+	case SC_GRAVITY_OFF:	// Zero-gravity
 		m_gravity = 0.0;
 		break;
 	case SC_GRAVITY_EARTH:	// Earth gravity
@@ -270,7 +271,7 @@ void Scene::Step()
 	std::vector<PhysicsObject*>::iterator poItr;
 	for (poItr=m_physicsObjects.begin(); poItr!=m_physicsObjects.end(); ++poItr)
 	{
-		(*poItr)->Move();
+		(*poItr)->Move(m_elapsed);
 	}
 
 	/*** BEGIN Out-of-bounds checks ***/
@@ -282,17 +283,17 @@ void Scene::Step()
 	// Revert movements of all x-coord out-of-bounds objects, and "bounce" them back
 	for (poItr=vOutOfBoundsX.begin(); poItr!=vOutOfBoundsX.end(); ++poItr)
 	{
-		(*poItr)->Revert();
+		(*poItr)->Revert(m_elapsed);
 		(*poItr)->Rebound(XAxis);
-		(*poItr)->Move();
+		(*poItr)->Move(m_elapsed);
 	}
 
 	// Revert movements of all y-coord out-of-bounds objects, and "bounce" them back
 	for (poItr=vOutOfBoundsY.begin(); poItr!=vOutOfBoundsY.end(); ++poItr)
 	{
-		(*poItr)->Revert();
+		(*poItr)->Revert(m_elapsed);
 		(*poItr)->Rebound(YAxis);
-		(*poItr)->Move();
+		(*poItr)->Move(m_elapsed);
 	}
 	/*** END Out-of-bounds checks ***/
 
@@ -313,8 +314,8 @@ void Scene::Step()
 		{
 			poPair.first->Rebound(YAxis);
 			poPair.second->Rebound(YAxis);
-			poPair.first->Move();
-			poPair.second->Move();
+			poPair.first->Move(m_elapsed);
+			poPair.second->Move(m_elapsed);
 		}
 		
 		// X-axis collision, revert movement and rebound both objects in x-direction
@@ -322,9 +323,12 @@ void Scene::Step()
 		{
 			poPair.first->Rebound(XAxis);
 			poPair.second->Rebound(XAxis);
-			poPair.first->Move();
-			poPair.second->Move();
+			poPair.first->Move(m_elapsed);
+			poPair.second->Move(m_elapsed);
 		}
 	}
 	/*** END Collision Handling ***/
+
+	// Increment elapsed time
+	m_elapsed += STEP_EPSILON;
 }

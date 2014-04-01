@@ -7,6 +7,7 @@
 
 #include <math.h>
 #include <utility>
+#include "Linear.h"
 
 class Quadratic
 {
@@ -28,15 +29,19 @@ public:
 	void SetC(double newC);
 
 	// Calculates real-number roots of the quadratic
-	std::pair<double,double> GetRoots();
+	std::pair<double,double> GetRoots(double fx = 0.0);
 
-	// Returns slope of the tangent line (in radians between 0,2pi) at the given point
-	double GetTangentSlope(double x);
+	// Returns angle of the tangent line (in radians) at the given point
+	double GetTangentAngle(double x);
 
 	// Solves quadratic given the value of x
 	double Solve(double x);
 
+	// Returns derivative as Linear function object
+	Linear Derive();
+
 // Coefficients
+// Form f(x) = ax^2 + bx + c
 private:
 	double m_a;
 	double m_b;

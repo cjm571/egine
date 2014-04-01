@@ -72,4 +72,7 @@ private:
 
 	// Gravity in the scene in m/s^2
 	double m_gravity;
+
+	// Time elapsed since Scene creation in seconds
+	double m_elapsed;
 };

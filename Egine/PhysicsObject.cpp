@@ -46,32 +46,52 @@ HRESULT PhysicsObject::SetTrajectory(Trajectory newTrajectory)
 	return hr;
 }
 
-void PhysicsObject::Move()
+void PhysicsObject::Move(double timeElapsed)
 {
-	double xMovement = m_trajectory.GetXVelocity() * PHYSICS_EPSILON;
-	double yMovement = m_trajectory.GetYVelocity() * PHYSICS_EPSILON;
-	CartPoint center = m_aabb.GetCenter(Physics);
+	// Calculate position, relative to starting point, at elapsed + epsilon
+	double xRelPos = m_trajectory.SolveX(timeElapsed + STEP_EPSILON);
+	double yRelPos = m_trajectory.SolveY(timeElapsed + STEP_EPSILON);
 
-	// Translate centerpoint based on trajectory. Unit circle ftw
-	center.x = center.x + xMovement;
-	center.y = center.y + yMovement;
-	m_aabb.SetCenter(center);
+	// Calculate actual position
+	CartPoint p0 = m_trajectory.GetInitialPosition();
+	double xPos = p0.x + xRelPos;
+	double yPos = p0.y + yRelPos;
+
+	// Set new centerpoint
+	CartPoint newCenter = {xPos, yPos};
+	m_aabb.SetCenter(newCenter);
+
+	// Set new theta via tangent of parametric function
+	double newTheta = m_trajectory.GetTangentAngle(timeElapsed + STEP_EPSILON);
+	m_trajectory.SetTheta(newTheta);
 }
 
-void PhysicsObject::Revert()
+void PhysicsObject::Revert(double timeElapsed)
 {
-	double xMovement = m_trajectory.GetXVelocity() * PHYSICS_EPSILON;
-	double yMovement = m_trajectory.GetYVelocity() * PHYSICS_EPSILON;
-	CartPoint center = m_aabb.GetCenter(Physics);
+	// Calculate position at elapsed + epsilon
+	double xRelPos = m_trajectory.SolveX(timeElapsed);
+	double yRelPos = m_trajectory.SolveY(timeElapsed);
 
-	// Revert translation based on trajectory
-	center.x = center.x - xMovement;
-	center.y = center.y - yMovement;
-	m_aabb.SetCenter(center);
+	// Calculate actual position
+	CartPoint p0 = m_trajectory.GetInitialPosition();
+	double xPos = p0.x + xRelPos;
+	double yPos = p0.y + yRelPos;
+
+	// Set new centerpoint
+	CartPoint newCenter = {xPos, yPos};
+	m_aabb.SetCenter(newCenter);
+
+	// Set new theta via tangent of parametric function
+	double newTheta = m_trajectory.GetTangentAngle(timeElapsed);
+	m_trajectory.SetTheta(newTheta);
 }
 
 void PhysicsObject::Rebound(eAxis axis)
 {
+	// Reset initial position, as this is essentially a new trajectory
+	CartPoint curPos = m_aabb.GetCenter(Physics);
+	m_trajectory.SetInitialPosition(curPos);
+	
 	// X-axis rebounds reflect direction about pi/2
 	if (axis == XAxis || axis == BothAxes)
 	{

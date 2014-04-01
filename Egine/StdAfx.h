@@ -40,8 +40,8 @@
 #include <dwrite.h>
 #include <wincodec.h>
 
-// Utility classes
-#include "Parametric.h"
+// for std::pair
+#include <utility>
 
 template <class Interface>
 inline void SafeRelease( Interface **ppInterfaceToRelease )
@@ -83,6 +83,9 @@ typedef struct
 
 
 /***** GLOBAL HELPER FUNCTIONS *****/
+// Returns true if doubles are within DOUBLE_EPSILON of each other
+// Returns false otherwise
+extern bool AreEqual(double a, double b);
 // Converts Cartesian coordinates to Polar
 extern PolarPoint CartToPolar(CartPoint cPoint);
 // Converts Polar coordinates to Cartesian
@@ -150,7 +153,10 @@ extern const UINT SC_GRAVITY_MASK;
 /***** CONSTANTS *****/
 // Speed of light in m/s
 extern const UINT C;
-// Amount of time in seconds between each physics calculation
-extern const double PHYSICS_EPSILON;
+// Amount of time (in seconds) between each physics calculation
+extern const double STEP_EPSILON;
+// Epsilon between distinct 'double's
+// All doubles within this delta from each other are considered the same value;
+extern const double DOUBLE_EPSILON;
 // Acceptable error for collision detection
 extern const double ERR_COLLISION;

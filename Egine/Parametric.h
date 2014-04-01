@@ -19,11 +19,22 @@ public:
 	Parametric(Quadratic _x, Quadratic _y);
 
 // Public Methods
-public:
+public:	
+	Quadratic GetXQuadratic() {return m_x;};
+	Quadratic GetYQuadratic() {return m_y;};
+
+	// Returns angle of the tangent line (in radians) at the given time
+	double GetTangentAngle(double t);
+	
 	// Solve for value of x(t) given t
 	double SolveX(double t);
 	// Solve for value of y(t) given t
 	double SolveY(double t);
+	
+	// Return real-number roots of x(t)
+	std::pair<double,double> GetXRoots(double xt=0.0);
+	// Return real-number roots of y(t)
+	std::pair<double,double> GetYRoots(double yt=0.0);
 
 // Data Members
 protected:

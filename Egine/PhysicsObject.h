@@ -41,14 +41,12 @@ public:
 	// Changes trajectory of object
 	HRESULT SetTrajectory(Trajectory);
 
-	// Moves object based on current trajectory and attributes
-	// Takes in force of gravity from containing Scene
-	// NOTE: Until multithreading implemented, ticks 1sec in each game loop
-	void Move();
+	// Moves object one STEP_EPSILON forward in time from given elapsed time
+	void Move(double timeElapsed);
 
-	// Undo the position changes from Move()
+	// Resets object to position at current elapsed time
 	// NOTE: If trajectory has changed since Move(), this will break simulation accuracy
-	void Revert();
+	void Revert(double timeElapsed);
 
 	// Resets an object's trajectory after collision on the given axis
 	// NOTE: does NOT Revert() previous movement, nor does it perform the subsequent Move()

@@ -31,11 +31,12 @@ void Quadratic::SetC(double newC)
 	m_c = newC;
 }
 
-std::pair<double,double> Quadratic::GetRoots()
+std::pair<double,double> Quadratic::GetRoots(double fx)
 {
 	// Solve for quadratic roots
-	double posRoot = ((-1*m_b) + sqrt(pow(m_b,2) - 4*m_a*m_c)) / (2*m_a);
-	double negRoot = ((-1*m_b) - sqrt(pow(m_b,2) - 4*m_a*m_c)) / (2*m_a);
+	double c = m_c - fx;
+	double posRoot = ((-1*m_b) + sqrt(pow(m_b,2) - 4*m_a*c)) / (2*m_a);
+	double negRoot = ((-1*m_b) - sqrt(pow(m_b,2) - 4*m_a*c)) / (2*m_a);
 	
 	// Make and return pair of roots
 	std::pair<double,double> roots = std::make_pair(posRoot, negRoot);
@@ -43,18 +44,18 @@ std::pair<double,double> Quadratic::GetRoots()
 	return roots;
 }
 
-double Quadratic::GetTangentSlope(double x)
+double Quadratic::GetTangentAngle(double x)
 {
-	double slope = 0.0;
+	double angle = -1.0;
 
 	// f'(x) = 2ax + b
 	double m = 2*m_a;
 	double b = m_b;
+	double slope = m*x + b;
 
-	// Convert slope to angle in radians
-	slope = atan(m*x + b);
-
-	return slope;
+	// Convert to angle and wrap
+	angle = atan(slope);
+	return angle;
 }
 
 double Quadratic::Solve(double x)
@@ -64,4 +65,9 @@ double Quadratic::Solve(double x)
 	solution = m_a*pow(x,2) + m_b*x + m_c;
 
 	return solution;
+}
+
+Linear Quadratic::Derive()
+{
+	return Linear(2*m_a, m_b);
 }

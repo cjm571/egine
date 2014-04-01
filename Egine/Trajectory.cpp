@@ -10,6 +10,10 @@
 Trajectory::Trajectory()
 	: m_g(9.8), m_theta(0.0)
 {
+	// Default initial position
+	m_p0.x = 0.0;
+	m_p0.y = 0.0;
+
 	// No movement in X-direction, all coeffs 0
 	m_x = Quadratic(0.0, 0.0, 0.0);
 
@@ -18,8 +22,8 @@ Trajectory::Trajectory()
 	m_y = Quadratic(a, 0.0, 0.0);
 }
 
-Trajectory::Trajectory(double _g)
-	: m_g(_g), m_theta(0.0)
+Trajectory::Trajectory(double _g, CartPoint _p0)
+	: m_g(_g), m_theta(0.0), m_p0(_p0)
 {
 	// No movement in X-direction, all coeffs 0
 	m_x = Quadratic(0.0, 0.0, 0.0);
@@ -29,8 +33,8 @@ Trajectory::Trajectory(double _g)
 	m_y = Quadratic(a, 0.0, 0.0);
 }
 
-Trajectory::Trajectory(double _g, double _v0)
-	: m_g(_g), m_theta(0.0)
+Trajectory::Trajectory(double _g, double _v0, CartPoint _p0)
+	: m_g(_g), m_theta(0.0), m_p0(_p0)
 {
 	// v0 in X-direction
 	m_x = Quadratic(0.0, _v0, 0.0);
@@ -40,8 +44,8 @@ Trajectory::Trajectory(double _g, double _v0)
 	m_y = Quadratic(a, 0.0, 0.0);
 }
 
-Trajectory::Trajectory(double _g, double _v0, double _theta0)
-	: m_g(_g), m_theta(_theta0)
+Trajectory::Trajectory(double _g, double _v0, double _theta0, CartPoint _p0)
+	: m_g(_g), m_theta(_theta0), m_p0(_p0)
 {
 	// Vx in X-direction
 	m_x = Quadratic(0.0, _v0*cos(_theta0), 0.0);
@@ -126,6 +130,42 @@ HRESULT Trajectory::SetTheta(double newTheta)
 	{
 		hr |= SetVx(curV*cos(m_theta));
 		hr |= SetVy(curV*sin(m_theta));
+	}
+
+	return hr;
+}
+
+HRESULT Trajectory::SetGravity(double newG)
+{
+	HRESULT hr = S_OK;
+
+	// Sanity check
+	if (newG < 0.0)
+	{
+		hr = E_FAIL;
+	}
+
+	if (SUCCEEDED(hr))
+	{
+		m_g = newG;
+	}
+
+	return hr;
+}
+
+HRESULT Trajectory::SetInitialPosition(CartPoint newp0)
+{
+	HRESULT hr = S_OK;
+
+	// Sanity check
+	if (newp0.x < 0.0 || newp0.y < 0.0)
+	{
+		hr = E_FAIL;
+	}
+
+	if (SUCCEEDED(hr))
+	{
+		m_p0 = newp0;
 	}
 
 	return hr;
