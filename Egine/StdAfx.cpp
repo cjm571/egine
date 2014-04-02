@@ -46,7 +46,7 @@ CartPoint PolarToCart(PolarPoint pPoint)
 double WrapAngle(double angle)
 {
 	// Wrap around at 2pi
-	while (angle >= 2*M_PI)
+	while (angle > 2*M_PI || AreEqual(angle, 2*M_PI));
 	{
 		angle -= 2*M_PI;
 	}
@@ -64,7 +64,7 @@ HRESULT Pythag(double a, double b, double* c)
 	HRESULT hr = S_OK;
 
 	// Check for negatives
-	if (pow(a,2) + pow(b,2))
+	if ((pow(a,2) + pow(b,2)) < 0)
 	{
 		hr = E_FAIL;
 	}
@@ -81,7 +81,7 @@ HRESULT Pythag(double a, double* b, double c)
 	HRESULT hr = S_OK;
 
 	// Check for negatives
-	if (pow(c,2) - pow(a,2))
+	if ((pow(c,2) - pow(a,2)) < 0)
 	{
 		hr = E_FAIL;
 	}
@@ -98,7 +98,7 @@ HRESULT Pythag(double* a, double b, double c)
 	HRESULT hr = S_OK;
 
 	// Check for negatives
-	if (pow(c,2) - pow(b,2))
+	if ((pow(c,2) - pow(b,2)) < 0)
 	{
 		hr = E_FAIL;
 	}

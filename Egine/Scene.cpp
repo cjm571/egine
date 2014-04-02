@@ -284,7 +284,7 @@ void Scene::Step()
 	for (poItr=vOutOfBoundsX.begin(); poItr!=vOutOfBoundsX.end(); ++poItr)
 	{
 		(*poItr)->Revert(m_elapsed);
-		(*poItr)->Rebound(XAxis);
+		(*poItr)->Rebound(XAxis, m_elapsed);
 		(*poItr)->Move(m_elapsed);
 	}
 
@@ -292,7 +292,7 @@ void Scene::Step()
 	for (poItr=vOutOfBoundsY.begin(); poItr!=vOutOfBoundsY.end(); ++poItr)
 	{
 		(*poItr)->Revert(m_elapsed);
-		(*poItr)->Rebound(YAxis);
+		(*poItr)->Rebound(YAxis, m_elapsed);
 		(*poItr)->Move(m_elapsed);
 	}
 	/*** END Out-of-bounds checks ***/
@@ -312,19 +312,15 @@ void Scene::Step()
 		// Y-axis collision, revert movement and rebound both objects in y-direction
 		if (axis == YAxis || axis == BothAxes)
 		{
-			poPair.first->Rebound(YAxis);
-			poPair.second->Rebound(YAxis);
-			poPair.first->Move(m_elapsed);
-			poPair.second->Move(m_elapsed);
+			poPair.first->Rebound(YAxis, m_elapsed);
+			poPair.second->Rebound(YAxis, m_elapsed);
 		}
 		
 		// X-axis collision, revert movement and rebound both objects in x-direction
 		if (axis == XAxis || axis == BothAxes)
 		{
-			poPair.first->Rebound(XAxis);
-			poPair.second->Rebound(XAxis);
-			poPair.first->Move(m_elapsed);
-			poPair.second->Move(m_elapsed);
+			poPair.first->Rebound(XAxis, m_elapsed);
+			poPair.second->Rebound(XAxis, m_elapsed);
 		}
 	}
 	/*** END Collision Handling ***/

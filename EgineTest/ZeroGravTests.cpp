@@ -152,8 +152,8 @@ namespace EgineTest
 			
 			double actualA = objA.GetTrajectory().GetTheta();
 			double actualB = objB.GetTrajectory().GetTheta();
-			Assert::AreEqual(reversedA, actualA);
-			Assert::AreEqual(reversedB, actualB);
+			Assert::IsTrue(AreEqual(reversedA, actualA));
+			Assert::IsTrue(AreEqual(reversedB, actualB));
 		}
 
 	public:

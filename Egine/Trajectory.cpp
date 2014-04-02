@@ -8,7 +8,7 @@
 
 /********** CTORS **********/
 Trajectory::Trajectory()
-	: m_g(9.8), m_theta(0.0)
+	: m_g(9.8), m_theta(0.0), m_t0(0.0)
 {
 	// Default initial position
 	m_p0.x = 0.0;
@@ -23,7 +23,7 @@ Trajectory::Trajectory()
 }
 
 Trajectory::Trajectory(double _g, CartPoint _p0)
-	: m_g(_g), m_theta(0.0), m_p0(_p0)
+	: m_g(_g), m_theta(0.0), m_p0(_p0), m_t0(0.0)
 {
 	// No movement in X-direction, all coeffs 0
 	m_x = Quadratic(0.0, 0.0, 0.0);
@@ -34,7 +34,7 @@ Trajectory::Trajectory(double _g, CartPoint _p0)
 }
 
 Trajectory::Trajectory(double _g, double _v0, CartPoint _p0)
-	: m_g(_g), m_theta(0.0), m_p0(_p0)
+	: m_g(_g), m_theta(0.0), m_p0(_p0), m_t0(0.0)
 {
 	// v0 in X-direction
 	m_x = Quadratic(0.0, _v0, 0.0);
@@ -45,7 +45,7 @@ Trajectory::Trajectory(double _g, double _v0, CartPoint _p0)
 }
 
 Trajectory::Trajectory(double _g, double _v0, double _theta0, CartPoint _p0)
-	: m_g(_g), m_theta(_theta0), m_p0(_p0)
+	: m_g(_g), m_theta(_theta0), m_p0(_p0), m_t0(0.0)
 {
 	// Vx in X-direction
 	m_x = Quadratic(0.0, _v0*cos(_theta0), 0.0);
@@ -166,6 +166,25 @@ HRESULT Trajectory::SetInitialPosition(CartPoint newp0)
 	if (SUCCEEDED(hr))
 	{
 		m_p0 = newp0;
+	}
+
+	return hr;
+}
+
+HRESULT Trajectory::SetT0(double newt0)
+{
+	HRESULT hr = S_OK;
+
+	// Sanity check
+	// Cannot move backward in time
+	if (newt0 < m_t0)
+	{
+		hr = E_FAIL;
+	}
+
+	if (SUCCEEDED(hr))
+	{
+		m_t0 = newt0;
 	}
 
 	return hr;

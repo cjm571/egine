@@ -29,8 +29,7 @@ double Parametric::GetTangentAngle(double t)
 	// m = dy/dx
 	double dx = dx_dt.Solve(t);
 	double dy = dy_dt.Solve(t);
-	double slope = dy/dx;
-	angle = atan(slope);
+	angle = atan2(dy, dx);
 
 	return angle;
 }

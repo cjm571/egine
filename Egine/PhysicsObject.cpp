@@ -48,9 +48,12 @@ HRESULT PhysicsObject::SetTrajectory(Trajectory newTrajectory)
 
 void PhysicsObject::Move(double timeElapsed)
 {
+	// Time value to be used in position calculations
+	double t = (timeElapsed - m_trajectory.GetT0()) + STEP_EPSILON;
+
 	// Calculate position, relative to starting point, at elapsed + epsilon
-	double xRelPos = m_trajectory.SolveX(timeElapsed + STEP_EPSILON);
-	double yRelPos = m_trajectory.SolveY(timeElapsed + STEP_EPSILON);
+	double xRelPos = m_trajectory.SolveX(t);
+	double yRelPos = m_trajectory.SolveY(t);
 
 	// Calculate actual position
 	CartPoint p0 = m_trajectory.GetInitialPosition();
@@ -62,15 +65,18 @@ void PhysicsObject::Move(double timeElapsed)
 	m_aabb.SetCenter(newCenter);
 
 	// Set new theta via tangent of parametric function
-	double newTheta = m_trajectory.GetTangentAngle(timeElapsed + STEP_EPSILON);
+	double newTheta = m_trajectory.GetTangentAngle(t);
 	m_trajectory.SetTheta(newTheta);
 }
 
 void PhysicsObject::Revert(double timeElapsed)
 {
+	// Time value to be used in position calculations
+	double t = timeElapsed - m_trajectory.GetT0();
+
 	// Calculate position at elapsed + epsilon
-	double xRelPos = m_trajectory.SolveX(timeElapsed);
-	double yRelPos = m_trajectory.SolveY(timeElapsed);
+	double xRelPos = m_trajectory.SolveX(t);
+	double yRelPos = m_trajectory.SolveY(t);
 
 	// Calculate actual position
 	CartPoint p0 = m_trajectory.GetInitialPosition();
@@ -82,26 +88,29 @@ void PhysicsObject::Revert(double timeElapsed)
 	m_aabb.SetCenter(newCenter);
 
 	// Set new theta via tangent of parametric function
-	double newTheta = m_trajectory.GetTangentAngle(timeElapsed);
+	double newTheta = m_trajectory.GetTangentAngle(t);
 	m_trajectory.SetTheta(newTheta);
 }
 
-void PhysicsObject::Rebound(eAxis axis)
+void PhysicsObject::Rebound(eAxis axis, double curTime)
 {
 	// Reset initial position, as this is essentially a new trajectory
 	CartPoint curPos = m_aabb.GetCenter(Physics);
 	m_trajectory.SetInitialPosition(curPos);
 	
+	// Reset trajectory start time
+	m_trajectory.SetT0(curTime);
+
+	double theta = m_trajectory.GetTheta();
+	
 	// X-axis rebounds reflect direction about pi/2
 	if (axis == XAxis || axis == BothAxes)
 	{
-		double theta = m_trajectory.GetTheta();
 		m_trajectory.SetTheta((theta * -1) + M_PI);
 	}
 	// Y-axis rebounds reflect direction about pi
 	if (axis == YAxis || axis == BothAxes)
 	{
-		double theta = m_trajectory.GetTheta();
 		m_trajectory.SetTheta(theta * -1);
 	}
 }

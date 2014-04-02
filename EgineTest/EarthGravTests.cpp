@@ -80,7 +80,7 @@ namespace EgineTest
 			// Calculate expected post-rebound angle
 			double preRBTime = timeToCollision - STEP_EPSILON;
 			double preRBAngle = obj.GetTrajectory().GetTangentAngle(preRBTime);
-			double expectedAngle = preRBAngle * -1;
+			double expectedAngle = WrapAngle(preRBAngle * -1);
 
 			// Assert that actual post-rebound angle within error bounds of expected
 			double actualAngle = obj.GetTrajectory().GetTheta();

@@ -32,6 +32,7 @@ public:
 	double GetTheta()				{return m_theta;};
 	double GetGravity()				{return m_g;};
 	CartPoint GetInitialPosition()	{return m_p0;};
+	double GetT0()					{return m_t0;};
 
 	// Returns scalar velocity, or -1.0 on error
 	// TODO: maybe this should return HRESULT, for style consistency
@@ -45,12 +46,15 @@ public:
 	HRESULT SetTheta(double newTheta);
 	HRESULT SetGravity(double newG);
 	HRESULT SetInitialPosition(CartPoint newp0);
+	HRESULT SetT0(double newt0);
 
 // Properties
 // NOTE: Velocity components are stored in inherited Quadratics' (m_x, m_y) member m_b
 private:
 	// Initial position of trajectory
 	CartPoint m_p0;
+	// Point in simulation time when trajectory was last altered
+	double m_t0;
 	// Direction of movement
 	double m_theta;
 	// Current gravity imposed on trajectory
