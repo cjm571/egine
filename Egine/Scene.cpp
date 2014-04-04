@@ -285,7 +285,6 @@ void Scene::Step()
 	{
 		(*poItr)->Revert(m_elapsed);
 		(*poItr)->Rebound(XAxis, m_elapsed);
-		(*poItr)->Move(m_elapsed);
 	}
 
 	// Revert movements of all y-coord out-of-bounds objects, and "bounce" them back
@@ -293,7 +292,6 @@ void Scene::Step()
 	{
 		(*poItr)->Revert(m_elapsed);
 		(*poItr)->Rebound(YAxis, m_elapsed);
-		(*poItr)->Move(m_elapsed);
 	}
 	/*** END Out-of-bounds checks ***/
 
@@ -308,6 +306,11 @@ void Scene::Step()
 
 		// Determine axis of collision, corner hits will rebound on both axes
 		eAxis axis = GetCollisionAxis(poPair);
+
+		// Determine "intra-step," i.e. actual, collision position
+		// This will be used to accurately reset Trajectory initial position
+		std::pair<CartPoint,CartPoint> collisionCoords;
+		collisionCoords = PhysicsObject::CalcActualCollisionPosition(*(poPair.first), *(poPair.second));
 
 		// Y-axis collision, revert movement and rebound both objects in y-direction
 		if (axis == YAxis || axis == BothAxes)

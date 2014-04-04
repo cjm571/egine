@@ -52,6 +52,12 @@ public:
 	// NOTE: does NOT Revert() previous movement, nor does it perform the subsequent Move()
 	void Rebound(eAxis axis, double curTime);
 
+
+// Public Static
+public:
+	// Calculates intra-step collisions position of 2 PhysicsObjects
+	static std::pair<CartPoint,CartPoint> CalcActualCollisionPosition(PhysicsObject a, PhysicsObject b);
+
 // Properties
 private:
 	// Axis-Aligned Bounding Box for use in collision detection

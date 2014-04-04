@@ -36,6 +36,11 @@ public:
 	// Return real-number roots of y(t)
 	std::pair<double,double> GetYRoots(double yt=0.0);
 
+	// Return intercept given distance from x=0
+	std::pair<double,double> GetXIntercept(double dist);
+	// Return Y-intercept given distance from y=0
+	std::pair<double,double> GetYIntercept(double dist);
+
 // Data Members
 protected:
 	// Quadratic equation representing x(t)

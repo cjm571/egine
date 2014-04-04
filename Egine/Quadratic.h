@@ -40,6 +40,11 @@ public:
 	// Returns derivative as Linear function object
 	Linear Derive();
 
+// Public Statics
+public:
+	// Calculates intersections of Quadratics f(x) and g(x)
+	static std::pair<double,double> CalcIntersects(Quadratic f, Quadratic g);
+
 // Coefficients
 // Form f(x) = ax^2 + bx + c
 private:

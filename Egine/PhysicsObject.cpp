@@ -94,7 +94,7 @@ void PhysicsObject::Revert(double timeElapsed)
 
 void PhysicsObject::Rebound(eAxis axis, double curTime)
 {
-	// Reset initial position, as this is essentially a new trajectory
+	// Reset initial position to collision point, as this is essentially a new trajectory
 	CartPoint curPos = m_aabb.GetCenter(Physics);
 	m_trajectory.SetInitialPosition(curPos);
 	
@@ -113,4 +113,16 @@ void PhysicsObject::Rebound(eAxis axis, double curTime)
 	{
 		m_trajectory.SetTheta(theta * -1);
 	}
+}
+
+
+/********** PUBLIC STATICS **********/
+std::pair<CartPoint,CartPoint> PhysicsObject::CalcActualCollisionPosition(PhysicsObject a, PhysicsObject b)
+{
+	std::pair<CartPoint,CartPoint> collisionCoords;
+
+	// Find intercept of the two Trajectories
+	
+
+	return collisionCoords;
 }

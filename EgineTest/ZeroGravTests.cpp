@@ -120,10 +120,11 @@ namespace EgineTest
 				break;
 			}
 			// TODO: handle both-axes collisions
-			UINT stepsTillCollision = static_cast<UINT>(ceil(boundsDist / (velObjA + velObjB)));
+			double timeToCollision = boundsDist / (velObjA + velObjB);
+			UINT steps = static_cast<UINT>(ceil(timeToCollision / STEP_EPSILON));
 
 			// Step scene until collision occurs
-			for (UINT stepsTaken=0; stepsTaken<stepsTillCollision; stepsTaken++)
+			for (UINT i=0; i<steps; i++)
 			{
 				testScene.Step();
 			}

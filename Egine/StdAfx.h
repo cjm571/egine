@@ -40,8 +40,9 @@
 #include <dwrite.h>
 #include <wincodec.h>
 
-// for std::pair
+// for std::pair, std::vector
 #include <utility>
+#include <vector>
 
 template <class Interface>
 inline void SafeRelease( Interface **ppInterfaceToRelease )

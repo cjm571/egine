@@ -72,6 +72,19 @@ double Trajectory::GetVelocity()
 	return c;
 }
 
+CartPoint Trajectory::GetPositionAt(double t)
+{
+	CartPoint position;
+
+	double xPos = m_x.Solve(t);
+	double yPos = m_y.Solve(t);
+
+	position.x = xPos;
+	position.y = yPos;
+
+	return position;
+}
+
 HRESULT Trajectory::SetVx(double newVx)
 {
 	HRESULT hr = S_OK;
@@ -188,4 +201,43 @@ HRESULT Trajectory::SetT0(double newt0)
 	}
 
 	return hr;
+}
+
+
+/********** PUBLIC STATICS **********/
+std::vector<CartPoint> Trajectory::CalcIntersects(Trajectory a, Trajectory b)
+{
+	std::vector<CartPoint> intersects;
+	
+	// Find values of t in which ax(t) and bx(t) are equal
+	std::pair<double,double> xIntersects;
+	xIntersects = Quadratic::CalcIntersects(a.m_x, b.m_x);
+
+	// Find values of t in which ay(t) and by(t) are equal
+	std::pair<double,double> yIntersects;
+	yIntersects = Quadratic::CalcIntersects(a.m_y, b.m_y);
+
+	// Find matches between x(t) and y(t) intersects
+	std::vector<double> matches;
+	if (xIntersects.first == yIntersects.first || xIntersects.first == yIntersects.second)
+	{
+		matches.push_back(xIntersects.first);
+	}
+	if (xIntersects.second == yIntersects.first || xIntersects.second == yIntersects.second)
+	{
+		matches.push_back(xIntersects.second);
+	}
+
+	// Calculate position of each object at the matched values of t and push to results vector
+	std::vector<double>::iterator matchesItr;
+	for (matchesItr = matches.begin(); matchesItr != matches.end(); ++matchesItr);
+	{
+		double t = *matchesItr;
+
+		CartPoint intersect = a.GetPositionAt(t);
+
+		intersects.push_back(intersect);
+	}
+
+	return intersects;
 }

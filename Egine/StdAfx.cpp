@@ -122,6 +122,6 @@ UINT const SC_GRAVITY_MASK =	0x00000001;
 
 /***** CONSTANTS *****/
 const UINT C = 299792458;
-const double STEP_EPSILON = 1.0;
+const double STEP_EPSILON = 0.1;
 const double DOUBLE_EPSILON = 1E-9;
 const double ERR_COLLISION = 0.0001;

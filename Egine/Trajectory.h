@@ -38,6 +38,9 @@ public:
 	// TODO: maybe this should return HRESULT, for style consistency
 	double GetVelocity();
 
+	// Returns Cartesian position of object at the given time
+	CartPoint GetPositionAt(double t);
+
 // Public methods
 public:
 	HRESULT SetVx(double newVx);
@@ -47,6 +50,11 @@ public:
 	HRESULT SetGravity(double newG);
 	HRESULT SetInitialPosition(CartPoint newp0);
 	HRESULT SetT0(double newt0);
+
+// Public Statics
+public:
+	// Calculates intersections of Trajectories a and b
+	static std::vector<CartPoint> CalcIntersects(Trajectory a, Trajectory b);
 
 // Properties
 // NOTE: Velocity components are stored in inherited Quadratics' (m_x, m_y) member m_b

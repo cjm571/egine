@@ -69,3 +69,23 @@ std::pair<double,double> Parametric::GetYRoots(double yt)
 
 	return roots;
 }
+
+std::pair<double,double> Parametric::GetXIntercept(double dist)
+{
+	std::pair<double,double> roots;
+
+	// Note the negation
+	roots = m_y.GetRoots(-1*dist);
+
+	return roots;
+}
+
+std::pair<double,double> Parametric::GetYIntercept(double dist)
+{
+	std::pair<double,double> roots;
+
+	// Note the negation
+	roots = m_x.GetRoots(-1*dist);
+
+	return roots;
+}

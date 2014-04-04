@@ -61,14 +61,16 @@ namespace EgineTest
 			double timeToCollision = -1.0;
 			if (bottomRebound)
 			{
-				roots = obj.GetTrajectory().GetYRoots();
+				// Solve for positive x-intercept to get collision time 
+				roots = obj.GetTrajectory().GetXIntercept(obj.GetAABB().GetLowerBound(Physics));
+				timeToCollision = roots.second;
 			}
 			else // Side rebound
 			{
+				// Use nearest y-intercept for collision time
+				// TODO: Fix this, it sucks. maybe pull side rebounds into separate function
 				roots = obj.GetTrajectory().GetXRoots();
 			}
-			// Select the positive root
-			timeToCollision = max(roots.first, roots.second);
 			UINT steps = static_cast<UINT>(ceil(timeToCollision / STEP_EPSILON));
 
 			// Step until rebound

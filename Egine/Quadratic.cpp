@@ -71,3 +71,21 @@ Linear Quadratic::Derive()
 {
 	return Linear(2*m_a, m_b);
 }
+
+
+/********** PUBLIC STATICS **********/
+std::pair<double,double> Quadratic::CalcIntersects(Quadratic f, Quadratic g)
+{
+	std::pair<double,double> intersects;
+	
+	// Set Quadratics equal and subtract
+	double a = f.m_a - g.m_a;
+	double b = f.m_b - g.m_b;
+	double c = f.m_c - g.m_c;
+	Quadratic h = Quadratic(a, b, c);
+
+	// Find roots of new Quadratic h(x),
+	intersects = h.GetRoots();
+
+	return intersects;
+}
