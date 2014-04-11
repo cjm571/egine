@@ -69,18 +69,18 @@ namespace EgineTest
 			PhysicsObject objB = PhysicsObject(centerB);
 			
 			// Set trajectories
-			Trajectory trajA = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, angle, objA.GetAABB().GetCenter(Physics));
+			Trajectory trajA = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, angle);
 			Trajectory trajB;
 			switch (axis)
 			{
 			case XAxis:
-				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, M_PI, objB.GetAABB().GetCenter(Physics));
+				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, M_PI);
 				break;
 			case YAxis:
-				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, 3*M_PI/2, objB.GetAABB().GetCenter(Physics));
+				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, 3*M_PI/2);
 				break;
 			case BothAxes:
-				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, reflAngle, objB.GetAABB().GetCenter(Physics));
+				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, reflAngle);
 				break;
 			default: // AxisErr
 				Assert::Fail();
@@ -93,32 +93,30 @@ namespace EgineTest
 			Assert::AreEqual(testScene.AddObject(&objA), S_OK);
 			Assert::AreEqual(testScene.AddObject(&objB), S_OK);
 
-			// Calculate steps required for collision
+			// Calculate distance between AABB boundaries
 			double boundsDist = -1.0;
-			double velObjA = -1.0;
-			double velObjB = -1.0;
 			switch (axis)
 			{
 			case XAxis:
-				boundsDist = abs((objA.GetAABB().GetRightBound()) -
-								 (objB.GetAABB().GetLeftBound()));
-				velObjA = abs(objA.GetTrajectory().GetXVelocity());
-				velObjB = abs(objB.GetTrajectory().GetXVelocity());
+				boundsDist = abs((objA.GetAABB().GetRightBound()) - (objB.GetAABB().GetLeftBound()));
 				break;
 			case YAxis:
-				boundsDist = abs((objA.GetAABB().GetUpperBound(Physics)) -
-								 (objB.GetAABB().GetLowerBound(Physics)));
-				velObjA = abs(objA.GetTrajectory().GetYVelocity());
-				velObjB = abs(objB.GetTrajectory().GetYVelocity());
+				boundsDist = abs((objA.GetAABB().GetUpperBound()) - (objB.GetAABB().GetLowerBound()));
 				break;
 			case BothAxes:
 				// TODO: properly calculate corner distance, velocity
-				boundsDist = 0.0;
+				Assert::Fail();
 				break;
 			default: // AxisErr
 				Assert::Fail();
 				break;
 			}
+			
+			// Calculate velocities of each object
+			double startTime = 0.0;
+			double velObjA = abs(objA.GetTrajectory().GetVelocity(axis, startTime));
+			double velObjB = abs(objB.GetTrajectory().GetVelocity(axis, startTime));
+
 			// TODO: handle both-axes collisions
 			double timeToCollision = boundsDist / (velObjA + velObjB);
 			UINT steps = static_cast<UINT>(ceil(timeToCollision / STEP_EPSILON));
@@ -151,8 +149,9 @@ namespace EgineTest
 				break;
 			}
 			
-			double actualA = objA.GetTrajectory().GetTheta();
-			double actualB = objB.GetTrajectory().GetTheta();
+			double currentTime = testScene.GetElapsedTime();
+			double actualA = objA.GetTrajectory().GetTheta(currentTime);
+			double actualB = objB.GetTrajectory().GetTheta(currentTime);
 			Assert::IsTrue(AreEqual(reversedA, actualA));
 			Assert::IsTrue(AreEqual(reversedB, actualB));
 		}

@@ -195,3 +195,31 @@ void AABB::SetHeight(double newHeight)
 {
 	m_height = newHeight;
 }
+
+
+/********** PUBLIC STATICS **********/
+bool AABB::CheckOverlap(AABB a, AABB b)
+{
+	double centerDist = 0.0;
+	bool xOverlap = false;
+	bool yOverlap = false;
+	bool isOverlapping = false;
+
+	// Check X-axis overlap
+	centerDist = abs(a.GetCenter().x - b.GetCenter().x);
+	if (centerDist - ((a.GetWidth()/2 + b.GetWidth()/2)) <= ERR_COLLISION)
+	{
+		xOverlap = true;
+	}
+
+	// Check Y-axis overlap
+	centerDist = abs(a.GetCenter().y - b.GetCenter().y);
+	if ((centerDist - (a.GetHeight()/2 + b.GetHeight()/2)) <= ERR_COLLISION)
+	{
+		yOverlap = true;
+	}
+	
+	// AABBs must overlap on ALL AXES for actual overlap to occur
+	isOverlapping = xOverlap && yOverlap;
+	return isOverlapping;
+}

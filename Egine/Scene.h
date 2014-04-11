@@ -31,12 +31,6 @@ public:
 
 // Helper Functions
 private:
-	// Checks two AABBs for overlap
-	bool CheckOverlap(AABB, AABB);
-
-	// Checks two PhysicsObjects for overlap based on AABBs
-	bool CheckOverlap(PhysicsObject*, PhysicsObject*);
-
 	// Check scene for possible collisions based on AABBs
 	// Returns vector of possibly-colliding pairs
 	std::vector<std::pair<PhysicsObject*,PhysicsObject*>> CheckCollisions();
@@ -49,10 +43,15 @@ private:
 	// Returns axis enum value
 	eAxis GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*>);
 
+	// Calculates intra-step out-of-bounds time of PhysicsObject on given collision axis
+	double CalcOOBTime(PhysicsObject obj, eAxis axis);
+
 // Public Methods
 public:
 	// Returns scene gravity in m/s^2
 	double GetGravity() {return m_gravity;};
+	// Returns elapsed Scene time in seconds
+	double GetElapsedTime() {return m_elapsed;};
 
 	// Returns vector of physics objects
 	std::vector<PhysicsObject*> GetObjects() {return m_physicsObjects;};

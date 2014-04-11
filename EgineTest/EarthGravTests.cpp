@@ -38,7 +38,7 @@ namespace EgineTest
 			PhysicsObject obj = PhysicsObject(EPICENTER);
 
 			// Set trajectory
-			Trajectory traj0 = Trajectory(testScene.GetGravity(), v0, theta0, obj.GetAABB().GetCenter(Physics));
+			Trajectory traj0 = Trajectory(testScene.GetGravity(), v0, theta0);
 			obj.SetTrajectory(traj0);
 
 			// Add object to scene
@@ -48,7 +48,7 @@ namespace EgineTest
 			double dist = -1.0;
 			if (bottomRebound)
 			{
-				dist = obj.GetAABB().GetLowerBound(Physics);
+				dist = obj.GetAABB().GetLowerBound();
 			}
 			else // Side rebound
 			{
@@ -62,7 +62,7 @@ namespace EgineTest
 			if (bottomRebound)
 			{
 				// Solve for positive x-intercept to get collision time 
-				roots = obj.GetTrajectory().GetXIntercept(obj.GetAABB().GetLowerBound(Physics));
+				roots = obj.GetTrajectory().CalcXIntercepts(obj.GetAABB().GetLowerBound());
 				timeToCollision = roots.second;
 			}
 			else // Side rebound
@@ -85,7 +85,8 @@ namespace EgineTest
 			double expectedAngle = WrapAngle(preRBAngle * -1);
 
 			// Assert that actual post-rebound angle within error bounds of expected
-			double actualAngle = obj.GetTrajectory().GetTheta();
+			double curTime = testScene.GetElapsedTime();
+			double actualAngle = obj.GetTrajectory().GetTheta(curTime);
 			double error = abs(expectedAngle - actualAngle);
 			Assert::IsTrue(error <= ANGLE_ERROR);
 			
@@ -93,7 +94,7 @@ namespace EgineTest
 			double postRBTime = timeToCollision + STEP_EPSILON;
 			double yVel = dist / (postRBTime - 0.5*g*pow(postRBTime,2));
 			double expectedVel = yVel + (v0 * cos(theta0));
-			double actualVel = obj.GetTrajectory().GetVelocity();
+			double actualVel = obj.GetTrajectory().GetVelocity(curTime);
 			error = abs(expectedVel - actualVel);
 			Assert::IsTrue(error <= VELOCITY_ERROR);
 		}

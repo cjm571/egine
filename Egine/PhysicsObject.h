@@ -32,11 +32,15 @@ public:
 // Public Methods
 public:
 	AABB GetAABB()					{return m_aabb;};
+	CartPoint GetInitialPosition()	{return m_p0;};
 	Trajectory GetTrajectory()		{return m_trajectory;};
 	double GetMass()				{return m_mass;};
 	D2D1::ColorF::Enum GetColor()	{return m_color;};
 	eShape GeteShape()				{return m_shape;};
 	ULONG GetUID()					{return m_UID;};
+
+	// Sets initial position of the PhysicsObject
+	HRESULT SetInitialPosition(CartPoint newP0);
 
 	// Changes trajectory of object
 	HRESULT SetTrajectory(Trajectory);
@@ -50,11 +54,14 @@ public:
 
 	// Resets an object's trajectory after collision on the given axis
 	// NOTE: does NOT Revert() previous movement, nor does it perform the subsequent Move()
-	void Rebound(eAxis axis, double curTime);
+	HRESULT Rebound(eAxis axis, double curTime);
 
 
 // Public Static
 public:
+	// Checks two PhysicsObjects for overlap based on AABBs
+	static bool CheckOverlap(PhysicsObject a, PhysicsObject b);
+	
 	// Calculates intra-step collisions position of 2 PhysicsObjects
 	static std::pair<CartPoint,CartPoint> CalcActualCollisionPosition(PhysicsObject a, PhysicsObject b);
 
@@ -63,6 +70,9 @@ private:
 	// Axis-Aligned Bounding Box for use in collision detection
 	AABB m_aabb;
 
+	// Initial position of object centerpoint
+	CartPoint m_p0;
+	
 	// Trajectory of object, will be acted on by physics operations
 	Trajectory m_trajectory;
 

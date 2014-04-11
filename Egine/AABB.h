@@ -28,25 +28,25 @@ public:
 	double GetHeight() {return m_height;};
 
 	// Returns physics or drawing center coords, based on flag
-	CartPoint GetCenter(eCoordSys);
+	CartPoint GetCenter(eCoordSys flag=Physics);
 
 	// Returns physics or drawing bottom-left coords, based on flag
-	CartPoint GetBottomLeft(eCoordSys);
+	CartPoint GetBottomLeft(eCoordSys flag=Physics);
 	
 	// Returns physics or drawing bottom-right coords, based on flag
-	CartPoint GetBottomRight(eCoordSys);
+	CartPoint GetBottomRight(eCoordSys flag=Physics);
 	
 	// Returns physics or drawing top-left coords, based on flag
-	CartPoint GetTopLeft(eCoordSys);
+	CartPoint GetTopLeft(eCoordSys flag=Physics);
 	
 	// Returns physics or drawing top-right coords, based on flag
-	CartPoint GetTopRight(eCoordSys);
+	CartPoint GetTopRight(eCoordSys flag=Physics);
 
 	// Returns physcs or drawing upper boundary position, based on flag
-	double GetUpperBound(eCoordSys);
+	double GetUpperBound(eCoordSys flag=Physics);
 	
 	// Returns physcs or drawing lower boundary position, based on flag
-	double GetLowerBound(eCoordSys);
+	double GetLowerBound(eCoordSys flag=Physics);
 
 	// Returns left boundary position
 	double GetLeftBound();
@@ -64,6 +64,11 @@ public:
 
 	// Sets height of bounding-box
 	void SetHeight(double);
+
+// Public statics
+public:
+	// Checks two AABBs for overlap
+	static bool CheckOverlap(AABB a, AABB b);
 
 // Private data members
 private:

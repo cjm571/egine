@@ -8,12 +8,8 @@
 
 /********** CTORS **********/
 Trajectory::Trajectory()
-	: m_g(9.8), m_theta(0.0), m_t0(0.0)
+	: m_g(9.8), m_t0(0.0)
 {
-	// Default initial position
-	m_p0.x = 0.0;
-	m_p0.y = 0.0;
-
 	// No movement in X-direction, all coeffs 0
 	m_x = Quadratic(0.0, 0.0, 0.0);
 
@@ -22,8 +18,8 @@ Trajectory::Trajectory()
 	m_y = Quadratic(a, 0.0, 0.0);
 }
 
-Trajectory::Trajectory(double _g, CartPoint _p0)
-	: m_g(_g), m_theta(0.0), m_p0(_p0), m_t0(0.0)
+Trajectory::Trajectory(double _g)
+	: m_g(_g), m_t0(0.0)
 {
 	// No movement in X-direction, all coeffs 0
 	m_x = Quadratic(0.0, 0.0, 0.0);
@@ -33,8 +29,8 @@ Trajectory::Trajectory(double _g, CartPoint _p0)
 	m_y = Quadratic(a, 0.0, 0.0);
 }
 
-Trajectory::Trajectory(double _g, double _v0, CartPoint _p0)
-	: m_g(_g), m_theta(0.0), m_p0(_p0), m_t0(0.0)
+Trajectory::Trajectory(double _g, double _v0)
+	: m_g(_g), m_t0(0.0)
 {
 	// v0 in X-direction
 	m_x = Quadratic(0.0, _v0, 0.0);
@@ -44,8 +40,8 @@ Trajectory::Trajectory(double _g, double _v0, CartPoint _p0)
 	m_y = Quadratic(a, 0.0, 0.0);
 }
 
-Trajectory::Trajectory(double _g, double _v0, double _theta0, CartPoint _p0)
-	: m_g(_g), m_theta(_theta0), m_p0(_p0), m_t0(0.0)
+Trajectory::Trajectory(double _g, double _v0, double _theta0)
+	: m_g(_g), m_t0(0.0)
 {
 	// Vx in X-direction
 	m_x = Quadratic(0.0, _v0*cos(_theta0), 0.0);
@@ -60,24 +56,99 @@ Trajectory::~Trajectory()
 }
 
 
-/********** PUBLIC METHODS **********/
-double Trajectory::GetVelocity()
+/********** HELPER FUNCTIONS **********/
+double Trajectory::GetRelativeTime(double t)
 {
-	double a = m_x.GetB();
-	double b = m_y.GetB();
-	double c = -1.0;
+	return t - m_t0;
+}
 
-	Pythag(a, b, &c);
 
-	return c;
+/********** PUBLIC METHODS **********/
+double Trajectory::GetTheta(double t)
+{
+	double theta = -1.0;
+	double tRel = GetRelativeTime(t);
+
+	theta = GetTangentAngle(tRel);
+	theta = WrapAngle(theta);
+
+	return theta;
+}
+
+double Trajectory::GetVelocity(double t)
+{
+	double vScalar = -1.0;
+	double tRel = GetRelativeTime(t);
+
+	// Derive X & Y quadtratics
+	Linear dx_dt = m_x.Derive();
+	Linear dy_dt = m_y.Derive();
+
+	// Solve derivatives at time t for X & Y velocities
+	double vX = dx_dt.Solve(tRel);
+	double vY = dy_dt.Solve(tRel);
+
+	// Use pythagorean theorem to get scalar velocity
+	Pythag(vX, vY, &vScalar);
+
+	return vScalar;
+}
+
+double Trajectory::GetVelocity(eAxis axis, double t)
+{
+	double axisV;
+	
+	if (axis == XAxis)
+	{
+		axisV = GetVelocity(t) * cos(GetTheta(t));
+	}
+	else // Y-axis
+	{
+		axisV = GetVelocity(t) * sin(GetTheta(t));
+	}
+
+	return axisV;
+}
+
+double Trajectory::GetVelocityFactor(eAxis axis)
+{
+	double vel;
+
+	if (axis == XAxis)
+	{
+		vel = m_x.GetB();
+	}
+	else // Y-axis
+	{
+		vel = m_y.GetB();
+	}
+
+	return vel;
+}
+
+double Trajectory::GetConstantFactor(eAxis axis)
+{
+	double vel;
+
+	if (axis == XAxis)
+	{
+		vel = m_x.GetC();
+	}
+	else // Y-axis
+	{
+		vel = m_y.GetC();
+	}
+
+	return vel;
 }
 
 CartPoint Trajectory::GetPositionAt(double t)
 {
 	CartPoint position;
+	double tRel = GetRelativeTime(t);
 
-	double xPos = m_x.Solve(t);
-	double yPos = m_y.Solve(t);
+	double xPos = m_x.Solve(tRel);
+	double yPos = m_y.Solve(tRel);
 
 	position.x = xPos;
 	position.y = yPos;
@@ -85,64 +156,51 @@ CartPoint Trajectory::GetPositionAt(double t)
 	return position;
 }
 
-HRESULT Trajectory::SetVx(double newVx)
+HRESULT Trajectory::SetVelocityFactor(eAxis axis, double newV)
 {
 	HRESULT hr = S_OK;
-	
+
 	// Sanity check
-	// Speed of light
-	if (newVx > abs(C * cos(m_theta)))
+	if (abs(newV) > C)
 	{
 		hr = E_FAIL;
-		MessageBoxA(NULL,"Object exceeding speed of light!", "Causality Violation", MB_OK);
 	}
 
-	m_x.SetB(newVx);
-
-	return hr;
-}
-
-HRESULT Trajectory::SetVy(double newVy)
-{
-	HRESULT hr = S_OK;
-	
-	// Sanity check
-	// Speed of light
-	if (newVy > abs(C * sin(m_theta)))
-	{
-		hr = E_FAIL;
-		MessageBoxA(NULL,"Object exceeding speed of light!", "Causality Violation", MB_OK);
-	}
-
-	m_y.SetB(newVy);
-
-	return hr;
-}
-
-HRESULT Trajectory::SetVelocity(double newV)
-{
-	HRESULT hr = S_OK;
-
-	hr |= SetVx(newV * cos(m_theta));
-	hr |= SetVy(newV * sin(m_theta));
-
-	return hr;
-}
-
-HRESULT Trajectory::SetTheta(double newTheta)
-{
-	HRESULT hr = S_OK;
-
-	// Wrap angle about (0,2pi) and set
-	m_theta = WrapAngle(newTheta);
-
-	// Adjust Quadratics accordingly
-	double curV = GetVelocity(); // lol... "curvy"
-	
 	if (SUCCEEDED(hr))
 	{
-		hr |= SetVx(curV*cos(m_theta));
-		hr |= SetVy(curV*sin(m_theta));
+		if (axis==XAxis)
+		{
+			m_x.SetB(newV);
+		}
+		if (axis==YAxis)
+		{
+			m_y.SetB(newV);
+		}
+	}
+
+	return hr;
+}
+
+HRESULT Trajectory::SetConstantFactor(eAxis axis, double newC)
+{
+	HRESULT hr = S_OK;
+
+	// Sanity check
+	if (abs(newC) > C)
+	{
+		hr = E_FAIL;
+	}
+
+	if (SUCCEEDED(hr))
+	{
+		if (axis==XAxis)
+		{
+			m_x.SetC(newC);
+		}
+		if (axis==YAxis)
+		{
+			m_y.SetC(newC);
+		}
 	}
 
 	return hr;
@@ -160,25 +218,8 @@ HRESULT Trajectory::SetGravity(double newG)
 
 	if (SUCCEEDED(hr))
 	{
+		m_y.SetA(-1*newG);
 		m_g = newG;
-	}
-
-	return hr;
-}
-
-HRESULT Trajectory::SetInitialPosition(CartPoint newp0)
-{
-	HRESULT hr = S_OK;
-
-	// Sanity check
-	if (newp0.x < 0.0 || newp0.y < 0.0)
-	{
-		hr = E_FAIL;
-	}
-
-	if (SUCCEEDED(hr))
-	{
-		m_p0 = newp0;
 	}
 
 	return hr;

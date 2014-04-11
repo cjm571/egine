@@ -40,44 +40,6 @@ Scene::~Scene()
 
 
 /********** HELPER FUNCTIONS **********/
-bool Scene::CheckOverlap(AABB a, AABB b)
-{
-	double centerDist = 0.0;
-	bool xOverlap = false;
-	bool yOverlap = false;
-	bool isOverlapping = false;
-
-	// Check X-axis overlap
-	centerDist = abs(a.GetCenter(Physics).x - b.GetCenter(Physics).x);
-	if (centerDist - ((a.GetWidth()/2 + b.GetWidth()/2)) <= ERR_COLLISION)
-	{
-		xOverlap = true;
-	}
-
-	// Check Y-axis overlap
-	centerDist = abs(a.GetCenter(Physics).y - b.GetCenter(Physics).y);
-	if ((centerDist - (a.GetHeight()/2 + b.GetHeight()/2)) <= ERR_COLLISION)
-	{
-		yOverlap = true;
-	}
-	
-	// AABBs must overlap on ALL AXES for actual overlap to occur
-	isOverlapping = xOverlap && yOverlap;
-	return isOverlapping;
-}
-
-bool Scene::CheckOverlap(PhysicsObject* poA, PhysicsObject* poB)
-{
-	bool bOverlapping = false; 
-
-	AABB aabbA = poA->GetAABB();
-	AABB aabbB = poB->GetAABB();
-
-	bOverlapping = CheckOverlap(aabbA, aabbB);
-
-	return bOverlapping;
-}
-
 std::vector<std::pair<PhysicsObject*,PhysicsObject*>> Scene::CheckCollisions()
 {
 	std::vector<std::pair<PhysicsObject*,PhysicsObject*>> collidingPairs;
@@ -117,7 +79,7 @@ std::vector<std::pair<PhysicsObject*,PhysicsObject*>> Scene::CheckCollisions()
 
 			bool bColliding = false;
 
-			bColliding = CheckOverlap(pObjectA, pObjectB);
+			bColliding = PhysicsObject::CheckOverlap(*pObjectA, *pObjectB);
 
 			// Add UID pair to vector on collision detect
 			if (bColliding)
@@ -141,8 +103,8 @@ std::vector<PhysicsObject*> Scene::CheckOutOfBounds(eAxis axis)
 	for (poItr=m_physicsObjects.begin(); poItr!=m_physicsObjects.end(); ++poItr)
 	{
 		AABB aabb = (*poItr)->GetAABB();
-		double upBound = aabb.GetUpperBound(Physics);
-		double lowBound = aabb.GetLowerBound(Physics);
+		double upBound = aabb.GetUpperBound();
+		double lowBound = aabb.GetLowerBound();
 		double leftBound = aabb.GetLeftBound();
 		double rightBound = aabb.GetRightBound();
 		
@@ -181,14 +143,14 @@ eAxis Scene::GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*> poPair)
 	
 	/*** Y-DEPTH **/
 	// B below A
-	if ((aabbA.GetLowerBound(Physics) - aabbB.GetLowerBound(Physics)) >= ERR_COLLISION)
+	if ((aabbA.GetLowerBound() - aabbB.GetLowerBound()) >= ERR_COLLISION)
 	{
-		yDepth = abs(aabbA.GetLowerBound(Physics) - aabbB.GetUpperBound(Physics));
+		yDepth = abs(aabbA.GetLowerBound() - aabbB.GetUpperBound());
 	}
 	// B above A
 	else
 	{
-		yDepth = abs(aabbA.GetUpperBound(Physics) - aabbB.GetLowerBound(Physics));
+		yDepth = abs(aabbA.GetUpperBound() - aabbB.GetLowerBound());
 	}
 
 	/*** X-DEPTH ***/
@@ -222,13 +184,40 @@ eAxis Scene::GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*> poPair)
 	return axis;
 }
 
+double Scene::CalcOOBTime(PhysicsObject obj, eAxis axis)
+{
+	double t = -1.0;
+
+	// Calculate AABB intercept with Scene boundary
+	Trajectory traj = obj.GetTrajectory();
+	std::pair<double,double> intercepts;
+	if (axis == YAxis)
+	{
+		// Use lower bound as offset
+		double y0 = obj.GetInitialPosition().y - (obj.GetAABB().GetHeight()/2);
+		intercepts = traj.CalcXIntercepts(y0);
+	}
+	else // X-axis
+	{
+		// TODO: X-axis shit
+		// Use right/left bound as offset
+		double x0 = obj.GetInitialPosition().x;
+		intercepts = traj.CalcYIntercepts(x0);
+	}
+
+	// Use the positive intercept for t
+	t = max(intercepts.first, intercepts.second);
+
+	return t;
+}
+
 /********** PUBLIC METHODS **********/
 HRESULT Scene::AddObject(PhysicsObject* newObject)
 {
 	HRESULT hr = S_OK;
 
-	CartPoint aabbMin = newObject->GetAABB().GetBottomLeft(Physics);
-	CartPoint aabbMax = newObject->GetAABB().GetTopRight(Physics);
+	CartPoint aabbMin = newObject->GetAABB().GetBottomLeft();
+	CartPoint aabbMax = newObject->GetAABB().GetTopRight();
 	
 	// Sanity check new physics object properties, add to list on pass
 	// Out-of-bounds check
@@ -247,7 +236,8 @@ HRESULT Scene::AddObject(PhysicsObject* newObject)
 		std::vector<PhysicsObject*>::iterator poItr;
 		for (poItr=m_physicsObjects.begin(); poItr!=m_physicsObjects.end(); ++poItr)
 		{
-			bOverlapping = CheckOverlap(newObject, (*poItr));
+			PhysicsObject curObject = **poItr;
+			bOverlapping = PhysicsObject::CheckOverlap(*newObject, curObject);
 			if (bOverlapping)
 			{
 				hr = E_FAIL;
@@ -280,18 +270,24 @@ void Scene::Step()
 	vOutOfBoundsX = CheckOutOfBounds(XAxis);
 	vOutOfBoundsY = CheckOutOfBounds(YAxis);
 
+	// Determine "intra-step," i.e. actual, out-of-bounds position/time
+	// This will be used to accurately reset Trajectory initial position
+	double newT0 = -1.0;
+
 	// Revert movements of all x-coord out-of-bounds objects, and "bounce" them back
 	for (poItr=vOutOfBoundsX.begin(); poItr!=vOutOfBoundsX.end(); ++poItr)
 	{
-		(*poItr)->Revert(m_elapsed);
-		(*poItr)->Rebound(XAxis, m_elapsed);
+		newT0 = CalcOOBTime(**poItr, XAxis);
+		(*poItr)->Revert(newT0);
+		(*poItr)->Rebound(XAxis, newT0);
 	}
 
 	// Revert movements of all y-coord out-of-bounds objects, and "bounce" them back
 	for (poItr=vOutOfBoundsY.begin(); poItr!=vOutOfBoundsY.end(); ++poItr)
 	{
-		(*poItr)->Revert(m_elapsed);
-		(*poItr)->Rebound(YAxis, m_elapsed);
+		newT0 = CalcOOBTime(**poItr, YAxis);
+		(*poItr)->Revert(newT0);
+		(*poItr)->Rebound(YAxis, newT0);
 	}
 	/*** END Out-of-bounds checks ***/
 
@@ -307,10 +303,8 @@ void Scene::Step()
 		// Determine axis of collision, corner hits will rebound on both axes
 		eAxis axis = GetCollisionAxis(poPair);
 
-		// Determine "intra-step," i.e. actual, collision position
+		// TODO: Determine "intra-step," i.e. actual, collision position
 		// This will be used to accurately reset Trajectory initial position
-		std::pair<CartPoint,CartPoint> collisionCoords;
-		collisionCoords = PhysicsObject::CalcActualCollisionPosition(*(poPair.first), *(poPair.second));
 
 		// Y-axis collision, revert movement and rebound both objects in y-direction
 		if (axis == YAxis || axis == BothAxes)
