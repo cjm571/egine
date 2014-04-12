@@ -34,7 +34,7 @@ void Quadratic::SetC(double newC)
 std::pair<double,double> Quadratic::GetRoots(double fx)
 {
 	// Solve for quadratic roots
-	double c = m_c - fx;
+	double c = m_c + fx;
 	double posRoot = ((-1*m_b) + sqrt(pow(m_b,2) - 4*m_a*c)) / (2*m_a);
 	double negRoot = ((-1*m_b) - sqrt(pow(m_b,2) - 4*m_a*c)) / (2*m_a);
 	
@@ -70,6 +70,16 @@ double Quadratic::Solve(double x)
 Linear Quadratic::Derive()
 {
 	return Linear(2*m_a, m_b);
+}
+
+double Quadratic::Derive(double x)
+{
+	double solution;
+
+	Linear derivative = Derive();
+	solution = derivative.Solve(x);
+
+	return solution;
 }
 
 

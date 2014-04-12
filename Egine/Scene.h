@@ -43,8 +43,6 @@ private:
 	// Returns axis enum value
 	eAxis GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*>);
 
-	// Calculates intra-step out-of-bounds time of PhysicsObject on given collision axis
-	double CalcOOBTime(PhysicsObject obj, eAxis axis);
 
 // Public Methods
 public:
@@ -60,9 +58,12 @@ public:
 	// Returns S_OK on success, E_FAIL on failure
 	HRESULT AddObject(PhysicsObject*);
 
-	// Step physics scene forward
-	// NOTE: Until multithreading implemented, steps forward 1s
+	// Step physics scene forward 1 STEP_EPSILON
 	void Step();
+
+	// Calculates intra-step out-of-bounds time of PhysicsObject on given collision axis
+	double CalcOOBTime(eAxis axis, PhysicsObject obj);
+
 
 // Properties
 private:

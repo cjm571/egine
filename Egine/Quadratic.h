@@ -40,6 +40,9 @@ public:
 	// Returns derivative as Linear function object
 	Linear Derive();
 
+	// Returns solution to the derivative at the given point
+	double Derive(double x);
+
 // Public Statics
 public:
 	// Calculates intersections of Quadratics f(x) and g(x)

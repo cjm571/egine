@@ -16,11 +16,11 @@ public:
 	// Defines initially at-rest trajactory in zero-gravity starting at (0,0)
 	Trajectory();
 	// Defines initially at-rest trajectory
-	Trajectory(double _g);
+	Trajectory(double _g, CartPoint _p0);
 	// Defines trajectory moving at given velocity along 0-rad line
-	Trajectory(double _g, double _v0);
+	Trajectory(double _g, double _v0, CartPoint _p0);
 	// Defines trajectory moving at given velocity in given direction
-	Trajectory(double _g, double _v0, double _theta0);
+	Trajectory(double _g, double _v0, double _theta0, CartPoint _p0);
 
 	// Destructor
 	~Trajectory();

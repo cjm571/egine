@@ -184,25 +184,25 @@ eAxis Scene::GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*> poPair)
 	return axis;
 }
 
-double Scene::CalcOOBTime(PhysicsObject obj, eAxis axis)
+double Scene::CalcOOBTime(eAxis axis, PhysicsObject obj)
 {
 	double t = -1.0;
 
 	// Calculate AABB intercept with Scene boundary
 	Trajectory traj = obj.GetTrajectory();
 	std::pair<double,double> intercepts;
-	if (axis == YAxis)
-	{
-		// Use lower bound as offset
-		double y0 = obj.GetInitialPosition().y - (obj.GetAABB().GetHeight()/2);
-		intercepts = traj.CalcXIntercepts(y0);
-	}
-	else // X-axis
+	if (axis == XAxis)
 	{
 		// TODO: X-axis shit
 		// Use right/left bound as offset
 		double x0 = obj.GetInitialPosition().x;
 		intercepts = traj.CalcYIntercepts(x0);
+	}
+	else // Y-axis
+	{
+		// Use halfwidth as offset
+		double offset = -1*(obj.GetAABB().GetHeight()/2);
+		intercepts = traj.CalcXIntercepts(offset);
 	}
 
 	// Use the positive intercept for t
@@ -257,11 +257,13 @@ HRESULT Scene::AddObject(PhysicsObject* newObject)
 
 void Scene::Step()
 {
+	double nextStepTime = m_elapsed + STEP_EPSILON;
+
 	// Move all phys objects before collision checking
 	std::vector<PhysicsObject*>::iterator poItr;
 	for (poItr=m_physicsObjects.begin(); poItr!=m_physicsObjects.end(); ++poItr)
 	{
-		(*poItr)->Move(m_elapsed);
+		(*poItr)->Move(nextStepTime);
 	}
 
 	/*** BEGIN Out-of-bounds checks ***/
@@ -269,25 +271,22 @@ void Scene::Step()
 	std::vector<PhysicsObject*> vOutOfBoundsY;
 	vOutOfBoundsX = CheckOutOfBounds(XAxis);
 	vOutOfBoundsY = CheckOutOfBounds(YAxis);
-
-	// Determine "intra-step," i.e. actual, out-of-bounds position/time
-	// This will be used to accurately reset Trajectory initial position
-	double newT0 = -1.0;
-
-	// Revert movements of all x-coord out-of-bounds objects, and "bounce" them back
+	
+	// Rebound objects and move them to next STEP_EPSILON boundary
+	double oobTime = -1.0;
 	for (poItr=vOutOfBoundsX.begin(); poItr!=vOutOfBoundsX.end(); ++poItr)
 	{
-		newT0 = CalcOOBTime(**poItr, XAxis);
-		(*poItr)->Revert(newT0);
-		(*poItr)->Rebound(XAxis, newT0);
+		oobTime = CalcOOBTime(XAxis, **poItr);
+		(*poItr)->Rebound(XAxis, oobTime);
+		(*poItr)->Move(nextStepTime);
 	}
 
-	// Revert movements of all y-coord out-of-bounds objects, and "bounce" them back
+	// Rebound objects and move them to next STEP_EPSILON boundary
 	for (poItr=vOutOfBoundsY.begin(); poItr!=vOutOfBoundsY.end(); ++poItr)
 	{
-		newT0 = CalcOOBTime(**poItr, YAxis);
-		(*poItr)->Revert(newT0);
-		(*poItr)->Rebound(YAxis, newT0);
+		oobTime = CalcOOBTime(YAxis, **poItr);
+		(*poItr)->Rebound(YAxis, oobTime);
+		(*poItr)->Move(nextStepTime);
 	}
 	/*** END Out-of-bounds checks ***/
 
@@ -302,13 +301,11 @@ void Scene::Step()
 
 		// Determine axis of collision, corner hits will rebound on both axes
 		eAxis axis = GetCollisionAxis(poPair);
-
-		// TODO: Determine "intra-step," i.e. actual, collision position
-		// This will be used to accurately reset Trajectory initial position
-
+		
 		// Y-axis collision, revert movement and rebound both objects in y-direction
 		if (axis == YAxis || axis == BothAxes)
 		{
+			// TODO: CalcCollisionTime()
 			poPair.first->Rebound(YAxis, m_elapsed);
 			poPair.second->Rebound(YAxis, m_elapsed);
 		}
@@ -316,6 +313,7 @@ void Scene::Step()
 		// X-axis collision, revert movement and rebound both objects in x-direction
 		if (axis == XAxis || axis == BothAxes)
 		{
+			// TODO: CalcCollisionTime()
 			poPair.first->Rebound(XAxis, m_elapsed);
 			poPair.second->Rebound(XAxis, m_elapsed);
 		}
@@ -323,5 +321,5 @@ void Scene::Step()
 	/*** END Collision Handling ***/
 
 	// Increment elapsed time
-	m_elapsed += STEP_EPSILON;
+	m_elapsed = nextStepTime;
 }

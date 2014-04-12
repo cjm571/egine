@@ -69,18 +69,18 @@ namespace EgineTest
 			PhysicsObject objB = PhysicsObject(centerB);
 			
 			// Set trajectories
-			Trajectory trajA = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, angle);
+			Trajectory trajA = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, angle, objA.GetAABB().GetCenter());
 			Trajectory trajB;
 			switch (axis)
 			{
 			case XAxis:
-				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, M_PI);
+				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, M_PI, objB.GetAABB().GetCenter());
 				break;
 			case YAxis:
-				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, 3*M_PI/2);
+				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, 3*M_PI/2, objB.GetAABB().GetCenter());
 				break;
 			case BothAxes:
-				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, reflAngle);
+				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, reflAngle, objB.GetAABB().GetCenter());
 				break;
 			default: // AxisErr
 				Assert::Fail();

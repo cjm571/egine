@@ -32,12 +32,14 @@ public:
 // Public Methods
 public:
 	AABB GetAABB()					{return m_aabb;};
-	CartPoint GetInitialPosition()	{return m_p0;};
 	Trajectory GetTrajectory()		{return m_trajectory;};
 	double GetMass()				{return m_mass;};
 	D2D1::ColorF::Enum GetColor()	{return m_color;};
 	eShape GeteShape()				{return m_shape;};
 	ULONG GetUID()					{return m_UID;};
+	
+	// Returns initial Cartesian position of object
+	CartPoint GetInitialPosition();
 
 	// Sets initial position of the PhysicsObject
 	HRESULT SetInitialPosition(CartPoint newP0);
@@ -45,16 +47,12 @@ public:
 	// Changes trajectory of object
 	HRESULT SetTrajectory(Trajectory);
 
-	// Moves object one STEP_EPSILON forward in time from given elapsed time
-	void Move(double timeElapsed);
-
-	// Resets object to position at current elapsed time
-	// NOTE: If trajectory has changed since Move(), this will break simulation accuracy
-	void Revert(double timeElapsed);
+	// Moves object forward in time to given time
+	void Move(double t);
 
 	// Resets an object's trajectory after collision on the given axis
-	// NOTE: does NOT Revert() previous movement, nor does it perform the subsequent Move()
-	HRESULT Rebound(eAxis axis, double curTime);
+	// NOTE: does NOT perform the subsequent Move()
+	HRESULT Rebound(eAxis axis, double reboundTime);
 
 
 // Public Static
@@ -69,10 +67,7 @@ public:
 private:
 	// Axis-Aligned Bounding Box for use in collision detection
 	AABB m_aabb;
-
-	// Initial position of object centerpoint
-	CartPoint m_p0;
-	
+		
 	// Trajectory of object, will be acted on by physics operations
 	Trajectory m_trajectory;
 

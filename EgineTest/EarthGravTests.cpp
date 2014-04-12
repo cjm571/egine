@@ -38,7 +38,7 @@ namespace EgineTest
 			PhysicsObject obj = PhysicsObject(EPICENTER);
 
 			// Set trajectory
-			Trajectory traj0 = Trajectory(testScene.GetGravity(), v0, theta0);
+			Trajectory traj0 = Trajectory(testScene.GetGravity(), v0, theta0, obj.GetAABB().GetCenter());
 			obj.SetTrajectory(traj0);
 
 			// Add object to scene
@@ -61,9 +61,13 @@ namespace EgineTest
 			double timeToCollision = -1.0;
 			if (bottomRebound)
 			{
-				// Solve for positive x-intercept to get collision time 
+				/*
+				// Solve for positive x-intercept to get collision time
 				roots = obj.GetTrajectory().CalcXIntercepts(obj.GetAABB().GetLowerBound());
 				timeToCollision = roots.second;
+				*/
+
+				timeToCollision = testScene.CalcOOBTime(YAxis, obj);
 			}
 			else // Side rebound
 			{
@@ -73,30 +77,21 @@ namespace EgineTest
 			}
 			UINT steps = static_cast<UINT>(ceil(timeToCollision / STEP_EPSILON));
 
+			// Calculate expected post-rebound angle
+			double preRBAngle = obj.GetTrajectory().GetTangentAngle(timeToCollision);
+			double expectedAngle = WrapAngle(preRBAngle * -1);
+
 			// Step until rebound
 			for (UINT i=0; i<steps; i++)
 			{
 				testScene.Step();
 			}
 
-			// Calculate expected post-rebound angle
-			double preRBTime = timeToCollision - STEP_EPSILON;
-			double preRBAngle = obj.GetTrajectory().GetTangentAngle(preRBTime);
-			double expectedAngle = WrapAngle(preRBAngle * -1);
-
 			// Assert that actual post-rebound angle within error bounds of expected
 			double curTime = testScene.GetElapsedTime();
 			double actualAngle = obj.GetTrajectory().GetTheta(curTime);
 			double error = abs(expectedAngle - actualAngle);
 			Assert::IsTrue(error <= ANGLE_ERROR);
-			
-			// Calculate expected post-rebound velocity
-			double postRBTime = timeToCollision + STEP_EPSILON;
-			double yVel = dist / (postRBTime - 0.5*g*pow(postRBTime,2));
-			double expectedVel = yVel + (v0 * cos(theta0));
-			double actualVel = obj.GetTrajectory().GetVelocity(curTime);
-			error = abs(expectedVel - actualVel);
-			Assert::IsTrue(error <= VELOCITY_ERROR);
 		}
 
 	public:

@@ -18,37 +18,37 @@ Trajectory::Trajectory()
 	m_y = Quadratic(a, 0.0, 0.0);
 }
 
-Trajectory::Trajectory(double _g)
+Trajectory::Trajectory(double _g, CartPoint _p0)
 	: m_g(_g), m_t0(0.0)
 {
 	// No movement in X-direction, all coeffs 0
-	m_x = Quadratic(0.0, 0.0, 0.0);
+	m_x = Quadratic(0.0, 0.0, _p0.x);
 
 	// g in Y-direction
 	double a = -0.5*m_g;
-	m_y = Quadratic(a, 0.0, 0.0);
+	m_y = Quadratic(a, 0.0, _p0.y);
 }
 
-Trajectory::Trajectory(double _g, double _v0)
+Trajectory::Trajectory(double _g, double _v0, CartPoint _p0)
 	: m_g(_g), m_t0(0.0)
 {
 	// v0 in X-direction
-	m_x = Quadratic(0.0, _v0, 0.0);
+	m_x = Quadratic(0.0, _v0, _p0.x);
 
 	// g in Y-direction
 	double a = -0.5*m_g;
-	m_y = Quadratic(a, 0.0, 0.0);
+	m_y = Quadratic(a, 0.0, _p0.y);
 }
 
-Trajectory::Trajectory(double _g, double _v0, double _theta0)
+Trajectory::Trajectory(double _g, double _v0, double _theta0, CartPoint _p0)
 	: m_g(_g), m_t0(0.0)
 {
 	// Vx in X-direction
-	m_x = Quadratic(0.0, _v0*cos(_theta0), 0.0);
+	m_x = Quadratic(0.0, _v0*cos(_theta0), _p0.x);
 
 	// g, Vy in Y-direction
 	double a = -0.5*m_g;
-	m_y = Quadratic(a, _v0*sin(_theta0), 0.0);
+	m_y = Quadratic(a, _v0*sin(_theta0), _p0.y);
 }
 
 Trajectory::~Trajectory()
@@ -100,11 +100,11 @@ double Trajectory::GetVelocity(eAxis axis, double t)
 	
 	if (axis == XAxis)
 	{
-		axisV = GetVelocity(t) * cos(GetTheta(t));
+		axisV = m_x.Derive(t);
 	}
 	else // Y-axis
 	{
-		axisV = GetVelocity(t) * sin(GetTheta(t));
+		axisV = m_y.Derive(t);
 	}
 
 	return axisV;

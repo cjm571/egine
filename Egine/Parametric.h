@@ -36,10 +36,10 @@ public:
 	// Return real-number roots of y(t)
 	std::pair<double,double> GetYRoots(double yt=0.0);
 
-	// Calculates X-intercept given offset from x=0
-	std::pair<double,double> CalcXIntercepts(double offset);
-	// Calculates Y-intercept given offset from y=0
-	std::pair<double,double> CalcYIntercepts(double offset);
+	// Calculates X-intercept given offset from initial position
+	std::pair<double,double> CalcXIntercepts(double offset=0.0);
+	// Calculates Y-intercept given offset from initial position
+	std::pair<double,double> CalcYIntercepts(double offset=0.0);
 
 // Data Members
 protected:
