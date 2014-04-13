@@ -56,18 +56,9 @@ CartPoint PhysicsObject::GetInitialPosition()
 HRESULT PhysicsObject::SetInitialPosition(CartPoint newP0)
 {
 	HRESULT hr = S_OK;
-
-	// Sanity check
-	if (newP0.x < 0 || newP0.y < 0)
-	{
-		hr = E_FAIL;
-	}
-
-	if (SUCCEEDED(hr))
-	{
-		hr |= m_trajectory.SetConstantFactor(XAxis, newP0.x);
-		hr |= m_trajectory.SetConstantFactor(YAxis, newP0.y);
-	}
+	
+	hr |= m_trajectory.SetConstantFactor(XAxis, newP0.x);
+	hr |= m_trajectory.SetConstantFactor(YAxis, newP0.y);
 
 	return hr;
 }
@@ -94,22 +85,53 @@ HRESULT PhysicsObject::Rebound(eAxis axis, double reboundTime)
 {
 	HRESULT hr = S_OK;
 
+	// Calculate new linear factor, v0, via v0 = -v_inst - 2a*t
 	double instV = m_trajectory.GetVelocity(axis, reboundTime);
-	CartPoint reboundPos = m_trajectory.GetPositionAt(reboundTime);
-	
-	// Set negative of instantaneous velocity to be new linear factor
-	hr |= m_trajectory.SetVelocityFactor(axis, -1*instV);
-	
-	// Reset initial position to collision point, as this is essentially a new trajectory
-	if(SUCCEEDED(hr))
+	double newv0 = (-1*instV) - (2*m_trajectory.GetQuadraticFactor(axis)*reboundTime);
+
+	// Calculate coords of p0 reflected over the collision line
+	double collisionLine;
+	CartPoint reflectedp0;
+	CartPoint oldp0 = GetInitialPosition();
+	CartPoint reboundCenterpoint = m_trajectory.GetPositionAt(reboundTime);
+	if (axis == XAxis)
+	{		
+		// Left-side rebound 
+		if (oldp0.x > reboundCenterpoint.x)
+		{
+			collisionLine = reboundCenterpoint.x;
+			reflectedp0.x = collisionLine - (oldp0.x-collisionLine);
+		}
+		else // Right-side rebound
+		{
+			collisionLine = reboundCenterpoint.x;
+			reflectedp0.x = collisionLine + (oldp0.x-collisionLine);
+		}
+		reflectedp0.y = oldp0.y;
+	}
+	else // Y-axis
 	{
-		hr |= SetInitialPosition(reboundPos);
+		// Bottom-side rebound
+		if (oldp0.y > reboundCenterpoint.y)
+		{
+			collisionLine = reboundCenterpoint.y;
+			reflectedp0.y = collisionLine - (oldp0.y-collisionLine);
+		}
+		else // Top-side rebound
+		{
+			collisionLine = reboundCenterpoint.y;
+			reflectedp0.y = collisionLine + (oldp0.y-collisionLine);
+		}
+		reflectedp0.x = oldp0.x;
 	}
 	
-	// Reset trajectory start time
+	// Set new linear velocity factor
+	hr |= m_trajectory.SetVelocityFactor(axis, newv0);
+	
+	// Set new p0
 	if(SUCCEEDED(hr))
 	{
-		hr |= m_trajectory.SetT0(reboundTime);
+		hr |= SetInitialPosition(reflectedp0);
 	}
 
 	return hr;

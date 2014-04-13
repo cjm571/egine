@@ -8,7 +8,7 @@
 
 /********** CTORS **********/
 Trajectory::Trajectory()
-	: m_g(9.8), m_t0(0.0)
+	: m_g(9.8)
 {
 	// No movement in X-direction, all coeffs 0
 	m_x = Quadratic(0.0, 0.0, 0.0);
@@ -19,7 +19,7 @@ Trajectory::Trajectory()
 }
 
 Trajectory::Trajectory(double _g, CartPoint _p0)
-	: m_g(_g), m_t0(0.0)
+	: m_g(_g)
 {
 	// No movement in X-direction, all coeffs 0
 	m_x = Quadratic(0.0, 0.0, _p0.x);
@@ -30,7 +30,7 @@ Trajectory::Trajectory(double _g, CartPoint _p0)
 }
 
 Trajectory::Trajectory(double _g, double _v0, CartPoint _p0)
-	: m_g(_g), m_t0(0.0)
+	: m_g(_g)
 {
 	// v0 in X-direction
 	m_x = Quadratic(0.0, _v0, _p0.x);
@@ -41,7 +41,7 @@ Trajectory::Trajectory(double _g, double _v0, CartPoint _p0)
 }
 
 Trajectory::Trajectory(double _g, double _v0, double _theta0, CartPoint _p0)
-	: m_g(_g), m_t0(0.0)
+	: m_g(_g)
 {
 	// Vx in X-direction
 	m_x = Quadratic(0.0, _v0*cos(_theta0), _p0.x);
@@ -56,20 +56,12 @@ Trajectory::~Trajectory()
 }
 
 
-/********** HELPER FUNCTIONS **********/
-double Trajectory::GetRelativeTime(double t)
-{
-	return t - m_t0;
-}
-
-
 /********** PUBLIC METHODS **********/
 double Trajectory::GetTheta(double t)
 {
 	double theta = -1.0;
-	double tRel = GetRelativeTime(t);
 
-	theta = GetTangentAngle(tRel);
+	theta = GetTangentAngle(t);
 	theta = WrapAngle(theta);
 
 	return theta;
@@ -78,15 +70,14 @@ double Trajectory::GetTheta(double t)
 double Trajectory::GetVelocity(double t)
 {
 	double vScalar = -1.0;
-	double tRel = GetRelativeTime(t);
 
 	// Derive X & Y quadtratics
 	Linear dx_dt = m_x.Derive();
 	Linear dy_dt = m_y.Derive();
 
 	// Solve derivatives at time t for X & Y velocities
-	double vX = dx_dt.Solve(tRel);
-	double vY = dy_dt.Solve(tRel);
+	double vX = dx_dt.Solve(t);
+	double vY = dy_dt.Solve(t);
 
 	// Use pythagorean theorem to get scalar velocity
 	Pythag(vX, vY, &vScalar);
@@ -110,7 +101,23 @@ double Trajectory::GetVelocity(eAxis axis, double t)
 	return axisV;
 }
 
-double Trajectory::GetVelocityFactor(eAxis axis)
+double Trajectory::GetQuadraticFactor(eAxis axis)
+{
+	double vel;
+
+	if (axis == XAxis)
+	{
+		vel = m_x.GetA();
+	}
+	else // Y-axis
+	{
+		vel = m_y.GetA();
+	}
+
+	return vel;
+}
+
+double Trajectory::GetLinearFactor(eAxis axis)
 {
 	double vel;
 
@@ -145,10 +152,9 @@ double Trajectory::GetConstantFactor(eAxis axis)
 CartPoint Trajectory::GetPositionAt(double t)
 {
 	CartPoint position;
-	double tRel = GetRelativeTime(t);
 
-	double xPos = m_x.Solve(tRel);
-	double yPos = m_y.Solve(tRel);
+	double xPos = m_x.Solve(t);
+	double yPos = m_y.Solve(t);
 
 	position.x = xPos;
 	position.y = yPos;
@@ -220,25 +226,6 @@ HRESULT Trajectory::SetGravity(double newG)
 	{
 		m_y.SetA(-1*newG);
 		m_g = newG;
-	}
-
-	return hr;
-}
-
-HRESULT Trajectory::SetT0(double newt0)
-{
-	HRESULT hr = S_OK;
-
-	// Sanity check
-	// Cannot move backward in time
-	if (newt0 < m_t0)
-	{
-		hr = E_FAIL;
-	}
-
-	if (SUCCEEDED(hr))
-	{
-		m_t0 = newt0;
 	}
 
 	return hr;

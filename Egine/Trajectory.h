@@ -28,7 +28,6 @@ public:
 // Accessors
 public:
 	double GetGravity()		{return m_g;};
-	double GetT0()			{return m_t0;};
 
 	// Returns angle of trajectory in range (0,2pi) at time t
 	double GetTheta(double t);
@@ -38,18 +37,15 @@ public:
 	// Returns axis-component of velocity at time t
 	double GetVelocity(eAxis axis, double t);
 	
+	// Returns velocity Quadratic factor for the given axis
+	double GetQuadraticFactor(eAxis axis);
 	// Returns velocity linear factor for the given axis
-	double GetVelocityFactor(eAxis axis);
+	double GetLinearFactor(eAxis axis);
 	// Returns velocity constant factor for the given axis
 	double GetConstantFactor(eAxis axis);
 
 	// Returns Cartesian position of object at the given time
 	CartPoint GetPositionAt(double t);
-
-// Helper functions
-private:
-	// Returns time relative to t0
-	double GetRelativeTime(double t);
 
 // Public methods
 public:
@@ -65,7 +61,7 @@ public:
 	// Resets the trajectory start time to the given value
 	// NOTE: newt0 must be greater than the current t0
 	HRESULT SetT0(double newt0);
-
+	
 // Public Statics
 public:
 	// Calculates intersections of Trajectories a and b
@@ -74,8 +70,6 @@ public:
 // Properties
 // NOTE: Velocity components are stored in inherited Quadratics' (m_x, m_y) member m_b
 private:
-	// Point in simulation time when trajectory was last altered
-	double m_t0;
 	// Current gravity imposed on trajectory
 	double m_g;
 };

@@ -84,7 +84,6 @@ std::pair<double,double> Parametric::CalcYIntercepts(double offset)
 {
 	std::pair<double,double> roots;
 
-	// Note the negation
 	roots = m_x.GetRoots(offset);
 
 	return roots;

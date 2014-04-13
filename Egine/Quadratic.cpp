@@ -33,13 +33,26 @@ void Quadratic::SetC(double newC)
 
 std::pair<double,double> Quadratic::GetRoots(double fx)
 {
+	std::pair<double,double> roots;
 	// Solve for quadratic roots
 	double c = m_c + fx;
-	double posRoot = ((-1*m_b) + sqrt(pow(m_b,2) - 4*m_a*c)) / (2*m_a);
-	double negRoot = ((-1*m_b) - sqrt(pow(m_b,2) - 4*m_a*c)) / (2*m_a);
+
+	// Short-circuit for Quadratics that have no quadratic factor
+	if (m_a == 0)
+	{
+		Linear linearRep = Linear(m_b, c);
+		double root = linearRep.GetRoot();
+
+		roots = std::make_pair(root, root);
+	}
+	else
+	{
+		double posRoot = ((-1*m_b) + sqrt(pow(m_b,2) - 4*m_a*c)) / (2*m_a);
+		double negRoot = ((-1*m_b) - sqrt(pow(m_b,2) - 4*m_a*c)) / (2*m_a);
 	
-	// Make and return pair of roots
-	std::pair<double,double> roots = std::make_pair(posRoot, negRoot);
+		// Make and return pair of roots
+		roots = std::make_pair(posRoot, negRoot);
+	}
 
 	return roots;
 }

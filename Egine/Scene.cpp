@@ -191,17 +191,27 @@ double Scene::CalcOOBTime(eAxis axis, PhysicsObject obj)
 	// Calculate AABB intercept with Scene boundary
 	Trajectory traj = obj.GetTrajectory();
 	std::pair<double,double> intercepts;
+	double offset = 0.0;
+	
 	if (axis == XAxis)
 	{
-		// TODO: X-axis shit
-		// Use right/left bound as offset
-		double x0 = obj.GetInitialPosition().x;
-		intercepts = traj.CalcYIntercepts(x0);
+		// Use halfwidth as offset
+		if (obj.GetAABB().GetCenter().x <= SCENE_WIDTH/2)
+		{
+			// Negative offset for left-side
+			offset = -1*(obj.GetAABB().GetWidth()/2);
+		}
+		else
+		{
+			// Positive offset for right-side
+			offset = obj.GetAABB().GetWidth()/2;
+		}
+		intercepts = traj.CalcYIntercepts(offset);
 	}
 	else // Y-axis
 	{
-		// Use halfwidth as offset
-		double offset = -1*(obj.GetAABB().GetHeight()/2);
+		// Use halfheight as offset
+		offset = -1*(obj.GetAABB().GetHeight()/2);
 		intercepts = traj.CalcXIntercepts(offset);
 	}
 

@@ -16,17 +16,8 @@ namespace EgineTest
 	{
 	private:
 		// Scene-edge Rebound helper function
-		// NOTE: 
-		// Bottom rebounds must be placed below Y = 100m
-		// Side rebounds must be placed within 50m of vertical side
-		static void SERebound(double v0, double theta0, CartPoint p0)
+		static void Rebound(eAxis axis, double v0, double theta0, CartPoint p0)
 		{
-			bool bottomRebound = true;
-			// Sanity check starting point, set rebound type
-			Assert::IsTrue((((p0.x  <= 50) || (p0.x >= SCENE_WIDTH-50)) && (p0.y >= 100)) ||
-						   (p0.y < 100 ) && ((p0.x > 50) || (p0.x < SCENE_WIDTH-50)));
-			bottomRebound = (p0.y < 100 ) && ((p0.x > 50) || (p0.x < SCENE_WIDTH-50));
-
 			// Wrap angle around (0,2pi)
 			theta0 = WrapAngle(theta0);
 			
@@ -34,8 +25,8 @@ namespace EgineTest
 			PhysicsObject refObj = PhysicsObject();
 			double halfwidth = refObj.GetAABB().GetWidth()/2;
 
-			// Create rebound object at epicenter
-			PhysicsObject obj = PhysicsObject(EPICENTER);
+			// Create rebound object at p0
+			PhysicsObject obj = PhysicsObject(p0);
 
 			// Set trajectory
 			Trajectory traj0 = Trajectory(testScene.GetGravity(), v0, theta0, obj.GetAABB().GetCenter());
@@ -43,43 +34,22 @@ namespace EgineTest
 
 			// Add object to scene
 			Assert::AreEqual(testScene.AddObject(&obj), S_OK);
-
-			// Calculate distance until collision
-			double dist = -1.0;
-			if (bottomRebound)
-			{
-				dist = obj.GetAABB().GetLowerBound();
-			}
-			else // Side rebound
-			{
-				dist = min(obj.GetAABB().GetLeftBound(), SCENE_WIDTH - obj.GetAABB().GetRightBound());
-			}
-			double g = testScene.GetGravity();
-
+			
 			// Calculate steps required for collision
-			std::pair<double,double> roots;
-			double timeToCollision = -1.0;
-			if (bottomRebound)
-			{
-				/*
-				// Solve for positive x-intercept to get collision time
-				roots = obj.GetTrajectory().CalcXIntercepts(obj.GetAABB().GetLowerBound());
-				timeToCollision = roots.second;
-				*/
-
-				timeToCollision = testScene.CalcOOBTime(YAxis, obj);
-			}
-			else // Side rebound
-			{
-				// Use nearest y-intercept for collision time
-				// TODO: Fix this, it sucks. maybe pull side rebounds into separate function
-				roots = obj.GetTrajectory().GetXRoots();
-			}
+			double timeToCollision = testScene.CalcOOBTime(axis, obj);
 			UINT steps = static_cast<UINT>(ceil(timeToCollision / STEP_EPSILON));
 
 			// Calculate expected post-rebound angle
-			double preRBAngle = obj.GetTrajectory().GetTangentAngle(timeToCollision);
-			double expectedAngle = WrapAngle(preRBAngle * -1);
+			double preRBAngle = WrapAngle(obj.GetTrajectory().GetTangentAngle(timeToCollision));
+			double expectedAngle;
+			if (axis == XAxis)
+			{
+				expectedAngle = WrapAngle(-1 * (preRBAngle+M_PI));
+			}
+			else // Y-axis
+			{
+				expectedAngle = WrapAngle(-1 * preRBAngle);
+			}
 
 			// Step until rebound
 			for (UINT i=0; i<steps; i++)
@@ -87,7 +57,7 @@ namespace EgineTest
 				testScene.Step();
 			}
 
-			// Assert that actual post-rebound angle within error bounds of expected
+			// Assert that actual post-rebound angle is within error bounds of expected
 			double curTime = testScene.GetElapsedTime();
 			double actualAngle = obj.GetTrajectory().GetTheta(curTime);
 			double error = abs(expectedAngle - actualAngle);
@@ -110,20 +80,32 @@ namespace EgineTest
 		/***** SCENE-BOTTOM REBOUND TESTS *****/
 		TEST_METHOD(SBParallelRebound)
 		{
-			CartPoint cPoint = {100, 75};
-			SERebound(0.0, 0.0, cPoint);
+			CartPoint startPoint = {100, 75};
+
+			// Initially at-rest
+			Rebound(YAxis, 0.0, 0.0, startPoint);
 		}
 
 		/***** SCENE-SIDE REBOUND TESTS *****/
 		TEST_METHOD(SSParallelRebound)
 		{
-			Assert::Fail();
+			CartPoint startPoint = {25, 150};
+
+			// Initially moving towards left Scene side at 5m/s
+			Rebound(XAxis, 5.0, M_PI, startPoint);
 		}
 
 		/***** PARABOLIC ARC TESTS *****/
 		TEST_METHOD(Parabola_X2)
 		{
-			Assert::Fail();
+			CartPoint startPoint = {25, 100};
+
+			// Traces out parabola defined by f(x) = -x^2 starting at point (-1,-1)
+			Quadratic _X2 = Quadratic(-1.0, 0.0, 0.0);
+			double theta0 = _X2.GetTangentAngle(-1.0);
+
+			// Initially moving along parabola at 1m/s
+			Rebound(YAxis, 1.0, theta0, startPoint);
 		}
 	};
 }

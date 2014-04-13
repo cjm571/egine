@@ -111,6 +111,7 @@ HRESULT Pythag(double* a, double b, double c)
 	return hr;
 }
 
+
 /***** SCENE PARAMETERS *****/
 double SCENE_WIDTH =	640.0;
 double SCENE_HEIGHT =	480.0;
