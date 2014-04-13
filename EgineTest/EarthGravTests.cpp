@@ -78,7 +78,7 @@ namespace EgineTest
 		
 
 		/***** SCENE-BOTTOM REBOUND TESTS *****/
-		TEST_METHOD(SBParallelRebound)
+		TEST_METHOD(BottomStraightRebound)
 		{
 			CartPoint startPoint = {100, 75};
 
@@ -87,16 +87,24 @@ namespace EgineTest
 		}
 
 		/***** SCENE-SIDE REBOUND TESTS *****/
-		TEST_METHOD(SSParallelRebound)
+		TEST_METHOD(LeftSideParallelRebound)
 		{
 			CartPoint startPoint = {25, 150};
 
 			// Initially moving towards left Scene side at 5m/s
 			Rebound(XAxis, 5.0, M_PI, startPoint);
 		}
+		
+		TEST_METHOD(RightSideParallelRebound)
+		{
+			CartPoint startPoint = {SCENE_WIDTH-25, 150};
+
+			// Initially moving towards right Scene side at 5m/s
+			Rebound(XAxis, 5.0, 0.0, startPoint);
+		}
 
 		/***** PARABOLIC ARC TESTS *****/
-		TEST_METHOD(Parabola_X2)
+		TEST_METHOD(Bottom_X2ParabolaRebound)
 		{
 			CartPoint startPoint = {25, 100};
 

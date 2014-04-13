@@ -112,14 +112,14 @@ std::vector<PhysicsObject*> Scene::CheckOutOfBounds(eAxis axis)
 		{
 		// X-coord check
 		case XAxis:
-			if (leftBound < 0.0 || rightBound > SCENE_WIDTH)
+			if (leftBound <= 0.0 || rightBound >= SCENE_WIDTH)
 			{
 				vOutOfBounds.push_back(*poItr);
 			}
 			break;
 		// Y-coord check
 		case YAxis:
-			if (lowBound < 0.0 || upBound > SCENE_HEIGHT)
+			if (lowBound <= 0.0 || upBound >= SCENE_HEIGHT)
 			{
 				vOutOfBounds.push_back(*poItr);
 			}
@@ -195,16 +195,16 @@ double Scene::CalcOOBTime(eAxis axis, PhysicsObject obj)
 	
 	if (axis == XAxis)
 	{
-		// Use halfwidth as offset
+		// Use negative dist of centerpoint from x=0 as offset
 		if (obj.GetAABB().GetCenter().x <= SCENE_WIDTH/2)
 		{
-			// Negative offset for left-side
+			// Just halfwidth for left-side
 			offset = -1*(obj.GetAABB().GetWidth()/2);
 		}
 		else
 		{
-			// Positive offset for right-side
-			offset = obj.GetAABB().GetWidth()/2;
+			// Halfwidth - scene width for right-side
+			offset = (obj.GetAABB().GetWidth()/2) - SCENE_WIDTH;
 		}
 		intercepts = traj.CalcYIntercepts(offset);
 	}
