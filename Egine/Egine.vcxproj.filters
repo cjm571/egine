@@ -42,6 +42,9 @@
     <ClInclude Include="Linear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MPUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Scene.cpp">
@@ -66,6 +69,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Linear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MPUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

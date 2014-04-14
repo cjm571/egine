@@ -59,9 +59,9 @@ double WrapAngle(double angle)
 
 	return angle;
 }
-HRESULT Pythag(double a, double b, double* c)
+PHRESULT Pythag(double a, double b, double* c)
 {
-	HRESULT hr = S_OK;
+	PHRESULT hr = S_OK;
 
 	// Check for negatives
 	if ((pow(a,2) + pow(b,2)) < 0)
@@ -76,9 +76,9 @@ HRESULT Pythag(double a, double b, double* c)
 
 	return hr;
 }
-HRESULT Pythag(double a, double* b, double c)
+PHRESULT Pythag(double a, double* b, double c)
 {
-	HRESULT hr = S_OK;
+	PHRESULT hr = S_OK;
 
 	// Check for negatives
 	if ((pow(c,2) - pow(a,2)) < 0)
@@ -93,9 +93,9 @@ HRESULT Pythag(double a, double* b, double c)
 
 	return hr;
 }
-HRESULT Pythag(double* a, double b, double c)
+PHRESULT Pythag(double* a, double b, double c)
 {
-	HRESULT hr = S_OK;
+	PHRESULT hr = S_OK;
 
 	// Check for negatives
 	if ((pow(c,2) - pow(b,2)) < 0)

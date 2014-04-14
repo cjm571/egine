@@ -162,9 +162,9 @@ CartPoint Trajectory::GetPositionAt(double t)
 	return position;
 }
 
-HRESULT Trajectory::SetVelocityFactor(eAxis axis, double newV)
+PHRESULT Trajectory::SetVelocityFactor(eAxis axis, double newV)
 {
-	HRESULT hr = S_OK;
+	PHRESULT hr = S_OK;
 
 	// Sanity check
 	if (abs(newV) > C)
@@ -187,9 +187,9 @@ HRESULT Trajectory::SetVelocityFactor(eAxis axis, double newV)
 	return hr;
 }
 
-HRESULT Trajectory::SetConstantFactor(eAxis axis, double newC)
+PHRESULT Trajectory::SetConstantFactor(eAxis axis, double newC)
 {
-	HRESULT hr = S_OK;
+	PHRESULT hr = S_OK;
 
 	// Sanity check
 	if (abs(newC) > C)
@@ -212,9 +212,9 @@ HRESULT Trajectory::SetConstantFactor(eAxis axis, double newC)
 	return hr;
 }
 
-HRESULT Trajectory::SetGravity(double newG)
+PHRESULT Trajectory::SetGravity(double newG)
 {
-	HRESULT hr = S_OK;
+	PHRESULT hr = S_OK;
 
 	// Sanity check
 	if (newG < 0.0)

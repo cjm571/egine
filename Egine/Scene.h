@@ -56,7 +56,7 @@ public:
 
 	// Add object to the scene
 	// Returns S_OK on success, E_FAIL on failure
-	HRESULT AddObject(PhysicsObject*);
+	PHRESULT AddObject(PhysicsObject*);
 
 	// Step physics scene forward 1 STEP_EPSILON
 	void Step();

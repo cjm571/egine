@@ -216,15 +216,15 @@ double Scene::CalcOOBTime(eAxis axis, PhysicsObject obj)
 	}
 
 	// Use the positive intercept for t
-	t = max(intercepts.first, intercepts.second);
+	t = std::max(intercepts.first, intercepts.second);
 
 	return t;
 }
 
 /********** PUBLIC METHODS **********/
-HRESULT Scene::AddObject(PhysicsObject* newObject)
+PHRESULT Scene::AddObject(PhysicsObject* newObject)
 {
-	HRESULT hr = S_OK;
+	PHRESULT hr = S_OK;
 
 	CartPoint aabbMin = newObject->GetAABB().GetBottomLeft();
 	CartPoint aabbMax = newObject->GetAABB().GetTopRight();
@@ -234,7 +234,7 @@ HRESULT Scene::AddObject(PhysicsObject* newObject)
 	if (aabbMin.x < 0 || aabbMin.y < 0 ||
 		aabbMax.x > SCENE_WIDTH || aabbMax.y > SCENE_HEIGHT)
 	{
-		MessageBoxA(NULL, "Cannot add object.\nBounding Box extends past scene perimeter.", NULL, MB_OK);
+		//TODO: Logging
 		hr = E_FAIL;
 	}
 

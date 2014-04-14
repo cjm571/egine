@@ -11,7 +11,7 @@ ULONG PhysicsObject::prevUID = 0;
 
 /********** CTORS **********/
 PhysicsObject::PhysicsObject()
-	: m_color(D2D1::ColorF::Black), m_mass(1.0), m_shape(PhysCircle)
+	: m_color(Black), m_mass(1.0), m_shape(PhysCircle)
 {
 	m_aabb = AABB();
 	SetInitialPosition(m_aabb.GetCenter());
@@ -20,7 +20,7 @@ PhysicsObject::PhysicsObject()
 }
 
 PhysicsObject::PhysicsObject(CartPoint _center)
-	: m_color(D2D1::ColorF::Black), m_mass(1.0), m_shape(PhysCircle)
+	: m_color(Black), m_mass(1.0), m_shape(PhysCircle)
 {
 	m_aabb = AABB(_center);
 	SetInitialPosition(m_aabb.GetCenter());
@@ -28,7 +28,7 @@ PhysicsObject::PhysicsObject(CartPoint _center)
 	m_UID = ++prevUID;
 }
 
-PhysicsObject::PhysicsObject(AABB _aabb, D2D1::ColorF::Enum _color, eShape _shape)
+PhysicsObject::PhysicsObject(AABB _aabb, Color _color, eShape _shape)
 	: m_color(_color), m_mass(1.0), m_shape(_shape)
 {
 	m_aabb = AABB(_aabb);
@@ -42,7 +42,7 @@ PhysicsObject::~PhysicsObject()
 }
 
 
-/********** PUBLIC METHODS **********/
+/********** ACCESSORS **********/
 CartPoint PhysicsObject::GetInitialPosition()
 {
 	CartPoint p0;
@@ -53,9 +53,11 @@ CartPoint PhysicsObject::GetInitialPosition()
 	return p0;
 }
 
-HRESULT PhysicsObject::SetInitialPosition(CartPoint newP0)
+
+/********** MUTATORS **********/
+PHRESULT PhysicsObject::SetInitialPosition(CartPoint newP0)
 {
-	HRESULT hr = S_OK;
+	PHRESULT hr = S_OK;
 	
 	hr |= m_trajectory.SetConstantFactor(XAxis, newP0.x);
 	hr |= m_trajectory.SetConstantFactor(YAxis, newP0.y);
@@ -63,15 +65,22 @@ HRESULT PhysicsObject::SetInitialPosition(CartPoint newP0)
 	return hr;
 }
 
-HRESULT PhysicsObject::SetTrajectory(Trajectory newTrajectory)
+PHRESULT PhysicsObject::SetTrajectory(Trajectory newTraj)
 {
-	HRESULT hr = S_OK;
+	PHRESULT hr = S_OK;
 
-	m_trajectory = newTrajectory;
+	m_trajectory = newTraj;
 
 	return hr;
 }
 
+void PhysicsObject::SetColor(Color newColor)
+{
+	m_color = newColor;
+}
+
+
+/********** PUBLIC METHODS **********/
 void PhysicsObject::Move(double t)
 {	
 	// Calculate centerpoint at the given time
@@ -81,9 +90,9 @@ void PhysicsObject::Move(double t)
 	m_aabb.SetCenter(newCenter);
 }
 
-HRESULT PhysicsObject::Rebound(eAxis axis, double reboundTime)
+PHRESULT PhysicsObject::Rebound(eAxis axis, double reboundTime)
 {
-	HRESULT hr = S_OK;
+	PHRESULT hr = S_OK;
 
 	// Calculate new linear factor, v0, via v0 = -v_inst - 2a*t
 	double instV = m_trajectory.GetVelocity(axis, reboundTime);

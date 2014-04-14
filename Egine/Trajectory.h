@@ -50,17 +50,17 @@ public:
 // Public methods
 public:
 	// Sets the velocity linear factor for the given axis
-	HRESULT SetVelocityFactor(eAxis axis, double newV);
+	PHRESULT SetVelocityFactor(eAxis axis, double newV);
 	// Sets the velocity constant factor for the given axis
-	HRESULT SetConstantFactor(eAxis axis, double newC);
+	PHRESULT SetConstantFactor(eAxis axis, double newC);
 
 	// Sets the trajectory gravity and the quadratic factor for the y-axis
 	// NOTE: newG must be a positive value
-	HRESULT SetGravity(double newG);
+	PHRESULT SetGravity(double newG);
 
 	// Resets the trajectory start time to the given value
 	// NOTE: newt0 must be greater than the current t0
-	HRESULT SetT0(double newt0);
+	PHRESULT SetT0(double newt0);
 	
 // Public Statics
 public:
