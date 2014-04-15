@@ -40,24 +40,24 @@ Scene::~Scene()
 
 
 /********** HELPER FUNCTIONS **********/
-std::vector<std::pair<PhysicsObject*,PhysicsObject*>> Scene::CheckCollisions()
+std::vector<std::pair<PhysicsObject,PhysicsObject>> Scene::CheckCollisions()
 {
-	std::vector<std::pair<PhysicsObject*,PhysicsObject*>> collidingPairs;
-	std::vector<std::pair<PhysicsObject*,PhysicsObject*>>::iterator pairsItr;
+	std::vector<std::pair<PhysicsObject,PhysicsObject>> collidingPairs;
+	std::vector<std::pair<PhysicsObject,PhysicsObject>>::iterator pairsItr;
 
-	std::vector<PhysicsObject*>::iterator poItrA;
-	std::vector<PhysicsObject*>::iterator poItrB;
+	std::vector<PhysicsObject>::iterator poItrA;
+	std::vector<PhysicsObject>::iterator poItrB;
 	for (poItrA=m_physicsObjects.begin(); poItrA!=m_physicsObjects.end(); ++poItrA)
 	{
 		for (poItrB=m_physicsObjects.begin(); poItrB!=m_physicsObjects.end(); ++poItrB)
 		{
 			// Dereference iterators and compare AABBs of contained phys objects
-			PhysicsObject* pObjectA = (*poItrA);
-			PhysicsObject* pObjectB = (*poItrB);
+			PhysicsObject objA = (*poItrA);
+			PhysicsObject objB = (*poItrB);
 
 			bool skipPair = false;
 			// Skip pair on UID match
-			if (pObjectA->GetUID() == pObjectB->GetUID())
+			if (objA.GetUID() == objB.GetUID())
 			{
 				skipPair = true;
 			}
@@ -65,8 +65,8 @@ std::vector<std::pair<PhysicsObject*,PhysicsObject*>> Scene::CheckCollisions()
 			// Skip pair on already-exists
 			for (pairsItr = collidingPairs.begin(); pairsItr != collidingPairs.end(); ++pairsItr)
 			{
-				if ((pObjectA->GetUID()==pairsItr->first->GetUID() && pObjectB->GetUID()==pairsItr->second->GetUID()) ||
-					(pObjectB->GetUID()==pairsItr->first->GetUID() && pObjectA->GetUID()==pairsItr->second->GetUID()))
+				if ((objA.GetUID()==pairsItr->first.GetUID() && objB.GetUID()==pairsItr->second.GetUID()) ||
+					(objB.GetUID()==pairsItr->first.GetUID() && objA.GetUID()==pairsItr->second.GetUID()))
 				{
 					skipPair = true;
 				}
@@ -79,13 +79,13 @@ std::vector<std::pair<PhysicsObject*,PhysicsObject*>> Scene::CheckCollisions()
 
 			bool bColliding = false;
 
-			bColliding = PhysicsObject::CheckOverlap(*pObjectA, *pObjectB);
+			bColliding = PhysicsObject::CheckOverlap(objA, objB);
 
 			// Add UID pair to vector on collision detect
 			if (bColliding)
 			{
-				std::pair<PhysicsObject*,PhysicsObject*> collidingPair;
-				collidingPair = std::make_pair(pObjectA, pObjectB);
+				std::pair<PhysicsObject,PhysicsObject> collidingPair;
+				collidingPair = std::make_pair(objA, objB);
 
 				collidingPairs.push_back(collidingPair);
 			}
@@ -95,14 +95,14 @@ std::vector<std::pair<PhysicsObject*,PhysicsObject*>> Scene::CheckCollisions()
 	return collidingPairs;
 }
 
-std::vector<PhysicsObject*> Scene::CheckOutOfBounds(eAxis axis)
+std::vector<PhysicsObject> Scene::CheckOutOfBounds(eAxis axis)
 {
-	std::vector<PhysicsObject*> vOutOfBounds;
+	std::vector<PhysicsObject> vOutOfBounds;
 
-	std::vector<PhysicsObject*>::iterator poItr;
+	std::vector<PhysicsObject>::iterator poItr;
 	for (poItr=m_physicsObjects.begin(); poItr!=m_physicsObjects.end(); ++poItr)
 	{
-		AABB aabb = (*poItr)->GetAABB();
+		AABB aabb = (*poItr).GetAABB();
 		double upBound = aabb.GetUpperBound();
 		double lowBound = aabb.GetLowerBound();
 		double leftBound = aabb.GetLeftBound();
@@ -130,12 +130,12 @@ std::vector<PhysicsObject*> Scene::CheckOutOfBounds(eAxis axis)
 	return vOutOfBounds;
 }
 
-eAxis Scene::GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*> poPair)
+eAxis Scene::GetCollisionAxis(std::pair<PhysicsObject,PhysicsObject> poPair)
 {
 	eAxis axis = AxisErr;
 
-	AABB aabbA = poPair.first->GetAABB();
-	AABB aabbB = poPair.second->GetAABB();
+	AABB aabbA = poPair.first.GetAABB();
+	AABB aabbB = poPair.second.GetAABB();
 
 	// Determine orientation by comparing the depth of the AABB overlap in each axis
 	double yDepth = 0.0;
@@ -222,12 +222,12 @@ double Scene::CalcOOBTime(eAxis axis, PhysicsObject obj)
 }
 
 /********** PUBLIC METHODS **********/
-PHRESULT Scene::AddObject(PhysicsObject* newObject)
+PHRESULT Scene::AddObject(PhysicsObject newObject)
 {
 	PHRESULT hr = S_OK;
 
-	CartPoint aabbMin = newObject->GetAABB().GetBottomLeft();
-	CartPoint aabbMax = newObject->GetAABB().GetTopRight();
+	CartPoint aabbMin = newObject.GetAABB().GetBottomLeft();
+	CartPoint aabbMax = newObject.GetAABB().GetTopRight();
 	
 	// Sanity check new physics object properties, add to list on pass
 	// Out-of-bounds check
@@ -243,11 +243,11 @@ PHRESULT Scene::AddObject(PhysicsObject* newObject)
 	{
 		bool bOverlapping = false;
 
-		std::vector<PhysicsObject*>::iterator poItr;
+		std::vector<PhysicsObject>::iterator poItr;
 		for (poItr=m_physicsObjects.begin(); poItr!=m_physicsObjects.end(); ++poItr)
 		{
-			PhysicsObject curObject = **poItr;
-			bOverlapping = PhysicsObject::CheckOverlap(*newObject, curObject);
+			PhysicsObject curObject = *poItr;
+			bOverlapping = PhysicsObject::CheckOverlap(newObject, curObject);
 			if (bOverlapping)
 			{
 				hr = E_FAIL;
@@ -270,15 +270,15 @@ void Scene::Step()
 	double nextStepTime = m_elapsed + STEP_EPSILON;
 
 	// Move all phys objects before collision checking
-	std::vector<PhysicsObject*>::iterator poItr;
+	std::vector<PhysicsObject>::iterator poItr;
 	for (poItr=m_physicsObjects.begin(); poItr!=m_physicsObjects.end(); ++poItr)
 	{
-		(*poItr)->Move(nextStepTime);
+		(*poItr).Move(nextStepTime);
 	}
 
 	/*** BEGIN Out-of-bounds checks ***/
-	std::vector<PhysicsObject*> vOutOfBoundsX;
-	std::vector<PhysicsObject*> vOutOfBoundsY;
+	std::vector<PhysicsObject> vOutOfBoundsX;
+	std::vector<PhysicsObject> vOutOfBoundsY;
 	vOutOfBoundsX = CheckOutOfBounds(XAxis);
 	vOutOfBoundsY = CheckOutOfBounds(YAxis);
 	
@@ -286,28 +286,28 @@ void Scene::Step()
 	double oobTime = -1.0;
 	for (poItr=vOutOfBoundsX.begin(); poItr!=vOutOfBoundsX.end(); ++poItr)
 	{
-		oobTime = CalcOOBTime(XAxis, **poItr);
-		(*poItr)->Rebound(XAxis, oobTime);
-		(*poItr)->Move(nextStepTime);
+		oobTime = CalcOOBTime(XAxis, *poItr);
+		(*poItr).Rebound(XAxis, oobTime);
+		(*poItr).Move(nextStepTime);
 	}
 
 	// Rebound objects and move them to next STEP_EPSILON boundary
 	for (poItr=vOutOfBoundsY.begin(); poItr!=vOutOfBoundsY.end(); ++poItr)
 	{
-		oobTime = CalcOOBTime(YAxis, **poItr);
-		(*poItr)->Rebound(YAxis, oobTime);
-		(*poItr)->Move(nextStepTime);
+		oobTime = CalcOOBTime(YAxis, *poItr);
+		(*poItr).Rebound(YAxis, oobTime);
+		(*poItr).Move(nextStepTime);
 	}
 	/*** END Out-of-bounds checks ***/
 
 	/*** BEGIN Collision Handling ***/
-	std::vector<std::pair<PhysicsObject*, PhysicsObject*>> vCollidingPairs;
-	std::vector<std::pair<PhysicsObject*, PhysicsObject*>>::iterator vPairsItr;
+	std::vector<std::pair<PhysicsObject, PhysicsObject>> vCollidingPairs;
+	std::vector<std::pair<PhysicsObject, PhysicsObject>>::iterator vPairsItr;
 	vCollidingPairs = CheckCollisions();
 
 	for (vPairsItr=vCollidingPairs.begin(); vPairsItr!=vCollidingPairs.end(); ++vPairsItr)
 	{
-		std::pair<PhysicsObject*, PhysicsObject*> poPair = (*vPairsItr);
+		std::pair<PhysicsObject, PhysicsObject> poPair = (*vPairsItr);
 
 		// Determine axis of collision, corner hits will rebound on both axes
 		eAxis axis = GetCollisionAxis(poPair);
@@ -316,16 +316,16 @@ void Scene::Step()
 		if (axis == YAxis || axis == BothAxes)
 		{
 			// TODO: CalcCollisionTime()
-			poPair.first->Rebound(YAxis, m_elapsed);
-			poPair.second->Rebound(YAxis, m_elapsed);
+			poPair.first.Rebound(YAxis, m_elapsed);
+			poPair.second.Rebound(YAxis, m_elapsed);
 		}
 		
 		// X-axis collision, revert movement and rebound both objects in x-direction
 		if (axis == XAxis || axis == BothAxes)
 		{
 			// TODO: CalcCollisionTime()
-			poPair.first->Rebound(XAxis, m_elapsed);
-			poPair.second->Rebound(XAxis, m_elapsed);
+			poPair.first.Rebound(XAxis, m_elapsed);
+			poPair.second.Rebound(XAxis, m_elapsed);
 		}
 	}
 	/*** END Collision Handling ***/

@@ -11,8 +11,8 @@ MainFrame::MainFrame() :
     m_hwnd(NULL),
     m_pDirect2dFactory(NULL),
     m_pRenderTarget(NULL),
-    m_pLightSlateGrayBrush(NULL),
-    m_pCornflowerBlueBrush(NULL)
+    m_pFillBrush(NULL),
+    m_pOutlineBrush(NULL)
 {
 }
 
@@ -20,8 +20,8 @@ MainFrame::~MainFrame()
 {
     SafeRelease(&m_pDirect2dFactory);
     SafeRelease(&m_pRenderTarget);
-    SafeRelease(&m_pLightSlateGrayBrush);
-    SafeRelease(&m_pCornflowerBlueBrush);
+    SafeRelease(&m_pFillBrush);
+    SafeRelease(&m_pOutlineBrush);
 
 }
 
@@ -136,7 +136,32 @@ HRESULT MainFrame::Render()
         int width = static_cast<int>(rtSize.width);
         int height = static_cast<int>(rtSize.height);
 
-		
+		// Get objects in Scene and render according to their properties
+		std::vector<PhysicsObject> objs = m_scene.GetObjects();
+		std::vector<PhysicsObject>::iterator objItr;
+		for (objItr=objs.begin(); objItr!=objs.end(); ++objItr)
+		{
+			// Initialize fill & outline brushes
+			hr = m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF((*objItr).GetColor()), &m_pFillBrush);
+			hr |= m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(Black), &m_pOutlineBrush);
+
+			// Define rectangle for object
+			D2D1_RECT_F rect = D2D1::RectF(
+				(FLOAT)(*objItr).GetAABB().GetLeftBound(),
+				(FLOAT)(*objItr).GetAABB().GetUpperBound(Drawing),
+				(FLOAT)(*objItr).GetAABB().GetRightBound(),
+				(FLOAT)(*objItr).GetAABB().GetLowerBound(Drawing)
+				);
+
+			// Fill rectangle with object color
+			m_pRenderTarget->FillRectangle(&rect, m_pFillBrush);
+
+			// Outline rectangle in black
+			m_pRenderTarget->DrawRectangle(&rect, m_pOutlineBrush);
+		}
+
+		// End draw
+		m_pRenderTarget->EndDraw();
     }
 
     if (hr == D2DERR_RECREATE_TARGET)
@@ -162,8 +187,8 @@ HRESULT MainFrame::SceneInit()
 	PhysicsObject objB = PhysicsObject(pointB);
 
 	// Define their trajectories
-	Trajectory trajA = Trajectory(m_scene.GetGravity(), 1.0, M_PI/6, pointA);
-	Trajectory trajB = Trajectory(m_scene.GetGravity(), 2.0, 5*M_PI/3, pointB);
+	Trajectory trajA = Trajectory(m_scene.GetGravity(), 10.0, M_PI/6, pointA);
+	Trajectory trajB = Trajectory(m_scene.GetGravity(), 20.0, 5*M_PI/3, pointB);
 	hr |= objA.SetTrajectory(trajA);
 	hr |= objB.SetTrajectory(trajB);
 
@@ -172,8 +197,8 @@ HRESULT MainFrame::SceneInit()
 	objB.SetColor(Violet);
 
 	// Add objects to the scene
-	hr |= m_scene.AddObject(&objA);
-	hr |= m_scene.AddObject(&objB);
+	hr |= m_scene.AddObject(objA);
+	hr |= m_scene.AddObject(objB);
 
 	return hr;
 }
@@ -210,24 +235,6 @@ HRESULT MainFrame::CreateDeviceResources()
             D2D1::HwndRenderTargetProperties(m_hwnd, size),
             &m_pRenderTarget
             );
-
-
-        if (SUCCEEDED(hr))
-        {
-            // Create a gray brush.
-            hr = m_pRenderTarget->CreateSolidColorBrush(
-                D2D1::ColorF(D2D1::ColorF::LightSlateGray),
-                &m_pLightSlateGrayBrush
-                );
-        }
-        if (SUCCEEDED(hr))
-        {
-            // Create a blue brush.
-            hr = m_pRenderTarget->CreateSolidColorBrush(
-                D2D1::ColorF(D2D1::ColorF::CornflowerBlue),
-                &m_pCornflowerBlueBrush
-                );
-        }
     }
 
     return hr;
@@ -236,8 +243,8 @@ HRESULT MainFrame::CreateDeviceResources()
 void MainFrame::DiscardDeviceResources()
 {
     SafeRelease(&m_pRenderTarget);
-    SafeRelease(&m_pLightSlateGrayBrush);
-    SafeRelease(&m_pCornflowerBlueBrush);
+    SafeRelease(&m_pFillBrush);
+    SafeRelease(&m_pOutlineBrush);
 }
 
 

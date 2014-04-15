@@ -33,7 +33,7 @@ namespace EgineTest
 			obj.SetTrajectory(traj0);
 
 			// Add object to scene
-			Assert::AreEqual(testScene.AddObject(&obj), S_OK);
+			Assert::AreEqual(testScene.AddObject(obj), S_OK);
 			
 			// Calculate steps required for collision
 			double timeToCollision = testScene.CalcOOBTime(axis, obj);

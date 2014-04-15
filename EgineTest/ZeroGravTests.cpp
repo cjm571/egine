@@ -90,8 +90,8 @@ namespace EgineTest
 			objB.SetTrajectory(trajB);
 
 			// Add objects to Scene
-			Assert::AreEqual(testScene.AddObject(&objA), S_OK);
-			Assert::AreEqual(testScene.AddObject(&objB), S_OK);
+			Assert::AreEqual(testScene.AddObject(objA), S_OK);
+			Assert::AreEqual(testScene.AddObject(objB), S_OK);
 
 			// Calculate distance between AABB boundaries
 			double boundsDist = -1.0;

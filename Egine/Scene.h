@@ -33,15 +33,15 @@ public:
 private:
 	// Check scene for possible collisions based on AABBs
 	// Returns vector of possibly-colliding pairs
-	std::vector<std::pair<PhysicsObject*,PhysicsObject*>> CheckCollisions();
+	std::vector<std::pair<PhysicsObject,PhysicsObject>> CheckCollisions();
 	
 	// Check scene for out-of-bounds objects based on type param
 	// Returns vector of out-of-bounds objects
-	std::vector<PhysicsObject*> CheckOutOfBounds(eAxis);
+	std::vector<PhysicsObject> CheckOutOfBounds(eAxis);
 
 	// Determine collision axis of a pair of physics objects
 	// Returns axis enum value
-	eAxis GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*>);
+	eAxis GetCollisionAxis(std::pair<PhysicsObject,PhysicsObject>);
 
 
 // Public Methods
@@ -52,11 +52,11 @@ public:
 	double GetElapsedTime() {return m_elapsed;};
 
 	// Returns vector of physics objects
-	std::vector<PhysicsObject*> GetObjects() {return m_physicsObjects;};
+	std::vector<PhysicsObject> GetObjects() {return m_physicsObjects;};
 
 	// Add object to the scene
 	// Returns S_OK on success, E_FAIL on failure
-	PHRESULT AddObject(PhysicsObject*);
+	PHRESULT AddObject(PhysicsObject);
 
 	// Step physics scene forward 1 STEP_EPSILON
 	void Step();
@@ -68,7 +68,7 @@ public:
 // Properties
 private:
 	// List of all objects existing in the scene
-	std::vector<PhysicsObject*> m_physicsObjects;
+	std::vector<PhysicsObject> m_physicsObjects;
 
 	// Gravity in the scene in m/s^2
 	double m_gravity;
