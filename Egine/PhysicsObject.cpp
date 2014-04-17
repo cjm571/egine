@@ -108,13 +108,13 @@ PHRESULT PhysicsObject::Rebound(eAxis axis, double reboundTime)
 		// Left-side rebound 
 		if (oldp0.x > reboundCenterpoint.x)
 		{
-			collisionLine = reboundCenterpoint.x;
-			reflectedp0.x = collisionLine - (oldp0.x-collisionLine);
+			collisionLine = reboundCenterpoint.x + (m_aabb.GetWidth()/2);
+			reflectedp0.x = collisionLine - oldp0.x;
 		}
 		else // Right-side rebound
 		{
-			collisionLine = reboundCenterpoint.x;
-			reflectedp0.x = collisionLine + (oldp0.x-collisionLine);
+			collisionLine = reboundCenterpoint.x - (m_aabb.GetWidth()/2);
+			reflectedp0.x = collisionLine + oldp0.x;
 		}
 		reflectedp0.y = oldp0.y;
 	}
@@ -123,13 +123,13 @@ PHRESULT PhysicsObject::Rebound(eAxis axis, double reboundTime)
 		// Bottom-side rebound
 		if (oldp0.y > reboundCenterpoint.y)
 		{
-			collisionLine = reboundCenterpoint.y;
-			reflectedp0.y = collisionLine - (oldp0.y-collisionLine);
+			collisionLine = reboundCenterpoint.y + (m_aabb.GetHeight()/2);
+			reflectedp0.y = collisionLine - oldp0.y;
 		}
 		else // Top-side rebound
 		{
-			collisionLine = reboundCenterpoint.y;
-			reflectedp0.y = collisionLine + (oldp0.y-collisionLine);
+			collisionLine = reboundCenterpoint.y - (m_aabb.GetHeight()/2);
+			reflectedp0.y = collisionLine + oldp0.y;
 		}
 		reflectedp0.x = oldp0.x;
 	}

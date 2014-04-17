@@ -33,6 +33,9 @@ private:
 	// Initialize physics scene
 	HRESULT SceneInit();
 
+	// Releases assets allocated by SceneInit()
+	void SceneRelease();
+
 // Direct2D Helper Functions
 private:
     // Initialize device-independent resources.

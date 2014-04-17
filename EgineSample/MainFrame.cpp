@@ -22,7 +22,7 @@ MainFrame::~MainFrame()
     SafeRelease(&m_pRenderTarget);
     SafeRelease(&m_pFillBrush);
     SafeRelease(&m_pOutlineBrush);
-
+	SceneRelease();
 }
 
 
@@ -60,26 +60,32 @@ HRESULT MainFrame::Initialize()
         // to create its own windows.
         m_pDirect2dFactory->GetDesktopDpi(&dpiX, &dpiY);
 
-        // Create the window.
-        m_hwnd = CreateWindow(
-            "D2DMainFrame",
+		// Determine window dimensions for desired client-size
+		UINT dpiWidth = static_cast<UINT>(ceil(SCENE_WIDTH * dpiX / 96.f));
+		UINT dpiHeight = static_cast<UINT>(ceil(SCENE_HEIGHT * dpiY / 96.f));
+		RECT windowRect = {0, 0, dpiWidth, dpiHeight};
+		AdjustWindowRect(&windowRect, WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);
+
+		// Create the window
+		m_hwnd = CreateWindow(
+			"D2DMainFrame",
             "Egine Sample DirectX Application",
-            WS_OVERLAPPEDWINDOW,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
-            static_cast<UINT>(ceil(640.f * dpiX / 96.f)),
-            static_cast<UINT>(ceil(480.f * dpiY / 96.f)),
-            NULL,
-            NULL,
-            HINST_THISCOMPONENT,
-            this
-            );
-        hr = m_hwnd ? S_OK : E_FAIL;
-        if (SUCCEEDED(hr))
-        {
-            ShowWindow(m_hwnd, SW_SHOWNORMAL);
-            UpdateWindow(m_hwnd);
-        }
+			WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
+			CW_USEDEFAULT,
+			CW_USEDEFAULT,
+			windowRect.right - windowRect.left,
+			windowRect.bottom - windowRect.top,
+			NULL,
+			NULL,
+			HINST_THISCOMPONENT,
+			this
+			);
+		hr = m_hwnd ? S_OK : E_FAIL;
+		if (SUCCEEDED(hr))
+		{
+			ShowWindow(m_hwnd, SW_SHOWNORMAL);
+			UpdateWindow(m_hwnd);
+		}
     }
 
 	if (SUCCEEDED(hr))
@@ -137,20 +143,20 @@ HRESULT MainFrame::Render()
         int height = static_cast<int>(rtSize.height);
 
 		// Get objects in Scene and render according to their properties
-		std::vector<PhysicsObject> objs = m_scene.GetObjects();
-		std::vector<PhysicsObject>::iterator objItr;
+		std::vector<PhysicsObject*> objs = m_scene.GetObjects();
+		std::vector<PhysicsObject*>::iterator objItr;
 		for (objItr=objs.begin(); objItr!=objs.end(); ++objItr)
 		{
 			// Initialize fill & outline brushes
-			hr = m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF((*objItr).GetColor()), &m_pFillBrush);
+			hr = m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF((*objItr)->GetColor()), &m_pFillBrush);
 			hr |= m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(Black), &m_pOutlineBrush);
 
 			// Define rectangle for object
 			D2D1_RECT_F rect = D2D1::RectF(
-				(FLOAT)(*objItr).GetAABB().GetLeftBound(),
-				(FLOAT)(*objItr).GetAABB().GetUpperBound(Drawing),
-				(FLOAT)(*objItr).GetAABB().GetRightBound(),
-				(FLOAT)(*objItr).GetAABB().GetLowerBound(Drawing)
+				(FLOAT)(*objItr)->GetAABB().GetLeftBound(),
+				(FLOAT)(*objItr)->GetAABB().GetUpperBound(Drawing),
+				(FLOAT)(*objItr)->GetAABB().GetRightBound(),
+				(FLOAT)(*objItr)->GetAABB().GetLowerBound(Drawing)
 				);
 
 			// Fill rectangle with object color
@@ -182,19 +188,19 @@ HRESULT MainFrame::SceneInit()
 
 	// Create 2 default objects
 	CartPoint pointA = {100,100};
-	PhysicsObject objA = PhysicsObject(pointA);
+	PhysicsObject* objA = new PhysicsObject(pointA);
 	CartPoint pointB = {250,150};
-	PhysicsObject objB = PhysicsObject(pointB);
+	PhysicsObject* objB = new PhysicsObject(pointB);
 
 	// Define their trajectories
-	Trajectory trajA = Trajectory(m_scene.GetGravity(), 10.0, M_PI/6, pointA);
+	Trajectory trajA = Trajectory(m_scene.GetGravity(), 10.0, 0.0, pointA);
 	Trajectory trajB = Trajectory(m_scene.GetGravity(), 20.0, 5*M_PI/3, pointB);
-	hr |= objA.SetTrajectory(trajA);
-	hr |= objB.SetTrajectory(trajB);
+	hr |= objA->SetTrajectory(trajA);
+	hr |= objB->SetTrajectory(trajB);
 
 	// Make them pretty
-	objA.SetColor(Red);
-	objB.SetColor(Violet);
+	objA->SetColor(Red);
+	objB->SetColor(Violet);
 
 	// Add objects to the scene
 	hr |= m_scene.AddObject(objA);
@@ -203,6 +209,16 @@ HRESULT MainFrame::SceneInit()
 	return hr;
 }
 
+void  MainFrame::SceneRelease()
+{
+	std::vector<PhysicsObject*> objs = m_scene.GetObjects();
+	std::vector<PhysicsObject*>::iterator objItr;
+
+	for (objItr=objs.begin(); objItr!=objs.end(); ++objItr)
+	{
+		delete &(*objItr);
+	}
+}
 
 /***** D2D FUNCTIONS *****/
 HRESULT MainFrame::CreateDeviceIndependentResources()
