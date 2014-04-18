@@ -195,7 +195,7 @@ double Scene::CalcOOBTime(eAxis axis, PhysicsObject obj)
 	
 	if (axis == XAxis)
 	{
-		// Use negative dist of centerpoint from x=0 as offset
+		// Use dist of centerpoint from x=0 as offset
 		if (obj.GetAABB().GetCenter().x <= SCENE_WIDTH/2)
 		{
 			// Just halfwidth for left-side
@@ -210,8 +210,17 @@ double Scene::CalcOOBTime(eAxis axis, PhysicsObject obj)
 	}
 	else // Y-axis
 	{
-		// Use halfheight as offset
-		offset = -1*(obj.GetAABB().GetHeight()/2);
+		// Use dist of centerpoint from y=0 as offset
+		if (obj.GetAABB().GetCenter().y <= SCENE_HEIGHT/2)
+		{
+			// Just halfheight for bottom-side
+			offset = -1*(obj.GetAABB().GetHeight()/2);
+		}
+		else
+		{
+			// Halfheight - scene height for top-side
+			offset = (obj.GetAABB().GetHeight()/2) - SCENE_HEIGHT;
+		}
 		intercepts = traj.CalcXIntercepts(offset);
 	}
 
