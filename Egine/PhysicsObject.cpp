@@ -93,13 +93,10 @@ void PhysicsObject::Move(double t)
 PHRESULT PhysicsObject::Rebound(eAxis axis, double reboundTime)
 {
 	PHRESULT hr = S_OK;
-
-	// Calculate new linear factor, v0, via v0 = -v_inst - 2a*t
-	double instV = m_trajectory.GetVelocity(axis, reboundTime);
-	double newv0 = (-1*instV) - (2*m_trajectory.GetQuadraticFactor(axis)*reboundTime);
-
+	
 	// Calculate coords of p0 reflected over the collision line
 	double collisionLine;
+	double offset;
 	CartPoint reflectedp0;
 	CartPoint oldp0 = GetInitialPosition();
 	CartPoint reboundCenterpoint = m_trajectory.GetPositionAt(reboundTime);
@@ -108,12 +105,14 @@ PHRESULT PhysicsObject::Rebound(eAxis axis, double reboundTime)
 		// Left-side rebound 
 		if (oldp0.x > reboundCenterpoint.x)
 		{
-			collisionLine = reboundCenterpoint.x - (m_aabb.GetWidth()/2);
+			offset = -1*(m_aabb.GetWidth()/2);
+			collisionLine = reboundCenterpoint.x + offset;
 			reflectedp0.x = collisionLine - abs(oldp0.x - collisionLine) + m_aabb.GetWidth();
 		}
 		else // Right-side rebound
 		{
-			collisionLine = reboundCenterpoint.x + (m_aabb.GetWidth()/2);
+			offset = m_aabb.GetWidth()/2;
+			collisionLine = reboundCenterpoint.x + offset;
 			reflectedp0.x = collisionLine + abs(oldp0.x - collisionLine) - m_aabb.GetWidth();
 		}
 		reflectedp0.y = oldp0.y;
@@ -123,24 +122,35 @@ PHRESULT PhysicsObject::Rebound(eAxis axis, double reboundTime)
 		// Bottom-side rebound
 		if (oldp0.y > reboundCenterpoint.y)
 		{
-			collisionLine = reboundCenterpoint.y - (m_aabb.GetHeight()/2);
+			offset = -1*(m_aabb.GetHeight()/2);
+			collisionLine = reboundCenterpoint.y + offset;
 			reflectedp0.y = collisionLine - abs(oldp0.y - collisionLine) + m_aabb.GetHeight();
 		}
 		else // Top-side rebound
 		{
-			collisionLine = reboundCenterpoint.y + (m_aabb.GetHeight()/2);
+			offset = m_aabb.GetHeight()/2;
+			collisionLine = reboundCenterpoint.y + offset;
 			reflectedp0.y = collisionLine + abs(oldp0.y - collisionLine) - m_aabb.GetHeight();
 		}
 		reflectedp0.x = oldp0.x;
 	}
-	
-	// Set new linear velocity factor
-	hr |= m_trajectory.SetVelocityFactor(axis, newv0);
-	
+
 	// Set new p0
-	if(SUCCEEDED(hr))
+	hr |= SetInitialPosition(reflectedp0);
+
+	if (SUCCEEDED(hr))
 	{
-		hr |= SetInitialPosition(reflectedp0);
+		// Calculate new linear velocity factor
+		// c == constFactor + offsetFromEdge
+		// 0 = at^2 + bt + c
+		// bt = -at^2 - c
+		// b = -at - (c/t)
+		double a = m_trajectory.GetQuadraticFactor(axis);
+		double c = m_trajectory.GetConstantFactor(axis) + offset;
+		double newB = (-1*a*reboundTime) - (c/reboundTime);
+
+		// Set new linear velocity factor
+		hr |= m_trajectory.SetVelocityFactor(axis, newB);
 	}
 
 	return hr;

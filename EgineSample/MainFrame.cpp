@@ -184,7 +184,7 @@ HRESULT MainFrame::SceneInit()
 	HRESULT hr = S_OK;
 
 	// Create zero-gravity scene
-	m_scene = Scene(SC_GRAVITY_OFF);
+	m_scene = Scene(SC_GRAVITY_EARTH);
 
 	// Create 2 default objects
 	CartPoint pointA = {100,100};
