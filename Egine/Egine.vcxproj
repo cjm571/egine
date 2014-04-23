@@ -90,6 +90,7 @@
     <ClInclude Include="Quadratic.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="SubTrajectory.h" />
     <ClInclude Include="Trajectory.h" />
   </ItemGroup>
   <ItemGroup>
@@ -101,6 +102,7 @@
     <ClCompile Include="Quadratic.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="StdAfx.cpp" />
+    <ClCompile Include="SubTrajectory.cpp" />
     <ClCompile Include="Trajectory.cpp" />
   </ItemGroup>
   <ItemGroup>

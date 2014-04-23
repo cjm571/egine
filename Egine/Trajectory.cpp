@@ -1,234 +1,77 @@
 /*************************
 * Author: CJ McAllister  *
 *                        *
-* Created on: 2014-02-23 *
+* Created on: 2014-04-23 *
 *************************/
 
 #include "Trajectory.h"
 
 /********** CTORS **********/
 Trajectory::Trajectory()
-	: m_g(9.8)
+	: m_t0(0.0)
 {
-	// No movement in X-direction, all coeffs 0
-	m_x = Quadratic(0.0, 0.0, 0.0);
-
-	// Earth gravity in Y-direction
-	double a = -0.5*m_g;
-	m_y = Quadratic(a, 0.0, 0.0);
 }
 
-Trajectory::Trajectory(double _g, CartPoint _p0)
-	: m_g(_g)
+Trajectory::Trajectory(double _g, double _v0, double _theta0, CartPoint _p0, double _t0)
+	: m_t0(_t0)
 {
-	// No movement in X-direction, all coeffs 0
-	m_x = Quadratic(0.0, 0.0, _p0.x);
-
-	// g in Y-direction
-	double a = -0.5*m_g;
-	m_y = Quadratic(a, 0.0, _p0.y);
+	// Create SubTrajectory based on inputs, and map it to a sub-t0 of m_t0
+	SubTrajectory _subTraj = SubTrajectory(_g, _v0, _theta0, _p0);
+	m_subTrajs[m_t0] = _subTraj;
 }
 
-Trajectory::Trajectory(double _g, double _v0, CartPoint _p0)
-	: m_g(_g)
+Trajectory::Trajectory(SubTrajectory _subTraj, double _t0)
+	: m_t0(_t0)
 {
-	// v0 in X-direction
-	m_x = Quadratic(0.0, _v0, _p0.x);
-
-	// g in Y-direction
-	double a = -0.5*m_g;
-	m_y = Quadratic(a, 0.0, _p0.y);
+	m_subTrajs[m_t0] = _subTraj;
 }
 
-Trajectory::Trajectory(double _g, double _v0, double _theta0, CartPoint _p0)
-	: m_g(_g)
-{
-	// Vx in X-direction
-	m_x = Quadratic(0.0, _v0*cos(_theta0), _p0.x);
 
-	// g, Vy in Y-direction
-	double a = -0.5*m_g;
-	m_y = Quadratic(a, _v0*sin(_theta0), _p0.y);
+/********** HELPER FUNCTIONS **********/
+double Trajectory::NormalizeT0(double t)
+{
+	return (t - m_t0);
 }
 
-Trajectory::~Trajectory()
+SubTrajectory Trajectory::GetSubTrajectory(double tNorm)
 {
+	SubTrajectory subTraj;
+
+	// TODO: optimize this braindead search
+	std::map<double,SubTrajectory>::iterator itr = m_subTrajs.begin();
+	do
+	{
+		// Copy, so the caller can't do anything dangerously stupid
+		subTraj = SubTrajectory(itr->second);
+		++itr;
+	}
+	// Break loop if we have gone past the given time
+	// Previous map entry will be used for return
+	while(itr!=m_subTrajs.end() && itr->first > tNorm);
+	
+	return subTraj;
 }
 
 
 /********** PUBLIC METHODS **********/
+double Trajectory::GetGravity(double t)
+{
+	double tNorm = NormalizeT0(t);
+
+	SubTrajectory subTraj = GetSubTrajectory(tNorm);
+
+	return subTraj.GetGravity();
+}
+
 double Trajectory::GetTheta(double t)
 {
-	double theta = -1.0;
+	double theta;
 
-	theta = GetTangentAngle(t);
-	theta = WrapAngle(theta);
+	double tNorm = NormalizeT0(t);
+	SubTrajectory subTraj = GetSubTrajectory(tNorm);
+	theta = subTraj.GetTheta(tNorm);
 
 	return theta;
-}
-
-double Trajectory::GetVelocity(double t)
-{
-	double vScalar = -1.0;
-
-	// Derive X & Y quadtratics
-	Linear dx_dt = m_x.Derive();
-	Linear dy_dt = m_y.Derive();
-
-	// Solve derivatives at time t for X & Y velocities
-	double vX = dx_dt.Solve(t);
-	double vY = dy_dt.Solve(t);
-
-	// Use pythagorean theorem to get scalar velocity
-	Pythag(vX, vY, &vScalar);
-
-	return vScalar;
-}
-
-double Trajectory::GetVelocity(eAxis axis, double t)
-{
-	double axisV;
-	
-	if (axis == XAxis)
-	{
-		axisV = m_x.Derive(t);
-	}
-	else // Y-axis
-	{
-		axisV = m_y.Derive(t);
-	}
-
-	return axisV;
-}
-
-double Trajectory::GetQuadraticFactor(eAxis axis)
-{
-	double vel;
-
-	if (axis == XAxis)
-	{
-		vel = m_x.GetA();
-	}
-	else // Y-axis
-	{
-		vel = m_y.GetA();
-	}
-
-	return vel;
-}
-
-double Trajectory::GetLinearFactor(eAxis axis)
-{
-	double vel;
-
-	if (axis == XAxis)
-	{
-		vel = m_x.GetB();
-	}
-	else // Y-axis
-	{
-		vel = m_y.GetB();
-	}
-
-	return vel;
-}
-
-double Trajectory::GetConstantFactor(eAxis axis)
-{
-	double vel;
-
-	if (axis == XAxis)
-	{
-		vel = m_x.GetC();
-	}
-	else // Y-axis
-	{
-		vel = m_y.GetC();
-	}
-
-	return vel;
-}
-
-CartPoint Trajectory::GetPositionAt(double t)
-{
-	CartPoint position;
-
-	double xPos = m_x.Solve(t);
-	double yPos = m_y.Solve(t);
-
-	position.x = xPos;
-	position.y = yPos;
-
-	return position;
-}
-
-PHRESULT Trajectory::SetVelocityFactor(eAxis axis, double newV)
-{
-	PHRESULT hr = S_OK;
-
-	// Sanity check
-	if (abs(newV) > C)
-	{
-		hr = E_FAIL;
-	}
-
-	if (SUCCEEDED(hr))
-	{
-		if (axis==XAxis)
-		{
-			m_x.SetB(newV);
-		}
-		if (axis==YAxis)
-		{
-			m_y.SetB(newV);
-		}
-	}
-
-	return hr;
-}
-
-PHRESULT Trajectory::SetConstantFactor(eAxis axis, double newC)
-{
-	PHRESULT hr = S_OK;
-
-	// Sanity check
-	if (abs(newC) > C)
-	{
-		hr = E_FAIL;
-	}
-
-	if (SUCCEEDED(hr))
-	{
-		if (axis==XAxis)
-		{
-			m_x.SetC(newC);
-		}
-		if (axis==YAxis)
-		{
-			m_y.SetC(newC);
-		}
-	}
-
-	return hr;
-}
-
-PHRESULT Trajectory::SetGravity(double newG)
-{
-	PHRESULT hr = S_OK;
-
-	// Sanity check
-	if (newG < 0.0)
-	{
-		hr = E_FAIL;
-	}
-
-	if (SUCCEEDED(hr))
-	{
-		m_y.SetA(-1*newG);
-		m_g = newG;
-	}
-
-	return hr;
 }
 
 
