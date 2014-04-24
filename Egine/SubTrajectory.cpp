@@ -8,7 +8,7 @@
 
 /********** CTORS **********/
 SubTrajectory::SubTrajectory()
-	: m_g(9.8)
+	: m_g(9.8), m_t0(0.0)
 {
 	// No movement in X-direction, all coeffs 0
 	m_x = Quadratic(0.0, 0.0, 0.0);
@@ -18,8 +18,8 @@ SubTrajectory::SubTrajectory()
 	m_y = Quadratic(a, 0.0, 0.0);
 }
 
-SubTrajectory::SubTrajectory(double _g, CartPoint _p0)
-	: m_g(_g)
+SubTrajectory::SubTrajectory(double _g, CartPoint _p0, double _t0)
+	: m_g(_g), m_t0(_t0)
 {
 	// No movement in X-direction, all coeffs 0
 	m_x = Quadratic(0.0, 0.0, _p0.x);
@@ -29,8 +29,8 @@ SubTrajectory::SubTrajectory(double _g, CartPoint _p0)
 	m_y = Quadratic(a, 0.0, _p0.y);
 }
 
-SubTrajectory::SubTrajectory(double _g, double _v0, CartPoint _p0)
-	: m_g(_g)
+SubTrajectory::SubTrajectory(double _g, double _v0, CartPoint _p0, double _t0)
+	: m_g(_g), m_t0(_t0)
 {
 	// v0 in X-direction
 	m_x = Quadratic(0.0, _v0, _p0.x);
@@ -40,8 +40,8 @@ SubTrajectory::SubTrajectory(double _g, double _v0, CartPoint _p0)
 	m_y = Quadratic(a, 0.0, _p0.y);
 }
 
-SubTrajectory::SubTrajectory(double _g, double _v0, double _theta0, CartPoint _p0)
-	: m_g(_g)
+SubTrajectory::SubTrajectory(double _g, double _v0, double _theta0, CartPoint _p0, double _t0)
+	: m_g(_g), m_t0(_t0)
 {
 	// Vx in X-direction
 	m_x = Quadratic(0.0, _v0*cos(_theta0), _p0.x);
@@ -162,7 +162,7 @@ CartPoint SubTrajectory::GetPositionAt(double t)
 	return position;
 }
 
-PHRESULT SubTrajectory::SetVelocityFactor(eAxis axis, double newV)
+PHRESULT SubTrajectory::SetInitialVelocity(eAxis axis, double newV)
 {
 	PHRESULT hr = S_OK;
 
@@ -187,12 +187,12 @@ PHRESULT SubTrajectory::SetVelocityFactor(eAxis axis, double newV)
 	return hr;
 }
 
-PHRESULT SubTrajectory::SetConstantFactor(eAxis axis, double newC)
+PHRESULT SubTrajectory::SetInitialPosition(eAxis axis, double newP)
 {
 	PHRESULT hr = S_OK;
 
 	// Sanity check
-	if (abs(newC) > C)
+	if (abs(newP) > C)
 	{
 		hr = E_FAIL;
 	}
@@ -201,11 +201,11 @@ PHRESULT SubTrajectory::SetConstantFactor(eAxis axis, double newC)
 	{
 		if (axis==XAxis)
 		{
-			m_x.SetC(newC);
+			m_x.SetC(newP);
 		}
 		if (axis==YAxis)
 		{
-			m_y.SetC(newC);
+			m_y.SetC(newP);
 		}
 	}
 

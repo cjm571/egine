@@ -5,7 +5,7 @@
 *************************/
 #pragma once
 
-#include <map>
+#include <deque>
 
 #include "StdAfx.h"
 #include "SubTrajectory.h"
@@ -17,10 +17,10 @@ public:
 	// Default Constructor
 	// Defines empty trajectory at time 0
 	Trajectory();
+	// Defines trajectory with the given first SubTrajectory
+	Trajectory(SubTrajectory _subTraj);
 	// Defines trajectory with given properties beginning at the given time
 	Trajectory(double _g, double _v0, double _theta0, CartPoint _p0, double _t0);
-	// Defines trajectory with the given first SubTrajectory starting at the given time
-	Trajectory(SubTrajectory _subTraj, double _t0);
 
 
 	// Destructor
@@ -28,12 +28,8 @@ public:
 
 // Helper functions
 private:
-	// Returns time, t, normalized such that m_t0 becomes 0.0s
-	// Called at the beginning of all functions involving time
-	double NormalizeT0(double t);
-
-	// Returns a COPY of SubTrajectory in effect at the given (normalized) time
-	SubTrajectory GetSubTrajectory(double tNorm);
+	// Returns a COPY of SubTrajectory in effect at the given time
+	SubTrajectory GetSubTrajectory(double t);
 
 // Accessors
 public:
@@ -48,12 +44,12 @@ public:
 	// Returns axis-component of velocity at time t
 	double GetVelocity(eAxis axis, double t);
 	
-	// Returns velocity Quadratic factor for the given axis
-	double GetQuadraticFactor(eAxis axis);
-	// Returns velocity linear factor for the given axis
-	double GetLinearFactor(eAxis axis);
-	// Returns velocity constant factor for the given axis
-	double GetConstantFactor(eAxis axis);
+	// Returns velocity Quadratic factor for the given axis at time t
+	double GetQuadraticFactor(eAxis axis, double t);
+	// Returns velocity linear factor for the given axis at time t
+	double GetLinearFactor(eAxis axis, double t);
+	// Returns velocity constant factor for the given axis at time t
+	double GetConstantFactor(eAxis axis, double t);
 
 	// Returns Cartesian position of object at the given time
 	CartPoint GetPositionAt(double t);
@@ -66,9 +62,6 @@ public:
 
 // Data members
 private:
-	// Maps of subtrajectories keyed by their starting time
-	std::map<double,SubTrajectory> m_subTrajs;
-
-	// Point in simulation time at which trajectory began
-	double m_t0;
+	// Double-ended queue of subtrajectories ordered by their starting time
+	std::deque<SubTrajectory> m_subTrajs;
 };
