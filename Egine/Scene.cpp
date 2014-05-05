@@ -184,7 +184,7 @@ eAxis Scene::GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*> poPair)
 	return axis;
 }
 
-double Scene::CalcOOBTime(eAxis axis, PhysicsObject obj)
+double Scene::CalcOOBTime(eAxis axis, PhysicsObject obj, double curTime)
 {
 	double t = -1.0;
 
@@ -193,9 +193,9 @@ double Scene::CalcOOBTime(eAxis axis, PhysicsObject obj)
 	std::pair<double,double> intercepts;
 	double offset = 0.0;
 	
+	// Use dist of centerpoint from x=0 as offset
 	if (axis == XAxis)
 	{
-		// Use dist of centerpoint from x=0 as offset
 		if (obj.GetAABB().GetCenter().x <= SCENE_WIDTH/2)
 		{
 			// Just halfwidth for left-side
@@ -206,11 +206,11 @@ double Scene::CalcOOBTime(eAxis axis, PhysicsObject obj)
 			// Halfwidth - scene width for right-side
 			offset = (obj.GetAABB().GetWidth()/2) - SCENE_WIDTH;
 		}
-		intercepts = traj.CalcYIntercepts(offset);
+		intercepts = traj.CalcYIntercepts(curTime, offset);
 	}
+	// Use dist of centerpoint from y=0 as offset
 	else // Y-axis
 	{
-		// Use dist of centerpoint from y=0 as offset
 		if (obj.GetAABB().GetCenter().y <= SCENE_HEIGHT/2)
 		{
 			// Just halfheight for bottom-side
@@ -221,7 +221,7 @@ double Scene::CalcOOBTime(eAxis axis, PhysicsObject obj)
 			// Halfheight - scene height for top-side
 			offset = (obj.GetAABB().GetHeight()/2) - SCENE_HEIGHT;
 		}
-		intercepts = traj.CalcXIntercepts(offset);
+		intercepts = traj.CalcXIntercepts(curTime, offset);
 	}
 
 	// Use the positive intercept for t
@@ -276,7 +276,7 @@ PHRESULT Scene::AddObject(PhysicsObject* newObject)
 
 void Scene::Step()
 {
-	double nextStepTime = m_elapsed + STEP_EPSILON;
+	double nextStepTime = m_elapsed + TIME_SIM_EPSILON;
 
 	// Move all phys objects before collision checking
 	std::vector<PhysicsObject*>::iterator poItr;
@@ -291,19 +291,19 @@ void Scene::Step()
 	vOutOfBoundsX = CheckOutOfBounds(XAxis);
 	vOutOfBoundsY = CheckOutOfBounds(YAxis);
 	
-	// Rebound objects and move them to next STEP_EPSILON boundary
+	// Rebound objects and move them to next TIME_SIM_EPSILON boundary
 	double oobTime = -1.0;
 	for (poItr=vOutOfBoundsX.begin(); poItr!=vOutOfBoundsX.end(); ++poItr)
 	{
-		oobTime = CalcOOBTime(XAxis, **poItr);
+		oobTime = CalcOOBTime(XAxis, **poItr, m_elapsed);
 		(*poItr)->Rebound(XAxis, oobTime);
 		(*poItr)->Move(nextStepTime);
 	}
 
-	// Rebound objects and move them to next STEP_EPSILON boundary
+	// Rebound objects and move them to next TIME_SIM_EPSILON boundary
 	for (poItr=vOutOfBoundsY.begin(); poItr!=vOutOfBoundsY.end(); ++poItr)
 	{
-		oobTime = CalcOOBTime(YAxis, **poItr);
+		oobTime = CalcOOBTime(YAxis, **poItr, m_elapsed);
 		(*poItr)->Rebound(YAxis, oobTime);
 		(*poItr)->Move(nextStepTime);
 	}

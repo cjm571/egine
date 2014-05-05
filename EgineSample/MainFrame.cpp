@@ -187,14 +187,14 @@ HRESULT MainFrame::SceneInit()
 	m_scene = Scene(SC_GRAVITY_EARTH);
 
 	// Create 2 default objects
-	CartPoint pointA = {100,100};
+	CartPoint pointA = {100,250};
 	PhysicsObject* objA = new PhysicsObject(pointA);
 	CartPoint pointB = {250,150};
 	PhysicsObject* objB = new PhysicsObject(pointB);
 
 	// Define their trajectories
-	Trajectory trajA = Trajectory(m_scene.GetGravity(), 10.0, 0.0, pointA);
-	Trajectory trajB = Trajectory(m_scene.GetGravity(), 20.0, 5*M_PI/3, pointB);
+	Trajectory trajA = Trajectory(m_scene.GetGravity(), 0.0, 0.0, pointA, TIME_SIM_START);
+	Trajectory trajB = Trajectory(m_scene.GetGravity(), 20.0, 5*M_PI/3, pointB, TIME_SIM_START);
 	hr |= objA->SetTrajectory(trajA);
 	hr |= objB->SetTrajectory(trajB);
 

@@ -14,7 +14,7 @@ PhysicsObject::PhysicsObject()
 	: m_color(Black), m_mass(1.0), m_shape(PhysCircle)
 {
 	m_aabb = AABB();
-	SetInitialPosition(m_aabb.GetCenter());
+	m_trajectory = Trajectory(m_aabb.GetCenter(), TIME_SIM_START);
 
 	m_UID = ++prevUID;
 }
@@ -23,7 +23,7 @@ PhysicsObject::PhysicsObject(CartPoint _center)
 	: m_color(Black), m_mass(1.0), m_shape(PhysCircle)
 {
 	m_aabb = AABB(_center);
-	SetInitialPosition(m_aabb.GetCenter());
+	m_trajectory = Trajectory(_center, TIME_SIM_START);
 
 	m_UID = ++prevUID;
 }
@@ -32,7 +32,7 @@ PhysicsObject::PhysicsObject(AABB _aabb, Color _color, eShape _shape)
 	: m_color(_color), m_mass(1.0), m_shape(_shape)
 {
 	m_aabb = AABB(_aabb);
-	SetInitialPosition(m_aabb.GetCenter());
+	m_trajectory = Trajectory(m_aabb.GetCenter(), TIME_SIM_START);
 
 	m_UID = ++prevUID;
 }
@@ -47,24 +47,13 @@ CartPoint PhysicsObject::GetInitialPosition()
 {
 	CartPoint p0;
 	
-	p0.x = m_trajectory.GetConstantFactor(XAxis);
-	p0.y = m_trajectory.GetConstantFactor(YAxis);
+	p0 = m_trajectory.GetInitialPosition(TIME_SIM_START);
 
 	return p0;
 }
 
 
 /********** MUTATORS **********/
-PHRESULT PhysicsObject::SetInitialPosition(CartPoint newP0)
-{
-	PHRESULT hr = S_OK;
-	
-	hr |= m_trajectory.SetConstantFactor(XAxis, newP0.x);
-	hr |= m_trajectory.SetConstantFactor(YAxis, newP0.y);
-
-	return hr;
-}
-
 PHRESULT PhysicsObject::SetTrajectory(Trajectory newTraj)
 {
 	PHRESULT hr = S_OK;
@@ -92,66 +81,38 @@ void PhysicsObject::Move(double t)
 
 PHRESULT PhysicsObject::Rebound(eAxis axis, double reboundTime)
 {
-	PHRESULT hr = S_OK;
-	
-	// Calculate coords of p0 reflected over the collision line
-	double collisionLine;
-	double offset;
-	CartPoint reflectedp0;
-	CartPoint oldp0 = GetInitialPosition();
-	CartPoint reboundCenterpoint = m_trajectory.GetPositionAt(reboundTime);
-	if (axis == XAxis)
-	{		
-		// Left-side rebound 
-		if (oldp0.x > reboundCenterpoint.x)
-		{
-			offset = -1*(m_aabb.GetWidth()/2);
-			collisionLine = reboundCenterpoint.x + offset;
-			reflectedp0.x = collisionLine - abs(oldp0.x - collisionLine) + m_aabb.GetWidth();
-		}
-		else // Right-side rebound
-		{
-			offset = m_aabb.GetWidth()/2;
-			collisionLine = reboundCenterpoint.x + offset;
-			reflectedp0.x = collisionLine + abs(oldp0.x - collisionLine) - m_aabb.GetWidth();
-		}
-		reflectedp0.y = oldp0.y;
-	}
-	else // Y-axis
+	PHRESULT hr = S_OK;	
+
+	// Gather data members that will compose to next subtrajectory
+	double aX = m_trajectory.GetAcceleration(XAxis, reboundTime);
+	double aY = m_trajectory.GetAcceleration(YAxis, reboundTime);
+	double vX = m_trajectory.GetVelocity(XAxis, reboundTime);
+	double vY = m_trajectory.GetVelocity(YAxis, reboundTime);
+	CartPoint p0 = m_trajectory.GetPositionAt(reboundTime);
+
+	// Invert axis velocity based on collision axis
+	switch (axis)
 	{
-		// Bottom-side rebound
-		if (oldp0.y > reboundCenterpoint.y)
-		{
-			offset = -1*(m_aabb.GetHeight()/2);
-			collisionLine = reboundCenterpoint.y + offset;
-			reflectedp0.y = collisionLine - abs(oldp0.y - collisionLine) + m_aabb.GetHeight();
-		}
-		else // Top-side rebound
-		{
-			offset = m_aabb.GetHeight()/2;
-			collisionLine = reboundCenterpoint.y + offset;
-			reflectedp0.y = collisionLine + abs(oldp0.y - collisionLine) - m_aabb.GetHeight();
-		}
-		reflectedp0.x = oldp0.x;
+	case XAxis:
+		vX = -1 * vX;
+		break;
+	case YAxis:
+		vY = -1 * vY;
+		break;
+	default:
+		hr = E_FAIL;
+		break;
 	}
 
-	// Set new p0
-	hr |= SetInitialPosition(reflectedp0);
+	// Create Quadratics based on properly inverted velocities
+	Quadratic xQuad = Quadratic(0.5*aX, vX, p0.x);
+	Quadratic yQuad = Quadratic(0.5*aY, vY, p0.y);
 
-	if (SUCCEEDED(hr))
-	{
-		// Calculate new linear velocity factor
-		// c == constFactor + offsetFromEdge
-		// 0 = at^2 + bt + c
-		// bt = -at^2 - c
-		// b = -at - (c/t)
-		double a = m_trajectory.GetQuadraticFactor(axis);
-		double c = m_trajectory.GetConstantFactor(axis) + offset;
-		double newB = (-1*a*reboundTime) - (c/reboundTime);
+	// Create new subtrajectory for post-rebound
+	SubTrajectory newSubTraj = SubTrajectory(xQuad, yQuad, reboundTime);
 
-		// Set new linear velocity factor
-		hr |= m_trajectory.SetVelocityFactor(axis, newB);
-	}
+	// Push new subtrajectory onto deque
+	m_trajectory.PushSubTrajectory(newSubTraj);
 
 	return hr;
 }
@@ -170,6 +131,7 @@ bool PhysicsObject::CheckOverlap(PhysicsObject a, PhysicsObject b)
 	return bOverlapping;
 }
 
+/*
 std::pair<CartPoint,CartPoint> PhysicsObject::CalcActualCollisionPosition(PhysicsObject a, PhysicsObject b)
 {
 	std::pair<CartPoint,CartPoint> collisionCoords;
@@ -184,3 +146,4 @@ std::pair<CartPoint,CartPoint> PhysicsObject::CalcActualCollisionPosition(Physic
 
 	return collisionCoords;
 }
+*/

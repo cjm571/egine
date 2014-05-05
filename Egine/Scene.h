@@ -58,11 +58,11 @@ public:
 	// Returns S_OK on success, E_FAIL on failure
 	PHRESULT AddObject(PhysicsObject*);
 
-	// Step physics scene forward 1 STEP_EPSILON
+	// Step physics scene forward 1 TIME_SIM_EPSILON
 	void Step();
 
 	// Calculates intra-step out-of-bounds time of PhysicsObject on given collision axis
-	double CalcOOBTime(eAxis axis, PhysicsObject obj);
+	double CalcOOBTime(eAxis axis, PhysicsObject obj, double curTime);
 
 
 // Properties

@@ -108,8 +108,16 @@ extern const UINT SC_GRAVITY_MASK;
 /***** CONSTANTS *****/
 // Speed of light in m/s
 extern const UINT C;
+// Zero gravity in m/s^2
+extern const double GRAV_ZERO;
+// Earth gravity in m/s^2
+extern const double GRAV_EARTH;
+// Luna gravity in m/s^2
+extern const double GRAV_LUNA;
+// Simulation start time
+extern const double TIME_SIM_START;
 // Amount of time (in seconds) between each physics calculation
-extern const double STEP_EPSILON;
+extern const double TIME_SIM_EPSILON;
 // Epsilon between distinct 'double's
 // All doubles within this delta from each other are considered the same value;
 extern const double DOUBLE_EPSILON;

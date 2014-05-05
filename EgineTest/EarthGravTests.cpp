@@ -29,15 +29,15 @@ namespace EgineTest
 			PhysicsObject obj = PhysicsObject(p0);
 
 			// Set trajectory
-			Trajectory traj0 = Trajectory(testScene.GetGravity(), v0, theta0, obj.GetAABB().GetCenter());
+			Trajectory traj0 = Trajectory(testScene.GetGravity(), v0, theta0, obj.GetAABB().GetCenter(), TIME_SIM_START);
 			obj.SetTrajectory(traj0);
 
 			// Add object to scene
 			Assert::AreEqual(testScene.AddObject(&obj), S_OK);
 			
 			// Calculate steps required for collision
-			double timeToCollision = testScene.CalcOOBTime(axis, obj);
-			UINT steps = static_cast<UINT>(ceil(timeToCollision / STEP_EPSILON));
+			double timeToCollision = testScene.CalcOOBTime(axis, obj, testScene.GetElapsedTime());
+			UINT steps = static_cast<UINT>(ceil(timeToCollision / TIME_SIM_EPSILON));
 
 			// Calculate expected post-rebound angle
 			double preRBAngle = WrapAngle(obj.GetTrajectory().GetTangentAngle(timeToCollision));

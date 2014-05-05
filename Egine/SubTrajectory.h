@@ -13,8 +13,12 @@ class SubTrajectory : public Parametric
 // Ctors
 public:
 	// Default Constructor
-	// Defines initially at-rest trajectory in zero-gravity starting at (0,0)
+	// Defines at-rest trajectory at (0,0)
 	SubTrajectory();
+	// Defines trajectory based on given Parametric
+	SubTrajectory(Parametric _parametric, double _t0);
+	// Defines trajectory based on given Quadratics
+	SubTrajectory(Quadratic _x, Quadratic _y, double _t0);
 	// Defines initially at-rest trajectory
 	SubTrajectory(double _g, CartPoint _p0, double _t0);
 	// Defines trajectory moving at given velocity along 0-rad line
@@ -25,10 +29,19 @@ public:
 	// Destructor
 	~SubTrajectory();
 
-// SubTrajectory Accessors
+// Data members
+private:
+	// Starting time of trajectory
+	double m_t0;
+
+// Helper Functions
+private:
+	// Returns the time relative to the start time of the SubTrajectory
+	double NormalizeT(double t);
+
+// Accessors
 public:
-	double GetGravity()	{return m_g;};
-	double GetT0()		{return m_t0;};
+	double GetT0() {return m_t0;};
 
 	// Returns angle of trajectory in range (0,2pi) at time t
 	double GetTheta(double t);
@@ -37,58 +50,25 @@ public:
 	double GetVelocity(double t);
 	// Returns axis-component of velocity at time t
 	double GetVelocity(eAxis axis, double t);
-	
-	// Returns velocity Quadratic factor for the given axis
-	double GetQuadraticFactor(eAxis axis);
-	// Returns velocity linear factor for the given axis
-	double GetLinearFactor(eAxis axis);
-	// Returns velocity constant factor for the given axis
-	double GetConstantFactor(eAxis axis);
 
 	// Returns Cartesian position of object at the given time
 	CartPoint GetPositionAt(double t);
+	
+	// Returns acceleration in m/s^2 on given axis
+	double GetAcceleration(eAxis axis);
+	// Returns the initial velocity (m/s) for the given axis
+	double GetInitialVelocity(eAxis axis);
+	// Returns initial position (m from origin) on the given axis
+	double GetInitialPosition(eAxis axis);
+	// Returns initial position (m from origin)
+	CartPoint GetInitialPosition();
 
-// Parametric Accessors
+// Mutators
 public:
-	Quadratic GetXQuadratic();
-	Quadratic GetYQuadratic();
-
-	// Returns angle of the tangent line (in radians) at the given time
-	double GetTangentAngle(double t);
-	
-	// Solve for value of x(t) given t
-	double SolveX(double t);
-	// Solve for value of y(t) given t
-	double SolveY(double t);
-	
-	// Return real-number roots of x(t)
-	std::pair<double,double> GetXRoots(double xt=0.0);
-	// Return real-number roots of y(t)
-	std::pair<double,double> GetYRoots(double yt=0.0);
-
-	// Calculates X-intercept given offset from initial position
-	std::pair<double,double> CalcXIntercepts(double offset=0.0);
-	// Calculates Y-intercept given offset from initial position
-	std::pair<double,double> CalcYIntercepts(double offset=0.0);
-	
-
-// Public methods
-public:
-	// Sets the trajectory gravity and the quadratic factor for the y-axis
-	// NOTE: newG must be a positive value
-	PHRESULT SetGravity(double newG);
+	// Sets the quadratic factor for the given axis
+	PHRESULT SetAcceleration(eAxis axis, double newA);
 	// Sets the linear factor for the given axis
 	PHRESULT SetInitialVelocity(eAxis axis, double newV);
 	// Sets the constant factor for the given axis
 	PHRESULT SetInitialPosition(eAxis axis, double newP);
-
-
-// Data members
-// NOTE: Velocity components are stored in inherited Quadratics' (m_x, m_y) member m_b
-private:
-	// Current gravity imposed on trajectory
-	double m_g;
-
-	// Starting time of trajectory
-	double m_t0;
 };

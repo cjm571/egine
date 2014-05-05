@@ -69,18 +69,18 @@ namespace EgineTest
 			PhysicsObject objB = PhysicsObject(centerB);
 			
 			// Set trajectories
-			Trajectory trajA = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, angle, objA.GetAABB().GetCenter());
+			Trajectory trajA = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, angle, objA.GetAABB().GetCenter(), TIME_SIM_START);
 			Trajectory trajB;
 			switch (axis)
 			{
 			case XAxis:
-				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, M_PI, objB.GetAABB().GetCenter());
+				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, M_PI, objB.GetAABB().GetCenter(), TIME_SIM_START);
 				break;
 			case YAxis:
-				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, 3*M_PI/2, objB.GetAABB().GetCenter());
+				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, 3*M_PI/2, objB.GetAABB().GetCenter(), TIME_SIM_START);
 				break;
 			case BothAxes:
-				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, reflAngle, objB.GetAABB().GetCenter());
+				trajB = Trajectory(testScene.GetGravity(), DEFAULT_VELOCITY, reflAngle, objB.GetAABB().GetCenter(), TIME_SIM_START);
 				break;
 			default: // AxisErr
 				Assert::Fail();
@@ -119,7 +119,7 @@ namespace EgineTest
 
 			// TODO: handle both-axes collisions
 			double timeToCollision = boundsDist / (velObjA + velObjB);
-			UINT steps = static_cast<UINT>(ceil(timeToCollision / STEP_EPSILON));
+			UINT steps = static_cast<UINT>(ceil(timeToCollision / TIME_SIM_EPSILON));
 
 			// Step scene until collision occurs
 			for (UINT i=0; i<steps; i++)
