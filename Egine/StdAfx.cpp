@@ -4,7 +4,7 @@
 * Created on: 2014-02-07 *
 *************************/
 
-// Inludes just standard includes and globals
+// Includes just standard includes and globals
 // Generates Egine.pch precompiled header and StdAfx.obj for precompiled type info
 #include "stdafx.h"
 
@@ -122,6 +122,7 @@ UINT const SC_GRAVITY_MASK =	0x00000001;
 
 
 /***** CONSTANTS *****/
+const double M_PI = 3.141592653589793238463;
 const UINT C = 299792458;
 const double GRAV_ZERO = 0.0;
 const double GRAV_EARTH = 9.80665;

@@ -5,19 +5,16 @@
 *************************/
 #pragma once
 
-// Allow use of math.h #defines
-#define _USE_MATH_DEFINES
-
 // C Runtime header files
 #include <stdlib.h>
-#include <math.h>
+#include <cmath>
 
 // C++ Standard Library
 #include <utility>
 #include <vector>
 #include <algorithm>
 
-// Homegrown Multi-platform utilities
+// Home-grown Multi-platform utilities
 #include "MPUtils.h"
 
 
@@ -106,6 +103,8 @@ enum SceneGravityFlags
 extern const UINT SC_GRAVITY_MASK;
 
 /***** CONSTANTS *****/
+// pi!
+extern const double M_PI;
 // Speed of light in m/s
 extern const UINT C;
 // Zero gravity in m/s^2
