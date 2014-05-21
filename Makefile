@@ -7,6 +7,7 @@
 # Compiler variables
 CC = g++
 CFLAGS = -c -Wall -std=c++0x
+LFLAGS = -static -Wl,--subsystem,windows
 
 # Static Library variables
 LibSrcDir = 	./Egine
@@ -15,12 +16,12 @@ LibObjList = 	$(LibObjDir)/AABB.o $(LibObjDir)/Linear.o $(LibObjDir)/MPUtils.o
 LibObjList += 	$(LibObjDir)/Parametric.o $(LibObjDir)/PhysicsObject.o $(LibObjDir)/Quadratic.o
 LibObjList +=	$(LibObjDir)/Scene.o $(LibObjDir)/StdAfx.o $(LibObjDir)/SubTrajectory.o
 LibObjList +=	$(LibObjDir)/Trajectory.o
-LibOutputDir = 	./Egine/lib
+LibOutputDir = 	./Egine/bin
 	
 all: $(LibOutputDir)/Egine.lib
 
 $(LibOutputDir)/Egine.lib: $(LibObjList)
-	$(CC) -static -o $@ $(LibObjList)
+	$(CC) $(LFLAGS) -o $@ $(LibObjList)
 	
 	
 ##### STATIC LIBRARY TARGETS #####
