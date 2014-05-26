@@ -7,21 +7,38 @@
 # Compiler variables
 CC = g++
 CFLAGS = -c -Wall -std=c++0x
-LFLAGS = -static -Wl,--subsystem,windows
+
+#Linker variables
+LD = ar
+LFLAGS = rvcs
 
 # Static Library variables
 LibSrcDir = 	./Egine
 LibObjDir = 	./Egine/obj
+LibIncDir =		./Egine/inc
+LibOutputDir = 	./Egine/lib
 LibObjList = 	$(LibObjDir)/AABB.o $(LibObjDir)/Linear.o $(LibObjDir)/MPUtils.o 
 LibObjList += 	$(LibObjDir)/Parametric.o $(LibObjDir)/PhysicsObject.o $(LibObjDir)/Quadratic.o
 LibObjList +=	$(LibObjDir)/Scene.o $(LibObjDir)/StdAfx.o $(LibObjDir)/SubTrajectory.o
 LibObjList +=	$(LibObjDir)/Trajectory.o
-LibOutputDir = 	./Egine/bin
-	
-all: $(LibOutputDir)/Egine.lib
 
-$(LibOutputDir)/Egine.lib: $(LibObjList)
-	$(CC) $(LFLAGS) -o $@ $(LibObjList)
+#Linux Test variables
+LTSrcDir =		./test/LinuxTest
+LTObjDir =		./test/LinuxTest/obj
+LTOutputDir =	./test/LinuxTest/bin
+LTObjList =		$(LTObjDir)/StdAfx.o $(LTObjDir)/TestStub.o $(LTObjDir)/Main.o
+	
+
+##### FUNCTIONAL GROUP TARGETS #####
+all: LinuxTest
+
+LinuxTest: Library $(LTOutputDir)/LinuxTest
+$(LTOutputDir)/LinuxTest: $(LTObjList)
+	$(CC) -static -I$(LibSrcDir) $(LTObjList) -L$(LibOutputDir) -legine -o $@
+
+Library: $(LibOutputDir)/libegine.a
+$(LibOutputDir)/libegine.a: $(LibObjList)
+	$(LD) $(LFLAGS) $@ $(LibObjList)
 	
 	
 ##### STATIC LIBRARY TARGETS #####
@@ -48,6 +65,20 @@ $(LibObjDir)/SubTrajectory.o: $(LibSrcDir)/SubTrajectory.cpp $(LibSrcDir)/SubTra
 $(LibObjDir)/Trajectory.o: $(LibSrcDir)/Trajectory.cpp $(LibSrcDir)/Trajectory.h
 	$(CC) $(CFLAGS) $(LibSrcDir)/Trajectory.cpp -o $@
 	
+	
+##### LINUX TEST TARGETS #####
+$(LTObjDir)/Main.o: $(LTSrcDir)/Main.cpp $(LTSrcDir)/Main.h
+	$(CC) $(CFLAGS) -I$(LibSrcDir) -L$(LibOutputDir) $(LTSrcDir)/Main.cpp -o $@
+$(LTObjDir)/StdAfx.o: $(LTSrcDir)/StdAfx.cpp $(LTSrcDir)/StdAfx.h
+	$(CC) $(CFLAGS) -I$(LibSrcDir) -L$(LibOutputDir) $(LTSrcDir)/StdAfx.cpp -o $@
+$(LTObjDir)/TestStub.o: $(LTSrcDir)/TestStub.cpp $(LTSrcDir)/TestStub.h
+	$(CC) $(CFLAGS) -I$(LibSrcDir) -L$(LibOutputDir) $(LTSrcDir)/TestStub.cpp -o $@
+
+	
 ##### UTILITY #####
 clean:
-	rm $(LibObjDir)/*.o
+	rm -f $(LibObjDir)/*.o
+	rm -f $(LibIncDir)/*.h
+	rm -f $(LibOutputDir)/*.a
+	rm -f $(LTObjDir)/*.o
+	rm -f $(LTOutputDir)/*

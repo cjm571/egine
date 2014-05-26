@@ -7,7 +7,12 @@
 
 // C Runtime header files
 #include <stdlib.h>
+
+// Maths stuffs
 #include <cmath>
+#ifdef M_PI
+#undef M_PI // undefine M_PI so my type-safe global M_PI can be used
+#endif
 
 // C++ Standard Library
 #include <utility>

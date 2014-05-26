@@ -6,7 +6,7 @@
 
 // Includes just standard includes and globals
 // Generates Egine.pch precompiled header and StdAfx.obj for precompiled type info
-#include "stdafx.h"
+#include "StdAfx.h"
 
 /***** GLOBAL HELPER FUNCTIONS *****/
 bool AreEqual(double a, double b)
