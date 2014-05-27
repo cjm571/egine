@@ -124,6 +124,11 @@ std::vector<PhysicsObject*> Scene::CheckOutOfBounds(eAxis axis)
 				vOutOfBounds.push_back(*poItr);
 			}
 			break;
+		// Invalid axis
+		case BothAxes:
+		case AxisErr:
+			// TODO: Log error
+			break;
 		}
 	}
 

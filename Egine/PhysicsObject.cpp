@@ -11,7 +11,7 @@ ULONG PhysicsObject::prevUID = 0;
 
 /********** CTORS **********/
 PhysicsObject::PhysicsObject()
-	: m_color(Black), m_mass(1.0), m_shape(PhysCircle)
+	: m_mass(1.0), m_color(Black), m_shape(PhysCircle)
 {
 	m_aabb = AABB();
 	m_trajectory = Trajectory(m_aabb.GetCenter(), TIME_SIM_START);
@@ -20,7 +20,7 @@ PhysicsObject::PhysicsObject()
 }
 
 PhysicsObject::PhysicsObject(CartPoint _center)
-	: m_color(Black), m_mass(1.0), m_shape(PhysCircle)
+	: m_mass(1.0), m_color(Black), m_shape(PhysCircle)
 {
 	m_aabb = AABB(_center);
 	m_trajectory = Trajectory(_center, TIME_SIM_START);
@@ -29,7 +29,7 @@ PhysicsObject::PhysicsObject(CartPoint _center)
 }
 
 PhysicsObject::PhysicsObject(AABB _aabb, Color _color, eShape _shape)
-	: m_color(_color), m_mass(1.0), m_shape(_shape)
+	: m_mass(1.0), m_color(_color), m_shape(_shape)
 {
 	m_aabb = AABB(_aabb);
 	m_trajectory = Trajectory(m_aabb.GetCenter(), TIME_SIM_START);
