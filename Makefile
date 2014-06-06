@@ -31,67 +31,60 @@ LTObjList =		$(addprefix $(LTObjDir)/,StdAfx.o TestStub.o Main.o)
 all: linuxtest
 
 linuxtest: library $(LTOutputDir)/LinuxTest
-$(LTOutputDir)/LinuxTest: $(LTObjList)
-	mkdir -p $(@D)
+$(LTOutputDir)/LinuxTest: $(LTOutputDir) $(LTObjList)
 	$(CC) -static -I$(LibSrcDir) $(LTObjList) -L$(LibOutputDir) -legine -o $@
 
 library: $(LibOutputDir)/libegine.a
-$(LibOutputDir)/libegine.a: $(LibObjList)
-	mkdir -p $(@D)
+$(LibOutputDir)/libegine.a: $(LibOutputDir) $(LibObjList)
 	$(LD) $(LFLAGS) $@ $(LibObjList)
 	
 	
 ##### STATIC LIBRARY TARGETS #####
-$(LibObjDir)/AABB.o: $(LibSrcDir)/AABB.cpp $(LibSrcDir)/AABB.h
-	mkdir -p $(@D)
+$(LibObjDir)/AABB.o: $(LibSrcDir)/AABB.cpp $(LibSrcDir)/AABB.h | $(LibObjDir)
 	$(CC) $(CFLAGS) $(LibSrcDir)/AABB.cpp -o $@
-$(LibObjDir)/Linear.o: $(LibSrcDir)/Linear.cpp $(LibSrcDir)/Linear.h
-	mkdir -p $(@D)
+$(LibObjDir)/Linear.o: $(LibSrcDir)/Linear.cpp $(LibSrcDir)/Linear.h | $(LibObjDir)
 	$(CC) $(CFLAGS) $(LibSrcDir)/Linear.cpp -o $@
-$(LibObjDir)/MPUtils.o: $(LibSrcDir)/MPUtils.cpp $(LibSrcDir)/MPUtils.h
-	mkdir -p $(@D)
+$(LibObjDir)/MPUtils.o: $(LibSrcDir)/MPUtils.cpp $(LibSrcDir)/MPUtils.h | $(LibObjDir)
 	$(CC) $(CFLAGS) $(LibSrcDir)/MPUtils.cpp -o $@
-$(LibObjDir)/Parametric.o: $(LibSrcDir)/Parametric.cpp $(LibSrcDir)/Parametric.h
-	mkdir -p $(@D)
+$(LibObjDir)/Parametric.o: $(LibSrcDir)/Parametric.cpp $(LibSrcDir)/Parametric.h | $(LibObjDir)
 	$(CC) $(CFLAGS) $(LibSrcDir)/Parametric.cpp -o $@
-$(LibObjDir)/PhysicsObject.o: $(LibSrcDir)/PhysicsObject.cpp $(LibSrcDir)/PhysicsObject.h
-	mkdir -p $(@D)
+$(LibObjDir)/PhysicsObject.o: $(LibSrcDir)/PhysicsObject.cpp $(LibSrcDir)/PhysicsObject.h | $(LibObjDir)
 	$(CC) $(CFLAGS) $(LibSrcDir)/PhysicsObject.cpp -o $@
-$(LibObjDir)/PhysLogger.o: $(LibSrcDir)/PhysLogger.cpp $(LibSrcDir)/PhysLogger.h
-	mkdir -p $(@D)
+$(LibObjDir)/PhysLogger.o: $(LibSrcDir)/PhysLogger.cpp $(LibSrcDir)/PhysLogger.h | $(LibObjDir)
 	$(CC) $(CFLAGS) $(LibSrcDir)/PhysLogger.cpp -o $@
-$(LibObjDir)/Quadratic.o: $(LibSrcDir)/Quadratic.cpp $(LibSrcDir)/Quadratic.h
-	mkdir -p $(@D)
+$(LibObjDir)/Quadratic.o: $(LibSrcDir)/Quadratic.cpp $(LibSrcDir)/Quadratic.h | $(LibObjDir)
 	$(CC) $(CFLAGS) $(LibSrcDir)/Quadratic.cpp -o $@
-$(LibObjDir)/Scene.o: $(LibSrcDir)/Scene.cpp $(LibSrcDir)/Scene.h
-	mkdir -p $(@D)
+$(LibObjDir)/Scene.o: $(LibSrcDir)/Scene.cpp $(LibSrcDir)/Scene.h | $(LibObjDir)
 	$(CC) $(CFLAGS) $(LibSrcDir)/Scene.cpp -o $@
-$(LibObjDir)/StdAfx.o: $(LibSrcDir)/StdAfx.cpp $(LibSrcDir)/StdAfx.h
-	mkdir -p $(@D)
+$(LibObjDir)/StdAfx.o: $(LibSrcDir)/StdAfx.cpp $(LibSrcDir)/StdAfx.h | $(LibObjDir)
 	$(CC) $(CFLAGS) $(LibSrcDir)/StdAfx.cpp -o $@
-$(LibObjDir)/SubTrajectory.o: $(LibSrcDir)/SubTrajectory.cpp $(LibSrcDir)/SubTrajectory.h
-	mkdir -p $(@D)
+$(LibObjDir)/SubTrajectory.o: $(LibSrcDir)/SubTrajectory.cpp $(LibSrcDir)/SubTrajectory.h | $(LibObjDir)
 	$(CC) $(CFLAGS) $(LibSrcDir)/SubTrajectory.cpp -o $@
-$(LibObjDir)/Trajectory.o: $(LibSrcDir)/Trajectory.cpp $(LibSrcDir)/Trajectory.h
-	mkdir -p $(@D)
+$(LibObjDir)/Trajectory.o: $(LibSrcDir)/Trajectory.cpp $(LibSrcDir)/Trajectory.h | $(LibObjDir)
 	$(CC) $(CFLAGS) $(LibSrcDir)/Trajectory.cpp -o $@
 	
 	
 ##### LINUX TEST TARGETS #####
-$(LTObjDir)/Main.o: $(LTSrcDir)/Main.cpp $(LTSrcDir)/Main.h
-	mkdir -p $(@D)
+$(LTObjDir)/Main.o: $(LTSrcDir)/Main.cpp $(LTSrcDir)/Main.h | $(LTObjDir)
 	$(CC) $(CFLAGS) -I$(LibSrcDir) -L$(LibOutputDir) $(LTSrcDir)/Main.cpp -o $@
-$(LTObjDir)/StdAfx.o: $(LTSrcDir)/StdAfx.cpp $(LTSrcDir)/StdAfx.h
-	mkdir -p $(@D)
+$(LTObjDir)/StdAfx.o: $(LTSrcDir)/StdAfx.cpp $(LTSrcDir)/StdAfx.h | $(LTObjDir)
 	$(CC) $(CFLAGS) -I$(LibSrcDir) -L$(LibOutputDir) $(LTSrcDir)/StdAfx.cpp -o $@
-$(LTObjDir)/TestStub.o: $(LTSrcDir)/TestStub.cpp $(LTSrcDir)/TestStub.h
-	mkdir -p $(@D)
+$(LTObjDir)/TestStub.o: $(LTSrcDir)/TestStub.cpp $(LTSrcDir)/TestStub.h | $(LTObjDir)
 	$(CC) $(CFLAGS) -I$(LibSrcDir) -L$(LibOutputDir) $(LTSrcDir)/TestStub.cpp -o $@
 
 	
 ##### UTILITY #####
+$(LTOutputDir):
+	mkdir -p $(LTOutputDir)
+$(LibOutputDir):
+	mkdir -p $(LibOutputDir)
+$(LibObjDir):
+	mkdir -p $(LibObjDir)
+$(LTObjDir):
+	mkdir -p $(LTObjDir)
+
 clean:
-	rm -f $(LibObjDir)/*.o
-	rm -f $(LibOutputDir)/*.a
-	rm -f $(LTObjDir)/*.o
-	rm -f $(LTOutputDir)/*
+	rm -rf $(LibObjDir)
+	rm -rf $(LibOutputDir)
+	rm -rf $(LTObjDir)
+	rm -rf $(LTOutputDir)

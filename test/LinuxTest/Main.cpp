@@ -15,7 +15,6 @@ int main()
 	cout << "Hello egine" << endl;
 	
 	double grav = testScene.GetGravity();
-	
 	cout << "Gravity: " << grav << endl;
 	
 	return 0;
