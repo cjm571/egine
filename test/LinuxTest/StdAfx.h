@@ -8,7 +8,4 @@
 // Include Egine library header
 #include "../../Egine/Scene.h"
 
-// Include Catch unit testing framework header
-#include "../Catch/catch.hpp"
-
 

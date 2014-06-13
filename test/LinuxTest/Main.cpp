@@ -6,17 +6,18 @@
 
 #include "Main.h"
 
-using namespace std;
-int main()
+// Tell Catch to provide a main()
+#define CATCH_CONFIG_MAIN
+// Include Catch unit testing framework header
+#include "../Catch/catch.hpp"
+
+double gravTest(Scene testScene)
 {
-	TestStub testStub = TestStub();
-	Scene testScene = Scene();
-	
-	cout << "Hello egine" << endl;
-	
-	double grav = testScene.GetGravity();
-	cout << "Gravity: " << grav << endl;
-	
-	return 0;
+	return testScene.GetGravity();
 }
 
+TEST_CASE("No idea what I'm doing...", "[gravTest]" )
+{
+	Scene testScene = Scene();
+	REQUIRE( gravTest(testScene) == 9.8 );
+}
