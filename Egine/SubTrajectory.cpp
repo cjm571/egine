@@ -226,7 +226,7 @@ PHRESULT SubTrajectory::SetInitialVelocity(eAxis axis, double newV)
 	PHRESULT hr = S_OK;
 
 	// Sanity check
-	if (abs(newV) > C)
+	if (abs(newV) > (double) C)
 	{
 		hr = E_FAIL;
 	}
@@ -250,22 +250,13 @@ PHRESULT SubTrajectory::SetInitialPosition(eAxis axis, double newP)
 {
 	PHRESULT hr = S_OK;
 
-	// Sanity check
-	if (abs(newP) > C)
+	if (axis==XAxis)
 	{
-		hr = E_FAIL;
+		m_x.SetC(newP);
 	}
-
-	if (SUCCEEDED(hr))
+	if (axis==YAxis)
 	{
-		if (axis==XAxis)
-		{
-			m_x.SetC(newP);
-		}
-		if (axis==YAxis)
-		{
-			m_y.SetC(newP);
-		}
+		m_y.SetC(newP);
 	}
 
 	return hr;
