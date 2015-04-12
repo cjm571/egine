@@ -11,7 +11,7 @@
 #include "CppUnitTest.h"
 
 // Headers from library
-#include "..\Egine\Scene.h"
+#include "..\..\Egine\Scene.h"
 
 /*** CONSTANTS ***/
 // Error bounds for distance measurements

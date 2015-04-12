@@ -82,6 +82,15 @@ enum eCoordSys
 	Drawing = 1
 };
 
+// Log output mode
+enum eLogMode
+{
+	Silent	= 0,
+	StdOut	= 1,
+	File	= 2,
+	Both	= 3
+};
+
 
 /***** SCENE PARAMETERS *****/
 // Scene width in meters
