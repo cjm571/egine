@@ -3,9 +3,10 @@
 *                        *
 * Created on: 2015-04-12 *
 *************************/
+
 /*
 Purpose:
- This class defines the Logger class, which is used to maintain a record of events
+ This Singleton class defines the Logger class, which is used to maintain a record of events
  which take place over the course of engine execution. This should aid in troubleshooting
  and debugging efforts in the future.
 */
@@ -20,9 +21,11 @@ Purpose:
 using namespace std;
 class Logger
 {
+public:
 // Ctors
 public:
-	Logger(eLogMode);
+	Logger();
+	Logger(LogModeFlag);
 	~Logger();
 
 // Severity enumeration
@@ -39,12 +42,12 @@ public:
 	
 // Data Members
 private:
+	// Log output mode
+	LogModeFlag m_mode;
+
 	// Log data structure. Holds logs indexed by severity
 	// Recorded time is time elapsed since log start
 	vector<vector<pair<time_t,string>>> m_log;
-
-	// Output mode. Silent, StdOut, or File
-	eLogMode m_mode;
 
 	// System time at log initialization
 	time_t m_startTime;

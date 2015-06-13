@@ -33,7 +33,6 @@ inline void SafeRelease(
     }
 }
 
-
 #ifndef Assert
 #if defined( DEBUG ) || defined( _DEBUG )
 #define Assert(b) do {if (!(b)) {OutputDebugStringA("Assert: " #b "\n");}} while(0)
@@ -42,9 +41,17 @@ inline void SafeRelease(
 #endif //DEBUG || _DEBUG
 #endif
 
-
-
 #ifndef HINST_THISCOMPONENT
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 #endif
+
+
+/*** High-Resolution performance counter ***/
+//
+// Performance Counter frequency
+extern __int64 PCFreq;
+extern __int64 CounterStart;
+
+// Starts the QPC
+HRESULT StartCounter();

@@ -5,6 +5,8 @@
 *************************/
 #pragma once
 
+#include <sstream>
+
 // Engine header
 #include "..\Egine\Scene.h"
 
@@ -25,10 +27,17 @@ public:
     // Process and dispatch messages
     void RunMessageLoop();
 
+// Public Statics
+public:
+	static ULONGLONG renderCount;
+
 // Helper Functions
 private:
     // Draw content.
     HRESULT Render();
+
+	// Displays FPS counter
+	HRESULT ShowFps();
 
 	// Initialize physics scene
 	HRESULT SceneInit();
@@ -64,10 +73,19 @@ private:
         );
 
 private:
+	// D2D interface pointers
     HWND m_hwnd;
 	Scene m_scene;
     ID2D1Factory* m_pDirect2dFactory;
     ID2D1HwndRenderTarget* m_pRenderTarget;
     ID2D1SolidColorBrush* m_pFillBrush;
     ID2D1SolidColorBrush* m_pOutlineBrush;
+
+	// FPS data
+	IDWriteFactory* m_pDWriteFactory;
+	IDWriteTextFormat* m_pTextFormat;
+	ID2D1SolidColorBrush* m_pFpsBgBrush;
+	ID2D1SolidColorBrush* m_pFpsTextBrush;
+	__int64 m_prevQPC;
+	__int64 m_curQPC;
 };

@@ -7,35 +7,41 @@
 #include "Scene.h"
 
 // Initialize static members
-const double Scene::CornerHitMargin = 0.1;
+const double Scene::g_CornerHitMargin = 0.1;
+Logger Scene::g_Log = Logger();
 
 /********** CTORS **********/
 Scene::Scene()
 	: m_gravity(9.8), m_elapsed(0.0)
 {
+	g_Log = Logger(Silent);
 }
 
 Scene::Scene(UINT _creationFlags)
 	: m_elapsed(0.0)
 {
 
-	switch (_creationFlags & SC_GRAVITY_MASK)
+	switch (_creationFlags & GRAV_MASK)
 	{
-	case SC_GRAVITY_OFF:	// Zero-gravity
+	case GravityFlag::Off:		// Zero-gravity
 		m_gravity = 0.0;
 		break;
-	case SC_GRAVITY_EARTH:	// Earth gravity
+	case GravityFlag::Earth:	// Earth gravity
 		m_gravity = 9.8;
 		break;
-	case SC_GRAVITY_MOON:	// Moon gravity
+	case GravityFlag::Luna:		// Moon gravity
 		m_gravity = 1.622;
 		break;
 	}
-}
 
+	g_Log = Logger((LogModeFlag)(_creationFlags & LOGMODE_MASK));
+	g_Log.Write(Logger::Info, "Scene object constructed");
+}
+	
 Scene::~Scene()
 {
 	m_physicsObjects.clear();
+	g_Log.Write(Logger::Info, "Scene object destroyed");
 }
 
 
@@ -171,7 +177,7 @@ eAxis Scene::GetCollisionAxis(std::pair<PhysicsObject*,PhysicsObject*> poPair)
 	}
 
 	// Corner-hit
-	if (abs(1-abs(yDepth/xDepth)) < CornerHitMargin)
+	if (abs(1-abs(yDepth/xDepth)) < g_CornerHitMargin)
 	{
 		axis = BothAxes;
 	}

@@ -82,15 +82,6 @@ enum eCoordSys
 	Drawing = 1
 };
 
-// Log output mode
-enum eLogMode
-{
-	Silent	= 0,
-	StdOut	= 1,
-	File	= 2,
-	Both	= 3
-};
-
 
 /***** SCENE PARAMETERS *****/
 // Scene width in meters
@@ -101,20 +92,28 @@ extern double SCENE_HEIGHT;
 
 
 /***** SCENE CREATION FLAGS *****/
-enum SceneGravityFlags
+enum GravityFlag
 {
 	// Created Scene will have 0 gravity
-	SC_GRAVITY_OFF		= 0x00000000,
+	Off		= 0x00000000,
 	// Created Scene will have Earth gravity
-	SC_GRAVITY_EARTH	= 0x00000001,
+	Earth	= 0x00000001,
 	// Created Scene will have Moon gravity
-	SC_GRAVITY_MOON		= 0x00000002
+	Luna	= 0x00000002
 };
 
+// Log output mode
+enum LogModeFlag
+{
+	Silent	= 0x00000000,
+	StdOut	= 0x00000010,
+	File	= 0x00000020,
+	Both	= 0x00000030
+};
 
 /***** SCENE CREATION MASKS *****/
-// Gravity on/off mask
-extern const UINT SC_GRAVITY_MASK;
+extern const UINT GRAV_MASK;
+extern const UINT LOGMODE_MASK;
 
 /***** CONSTANTS *****/
 // pi!

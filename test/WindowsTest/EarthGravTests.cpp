@@ -68,7 +68,7 @@ namespace EgineTest
 		/***** TEST INIT/CLEANUP *****/
 		TEST_METHOD_INITIALIZE(EarthGravInit)
 		{
-			testScene = Scene(SC_GRAVITY_EARTH);
+			testScene = Scene(GravityFlag::Earth);
 		}
 		
 		TEST_METHOD_CLEANUP(EarthGravCleanup)

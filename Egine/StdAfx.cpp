@@ -113,21 +113,22 @@ PHRESULT Pythag(double* a, double b, double c)
 
 
 /***** SCENE PARAMETERS *****/
-double SCENE_WIDTH =	640.0;
-double SCENE_HEIGHT =	480.0;
+double SCENE_WIDTH	= 640.0;
+double SCENE_HEIGHT = 480.0;
 
 
 /***** SCENE CREATION MASKS *****/
-UINT const SC_GRAVITY_MASK =	0x00000001;
+UINT const GRAV_MASK	= 0x0000000F;
+UINT const LOGMODE_MASK = 0x000000F0;
 
 
 /***** CONSTANTS *****/
-const double M_PI = 3.141592653589793238463;
-const UINT C = 299792458;
-const double GRAV_ZERO = 0.0;
-const double GRAV_EARTH = 9.80665;
-const double GRAV_LUNA = 1.622;
-const double TIME_SIM_START = 0.0;
-const double TIME_SIM_EPSILON = 0.1;
-const double DOUBLE_EPSILON = 1E-9;
-const double ERR_COLLISION = 0.0001;
+const double	M_PI				= 3.141592653589793238463;
+const UINT		C					= 299792458;
+const double	GRAV_ZERO			= 0.0;
+const double	GRAV_EARTH			= 9.80665;
+const double	GRAV_LUNA			= 1.622;
+const double	TIME_SIM_START		= 0.0;
+const double	TIME_SIM_EPSILON	= 0.1;
+const double	DOUBLE_EPSILON		= 1E-9;
+const double	ERR_COLLISION		= 0.0001;

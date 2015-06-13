@@ -6,13 +6,21 @@
 
 #include "MainFrame.h"
 
+ULONGLONG MainFrame::renderCount = 0;
+
 /***** CTORS *****/
 MainFrame::MainFrame() :
-    m_hwnd(NULL),
-    m_pDirect2dFactory(NULL),
-    m_pRenderTarget(NULL),
-    m_pFillBrush(NULL),
-    m_pOutlineBrush(NULL)
+	m_hwnd(NULL),
+	m_pDirect2dFactory(NULL),
+	m_pRenderTarget(NULL),
+	m_pFillBrush(NULL),
+	m_pOutlineBrush(NULL),
+	m_pDWriteFactory(NULL),
+	m_pTextFormat(NULL),
+	m_pFpsBgBrush(NULL),
+	m_pFpsTextBrush(NULL),
+	m_prevQPC(0),
+	m_curQPC(0)
 {
 }
 
@@ -22,6 +30,11 @@ MainFrame::~MainFrame()
     SafeRelease(&m_pRenderTarget);
     SafeRelease(&m_pFillBrush);
     SafeRelease(&m_pOutlineBrush);
+	SafeRelease(&m_pDWriteFactory);
+	SafeRelease(&m_pTextFormat);
+	SafeRelease(&m_pFpsBgBrush);
+	SafeRelease(&m_pFpsTextBrush);
+	
 	SceneRelease();
 }
 
@@ -34,6 +47,18 @@ HRESULT MainFrame::Initialize()
     // Initialize device-indpendent resources, such
     // as the Direct2D factory.
     hr = CreateDeviceIndependentResources();
+
+	// Initialize FPS counter members
+	if (SUCCEEDED(hr))
+	{
+		hr |= DWriteCreateFactory(
+			DWRITE_FACTORY_TYPE_SHARED,
+			__uuidof(IDWriteFactory),
+			reinterpret_cast<IUnknown**>(&m_pDWriteFactory)
+			);
+		hr |= StartCounter();
+		hr |= QueryPerformanceCounter((LARGE_INTEGER *)&m_prevQPC) ? S_OK : E_FAIL;
+	}
 
     if (SUCCEEDED(hr))
     {
@@ -88,6 +113,7 @@ HRESULT MainFrame::Initialize()
 		}
     }
 
+	// Initialize Scene
 	if (SUCCEEDED(hr))
 	{
 		hr |= SceneInit();
@@ -102,7 +128,7 @@ void MainFrame::RunMessageLoop()
 	
 	// Render original scene
 	Render();
-
+	
 	// Run until main window is closed
 	while (IsWindow(m_hwnd))
 	{
@@ -166,6 +192,9 @@ HRESULT MainFrame::Render()
 			m_pRenderTarget->DrawRectangle(&rect, m_pOutlineBrush);
 		}
 
+		// Draw FPS counter
+		ShowFps();
+
 		// End draw
 		m_pRenderTarget->EndDraw();
     }
@@ -176,15 +205,99 @@ HRESULT MainFrame::Render()
         DiscardDeviceResources();
     }
 
+	renderCount++;
     return hr;
+}
+
+HRESULT MainFrame::ShowFps()
+{
+	HRESULT hr = S_OK;
+
+	// Get current QPC FIRST
+	hr |= QueryPerformanceCounter((LARGE_INTEGER *)&m_curQPC) ? S_OK : E_FAIL;
+
+	const UINT RESOLUTION = 5;
+	double sTimeDiff; // in seconds
+	double fps;
+	std::ostringstream strs;
+	std::string strFps;
+	LPWSTR wStrFps = new wchar_t[RESOLUTION+1];
+
+	__int64 countDiff = m_curQPC - m_prevQPC;
+	sTimeDiff = (countDiff * 1.0) / PCFreq;
+
+	fps = 1.0 / sTimeDiff;
+	strs << fps;
+	strFps = strs.str().substr(0, RESOLUTION); // only care about a few decimal places, ignore the rest
+	MultiByteToWideChar(CP_UTF8, NULL, strFps.c_str(), RESOLUTION, wStrFps, RESOLUTION+1);
+
+	// Draw black rectangle background
+	D2D1_RECT_F fpsRect = D2D1::RectF(
+		0.0f,
+		0.0f,
+		30.0f,
+		16.0f
+		);
+	if SUCCEEDED(hr)
+	{
+		hr = m_pRenderTarget->CreateSolidColorBrush(
+			D2D1::ColorF(D2D1::ColorF::Black, 1.0f),
+			&m_pFpsBgBrush
+			);
+	}
+	if SUCCEEDED(hr)
+	{
+		m_pRenderTarget->FillRectangle(
+			fpsRect,
+			m_pFpsBgBrush
+			);
+	}
+
+	// FINALLY draw the goddamned FPS
+	if SUCCEEDED(hr)
+	{
+		hr = m_pDWriteFactory->CreateTextFormat(
+			L"Courier",
+			NULL,
+			DWRITE_FONT_WEIGHT_REGULAR,
+			DWRITE_FONT_STYLE_NORMAL,
+			DWRITE_FONT_STRETCH_NORMAL,
+			12.0f,
+			L"en-us",
+			&m_pTextFormat
+			);
+	}
+	if SUCCEEDED(hr)
+	{
+		hr = m_pRenderTarget->CreateSolidColorBrush(
+			D2D1::ColorF(D2D1::ColorF::Yellow, 1.0f),
+			&m_pFpsTextBrush
+			);
+	}
+	if SUCCEEDED(hr)
+	{
+		m_pRenderTarget->DrawTextA(
+			wStrFps,
+			RESOLUTION,
+			m_pTextFormat,
+			fpsRect,
+			m_pFpsTextBrush
+			);
+	}
+
+	delete[] wStrFps;
+
+	// Reset prevTick
+	hr |= QueryPerformanceCounter((LARGE_INTEGER *)&m_prevQPC) ? S_OK : E_FAIL;
+	return hr;
 }
 
 HRESULT MainFrame::SceneInit()
 {
 	HRESULT hr = S_OK;
 
-	// Create zero-gravity scene
-	m_scene = Scene(SC_GRAVITY_EARTH);
+	// Create Earth-gravity scene
+	m_scene = Scene(GravityFlag::Earth | LogModeFlag::StdOut);
 
 	// Create 2 default objects
 	CartPoint pointA = {100,250};

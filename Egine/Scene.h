@@ -1,12 +1,19 @@
 /*************************
-* Author: CJ McAllister  *
-*                        *
+* Author: CJ McAllister	 *
+*						 *
 * Created on: 2014-02-13 *
 *************************/
+
+/*
+Purpose:
+ This class defines the physics scene in which all physics
+ events take place.
+*/
 #pragma once
 
 #include "StdAfx.h"
 #include "PhysicsObject.h"
+#include "Logger.h"
 
 #include <vector>
 
@@ -18,7 +25,8 @@ public:
 	// Creates Scene with 9.8m/s^2 gravity
 	Scene();
 
-	// Creates zero-gravity Scene
+	// Creates Scene with given creation flags:
+	// 
 	Scene(UINT _creationFlags);
 
 	// Default destructor
@@ -27,7 +35,10 @@ public:
 // Static data members
 public:
 	// Margin for determining corner-hits
-	static const double CornerHitMargin;
+	static const double g_CornerHitMargin;
+
+	// Scene-global logger instance
+	static Logger g_Log;
 
 // Helper Functions
 private:

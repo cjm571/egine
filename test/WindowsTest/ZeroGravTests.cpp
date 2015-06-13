@@ -160,7 +160,7 @@ namespace EgineTest
 		/***** TEST INIT/CLEANUP *****/
 		TEST_METHOD_INITIALIZE(ZeroGravInit)
 		{
-			testScene = Scene(SC_GRAVITY_OFF);
+			testScene = Scene(GravityFlag::Off);
 		}
 		
 		TEST_METHOD_CLEANUP(ZeroGravCleanup)

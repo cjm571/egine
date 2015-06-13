@@ -7,18 +7,30 @@
 #include "Logger.h"
 
 /********** CTORS **********/
-Logger::Logger(eLogMode _mode)
-	: m_mode(_mode)
+Logger::Logger()
+	: m_mode(Silent)
+{
+}
+
+Logger::Logger(LogModeFlag _logModeFlag)
+	: m_mode(_logModeFlag)
 {
 	// Record logger starting time
 	m_startTime = time(NULL);
 
+	m_log.push_back(vector<pair<time_t, string>>()); // Error
+	m_log.push_back(vector<pair<time_t, string>>()); // Warning
+	m_log.push_back(vector<pair<time_t, string>>()); // Info
+	m_log.push_back(vector<pair<time_t, string>>()); // Debug
+	m_log.push_back(vector<pair<time_t, string>>()); // Verbose
+
+	//TODO Open file in file mode
 	// Initialize log
-	m_log[Error].push_back(make_pair(m_startTime, string("LOG START")));
-	m_log[Warning].push_back(make_pair(m_startTime, string("LOG START")));
-	m_log[Info].push_back(make_pair(m_startTime, string("LOG START")));
-	m_log[Debug].push_back(make_pair(m_startTime, string("LOG START")));
-	m_log[Verbose].push_back(make_pair(m_startTime, string("LOG START")));
+	Write(Error, "LOG_START");
+	Write(Warning, "LOG_START");
+	Write(Info, "LOG_START");
+	Write(Debug, "LOG_START");
+	Write(Verbose, "LOG_START");
 }
 
 Logger::~Logger()
@@ -27,11 +39,12 @@ Logger::~Logger()
 	time_t endtime = time(NULL);
 
 	// Endcap log entries
-	m_log[Error].push_back(make_pair(endtime, string("LOG END")));
-	m_log[Warning].push_back(make_pair(endtime, string("LOG END")));
-	m_log[Info].push_back(make_pair(endtime, string("LOG END")));
-	m_log[Debug].push_back(make_pair(endtime, string("LOG END")));
-	m_log[Verbose].push_back(make_pair(endtime, string("LOG END")));
+	Write(Error, "LOG_END");
+	Write(Warning, "LOG_END");
+	Write(Info, "LOG_END");
+	Write(Debug, "LOG_END");
+	Write(Verbose, "LOG_END");
+	//TODO Close file in file mode
 }
 
 
@@ -50,12 +63,12 @@ void Logger::Write(eSeverity sev, string msg)
 		// Console output
 		if (m_mode == StdOut)
 		{
-			printf("%d:%d:%d - %s", hour, min, sec, msg);
+			fprintf(stderr, "[%s] %d:%d:%d - %s\n", "TEMP", hour, min, sec, msg.c_str());
 		}
 		// File output
 		if (m_mode == File)
 		{
-			fprintf(stderr, "%d:%d:%d - %s", hour, min, sec, msg);
+			fprintf(stderr, "%d:%d:%d - %s\n", hour, min, sec, msg.c_str());
 		}
 	}
 }

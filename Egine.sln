@@ -15,6 +15,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsTest", "test\Windows
 		{334C06C7-19A9-43FE-9235-844417949CF0} = {334C06C7-19A9-43FE-9235-844417949CF0}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{703158F4-DA77-47C4-84B6-B4B25C5AA6D4}"
+	ProjectSection(SolutionItems) = preProject
+		docs\Software_Requirements.odt = docs\Software_Requirements.odt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
